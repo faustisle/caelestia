@@ -70,18 +70,25 @@ PageBase {
         }
 
         NavRow {
-            icon: "signal_cellular_alt"
-            text: Tr.tr("Status icons")
-            subtext: Tr.tr("Visible indicators")
+            icon: "monitor_heart"
+            text: Tr.tr("System monitor")
+            subtext: Tr.tr("CPU and memory usage")
             onClicked: root.nState.openSubPage(8)
         }
 
         NavRow {
-            last: true
             icon: "schedule"
             text: Tr.tr("Clock")
             subtext: Tr.tr("Date, icon, background")
             onClicked: root.nState.openSubPage(9)
+        }
+
+        NavRow {
+            last: true
+            icon: "signal_cellular_alt"
+            text: Tr.tr("Status icons")
+            subtext: Tr.tr("Visible indicators")
+            onClicked: root.nState.openSubPage(10)
         }
 
         // Scroll actions

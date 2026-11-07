@@ -132,10 +132,13 @@ QtObject {
                     BarTray {}
                 }
                 Component {
-                    BarStatusIcons {}
+                    BarSysMonitor {}
                 }
                 Component {
                     BarClock {}
+                }
+                Component {
+                    BarStatusIcons {}
                 }
             }
         },

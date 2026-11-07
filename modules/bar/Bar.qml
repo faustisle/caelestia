@@ -142,6 +142,14 @@ ColumnLayout {
                 }
             }
             DelegateChoice {
+                roleValue: "sysmon"
+                delegate: EntryWrapper {
+                    SysMonitor {
+                        objectName: "taskbarSysMonitor"
+                    }
+                }
+            }
+            DelegateChoice {
                 roleValue: "clock"
                 delegate: EntryWrapper {
                     Clock {

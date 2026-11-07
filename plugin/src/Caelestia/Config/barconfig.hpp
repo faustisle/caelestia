@@ -94,6 +94,16 @@ class BarClock : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, showSeconds, false)
 };
 
+class BarSysMonitor : public settings::ObjectNode {
+    CONFIG_NODE(BarSysMonitor, settings::ObjectNode)
+
+    CONFIG_PROPERTY(bool, background, false)
+    CONFIG_PROPERTY(bool, showIcons, true)
+    CONFIG_PROPERTY(bool, showCpu, true)
+    CONFIG_PROPERTY(bool, showCpuTemp, true)
+    CONFIG_PROPERTY(bool, showMemory, true)
+};
+
 class BarConfig : public settings::ObjectNode {
     CONFIG_NODE(BarConfig, settings::ObjectNode)
 
@@ -105,6 +115,7 @@ class BarConfig : public settings::ObjectNode {
     CONFIG_SUBOBJECT(BarWorkspaces, workspaces)
     CONFIG_SUBOBJECT(BarTray, tray)
     CONFIG_SUBOBJECT(BarClock, clock)
+    CONFIG_SUBOBJECT(BarSysMonitor, sysMonitor)
     CONFIG_LIST(EntryList, statusIcons,
         DEFAULT_ARG({
             LIST_ENTRY(lockStatus, true),
@@ -121,6 +132,7 @@ class BarConfig : public settings::ObjectNode {
             LIST_ENTRY(workspaces, true),
             LIST_ENTRY(spacer, true),
             LIST_ENTRY(tray, true),
+            LIST_ENTRY(sysmon, true),
             LIST_ENTRY(clock, true),
             LIST_ENTRY(statusIcons, true),
             LIST_ENTRY(power, true),

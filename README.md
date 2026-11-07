@@ -561,6 +561,13 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             "showDate": false,
             "showIcon": true
         },
+        "sysMonitor": {
+            "background": false,
+            "showIcons": true,
+            "showCpu": true,
+            "showCpuTemp": true,
+            "showMemory": true
+        },
         "statusIcons": [
             {
                 "id": "lockStatus",
@@ -606,6 +613,10 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             },
             {
                 "id": "tray",
+                "enabled": true
+            },
+            {
+                "id": "sysmon",
                 "enabled": true
             },
             {
