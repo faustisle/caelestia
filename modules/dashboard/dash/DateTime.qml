@@ -13,8 +13,11 @@ Item {
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     implicitWidth: Tokens.sizes.dashboard.dateTimeWidth
+    implicitHeight: layout.implicitHeight
 
     ColumnLayout {
+        id: layout
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter

@@ -34,15 +34,14 @@ Item {
                 iconName: "speed",
                 text: Tr.tr("Performance"),
                 enabled: Config.dashboard.showPerformance
-            },
-            {
-                component: weatherComponent,
-                iconName: "cloud",
-                text: Tr.tr("Weather"),
-                enabled: Config.dashboard.showWeather
             }
         ];
         return allTabs.filter(tab => tab.enabled);
+    }
+
+    onDashboardTabsChanged: {
+        if (root.screenState.dashboardTab >= root.dashboardTabs.length)
+            root.screenState.dashboardTab = Math.max(0, root.dashboardTabs.length - 1);
     }
 
     readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
@@ -173,12 +172,6 @@ Item {
                 id: performanceComponent
 
                 Performance {}
-            }
-
-            Component {
-                id: weatherComponent
-
-                WeatherTab {}
             }
 
             Behavior on contentX {
