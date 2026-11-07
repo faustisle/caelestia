@@ -52,7 +52,7 @@ StyledRect {
 
         anchors.fill: parent
         anchors.margins: root.padding
-        spacing: Tokens.spacing.small
+        spacing: Tokens.spacing.medium
 
         Metric {
             visible: Config.bar.sysMonitor.showCpu
