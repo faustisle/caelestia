@@ -13,11 +13,14 @@ StyledRect {
 
     readonly property color colour: Colours.palette.m3tertiary
     readonly property int padding: Config.bar.sysMonitor.background ? Tokens.padding.medium : Tokens.padding.extraSmall
-    readonly property var valueFont: Tokens.font.body.builders.small
+    readonly property var valueFont: Tokens.font.body.builders.small.scale(1.1).build()
+    readonly property var unitFont: Tokens.font.body.builders.small.scale(0.8).build()
+    readonly property var iconFont: Tokens.font.icon.builders.small.build()
+    readonly property var memoryIconFont: Tokens.font.icon.builders.small.scale(0.85).build()
 
-    readonly property string cpuValue: (isFinite(Cpu.percentage) ? Cpu.percentage * 100 : 0).toFixed(1)
+    readonly property string cpuValue: Math.round(isFinite(Cpu.percentage) ? Cpu.percentage * 100 : 0).toString()
     readonly property int resolvedTempUnit: Units.resolveTempUnit(GlobalConfig.services.sensorUnits)
-    readonly property string tempValue: (isFinite(Cpu.temperature) ? Units.toTemperature(Cpu.temperature, GlobalConfig.services.sensorUnits) : 0).toFixed(1)
+    readonly property string tempValue: Math.round(isFinite(Cpu.temperature) ? Units.toTemperature(Cpu.temperature, GlobalConfig.services.sensorUnits) : 0).toString()
     readonly property string tempUnit: {
         if (Number(root.resolvedTempUnit) === TemperatureUnit.Fahrenheit)
             return "°F";
@@ -68,6 +71,7 @@ StyledRect {
         Metric {
             visible: Config.bar.sysMonitor.showMemory
             icon: "memory_alt"
+            iconFont: root.memoryIconFont
             value: root.memoryValue
             unit: root.memoryUnit
         }
@@ -79,24 +83,10 @@ StyledRect {
         required property string icon
         required property string value
         required property string unit
-
-        readonly property var baseFont: root.valueFont
-        readonly property var fittedFont: {
-            const available = Tokens.sizes.bar.innerWidth - Tokens.padding.extraSmall * 2;
-            const width = isFinite(valueMetrics.width) && valueMetrics.width > 0 ? valueMetrics.width : 1;
-            const scale = Math.min(1.1, Math.max(0.6, available / width));
-            return metric.baseFont.scale(scale).build();
-        }
+        property font iconFont: root.iconFont
 
         Layout.fillWidth: true
         spacing: Tokens.spacing.extraSmall / 2
-
-        TextMetrics {
-            id: valueMetrics
-
-            font: metric.baseFont.build()
-            text: metric.value
-        }
 
         MaterialIcon {
             Layout.fillWidth: true
@@ -104,13 +94,14 @@ StyledRect {
             horizontalAlignment: Text.AlignHCenter
             text: metric.icon
             color: root.colour
+            fontStyle: metric.iconFont
         }
 
         StyledText {
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: metric.value
-            font: metric.fittedFont
+            font: root.valueFont
             color: root.colour
         }
 
@@ -118,7 +109,7 @@ StyledRect {
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: metric.unit
-            font: root.valueFont.scale(0.8).build()
+            font: root.unitFont
             color: root.colour
         }
     }
