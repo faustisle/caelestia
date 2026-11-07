@@ -46,6 +46,12 @@ CustomMouseArea {
     acceptedButtons: Qt.MiddleButton
     onClicked: root.resetToday()
 
+    StyledRect {
+        anchors.fill: parent
+        color: Colours.tPalette.m3surfaceContainer
+        radius: Tokens.rounding.extraLarge
+    }
+
     Anim {
         id: trOutAnim
 
