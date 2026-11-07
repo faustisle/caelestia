@@ -12,7 +12,6 @@ toasts
 session
 sidebar
 utilities
-winfo
 
 blobs
 components

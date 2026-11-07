@@ -30,13 +30,6 @@ Item {
         anchors.margins: Tokens.padding.large
 
         Popout {
-            name: "activewindow"
-            sourceComponent: ActiveWindow {
-                popouts: root.popouts
-            }
-        }
-
-        Popout {
             id: networkPopout
 
             name: "network"

@@ -507,7 +507,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             "brightness": true
         },
         "popouts": {
-            "activeWindow": true,
             "tray": true,
             "statusIcons": true
         },
@@ -558,11 +557,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
                 }
             ]
         },
-        "activeWindow": {
-            "compact": false,
-            "inverted": false,
-            "showOnHover": true
-        },
         "tray": {
             "background": false,
             "recolour": false,
@@ -612,14 +606,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             },
             {
                 "id": "workspaces",
-                "enabled": true
-            },
-            {
-                "id": "spacer",
-                "enabled": true
-            },
-            {
-                "id": "activeWindow",
                 "enabled": true
             },
             {

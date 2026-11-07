@@ -108,7 +108,6 @@ class BarTokens : public settings::ObjectNode {
     CONFIG_NODE(BarTokens, settings::ObjectNode)
 
     CONFIG_PROPERTY(int, innerWidth, 40)
-    CONFIG_PROPERTY(int, windowPreviewSize, 400)
     CONFIG_PROPERTY(int, trayMenuWidth, 300)
     CONFIG_PROPERTY(int, batteryWidth, 250)
     CONFIG_PROPERTY(int, networkWidth, 320)
@@ -193,13 +192,6 @@ class LockTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, showColourBoxRowHeight, 570)
 };
 
-class WInfoTokens : public settings::ObjectNode {
-    CONFIG_NODE(WInfoTokens, settings::ObjectNode)
-
-    CONFIG_PROPERTY(qreal, heightMult, 0.7)
-    CONFIG_PROPERTY(qreal, detailsWidth, 500)
-};
-
 class NexusTokens : public settings::ObjectNode {
     CONFIG_NODE(NexusTokens, settings::ObjectNode)
 
@@ -232,7 +224,6 @@ class SizeTokens : public settings::ObjectNode {
     CONFIG_SUBOBJECT(SidebarTokens, sidebar)
     CONFIG_SUBOBJECT(UtilitiesTokens, utilities)
     CONFIG_SUBOBJECT(LockTokens, lock)
-    CONFIG_SUBOBJECT(WInfoTokens, winfo)
     CONFIG_SUBOBJECT(NexusTokens, nexus)
 };
 

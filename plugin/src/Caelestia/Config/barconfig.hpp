@@ -24,7 +24,6 @@ class BarScrollActions : public settings::ObjectNode {
 class BarPopouts : public settings::ObjectNode {
     CONFIG_NODE(BarPopouts, settings::ObjectNode)
 
-    CONFIG_PROPERTY(bool, activeWindow, true)
     CONFIG_PROPERTY(bool, tray, true)
     CONFIG_PROPERTY(bool, statusIcons, true)
 };
@@ -67,14 +66,6 @@ class BarWorkspaces : public settings::ObjectNode {
         }))
 };
 
-class BarActiveWindow : public settings::ObjectNode {
-    CONFIG_NODE(BarActiveWindow, settings::ObjectNode)
-
-    CONFIG_PROPERTY(bool, compact, false)
-    CONFIG_PROPERTY(bool, inverted, false)
-    CONFIG_PROPERTY(bool, showOnHover, true)
-};
-
 class BarTrayIconSub : public settings::ObjectNode {
     CONFIG_NODE(BarTrayIconSub, settings::ObjectNode)
 
@@ -112,7 +103,6 @@ class BarConfig : public settings::ObjectNode {
     CONFIG_SUBOBJECT(BarScrollActions, scrollActions)
     CONFIG_SUBOBJECT(BarPopouts, popouts)
     CONFIG_SUBOBJECT(BarWorkspaces, workspaces)
-    CONFIG_SUBOBJECT(BarActiveWindow, activeWindow)
     CONFIG_SUBOBJECT(BarTray, tray)
     CONFIG_SUBOBJECT(BarClock, clock)
     CONFIG_LIST(EntryList, statusIcons,
@@ -129,8 +119,6 @@ class BarConfig : public settings::ObjectNode {
         DEFAULT_ARG({
             LIST_ENTRY(logo, true),
             LIST_ENTRY(workspaces, true),
-            LIST_ENTRY(spacer, true),
-            LIST_ENTRY(activeWindow, true),
             LIST_ENTRY(spacer, true),
             LIST_ENTRY(tray, true),
             LIST_ENTRY(clock, true),
