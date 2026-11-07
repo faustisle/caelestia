@@ -3,9 +3,6 @@ qml_module(caelestia-services
     SOURCES
         service.cpp
         serviceref.cpp
-        audiocollector.cpp
-        audioprovider.cpp
-        cavaprovider.cpp
         tickingservice.cpp
         sensorslib.cpp
         cpu.cpp
@@ -22,7 +19,6 @@ qml_module(caelestia-services
         Qt::DBus
         Qt::Network
         PkgConfig::Pipewire
-        PkgConfig::Cava
         Sensors::Sensors
         caelestia-util
         caelestia-core

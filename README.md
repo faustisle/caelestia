@@ -76,7 +76,6 @@ Dependencies:
 - `gcc-libs`
 - [`ddcutil`](https://github.com/rockowitz/ddcutil)
 - [`brightnessctl`](https://github.com/Hummer12007/brightnessctl)
-- [`libcava`](https://github.com/LukashonakV/cava)
 - [`networkmanager`](https://gitlab.freedesktop.org/NetworkManager/NetworkManager)
 - [`lm_sensors`](https://github.com/lm-sensors/lm-sensors)
 - [`libpipewire`](https://github.com/PipeWire/pipewire)
@@ -235,7 +234,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
 > - `nexus`: `networkRescanInterval`
 > - `notifs`: `actionOnClick`, `defaultExpireTimeout`, `expire`, `fullscreen`, `fullscreenExpireTimeout`
 > - `paths`: `wallpaperDir`
-> - `services`: `audioIncrement`, `brightnessIncrement`, `clockFormat`, `dataUnits`, `gpuType`, `maxVolume`, `sensorUnits`, `smartScheme`, `visualiserBars`
+> - `services`: `audioIncrement`, `brightnessIncrement`, `clockFormat`, `dataUnits`, `gpuType`, `maxVolume`, `sensorUnits`, `smartScheme`
 > - `utilities`: `gameMode.*`, `toasts.*`, `vpn.*`
 >
 > </details>
@@ -488,13 +487,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
                 "opacity": 0.7,
                 "blur": 0.4
             }
-        },
-        "visualiser": {
-            "enabled": false,
-            "autoHide": true,
-            "blur": false,
-            "rounding": 1,
-            "spacing": 1
         }
     },
     "bar": {
@@ -816,7 +808,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "dataUnits": "Binary",
         "clockFormat": "Auto",
         "gpuType": "Auto",
-        "visualiserBars": 60,
         "audioIncrement": 0.1,
         "brightnessIncrement": 0.1,
         "maxVolume": 1.0,
