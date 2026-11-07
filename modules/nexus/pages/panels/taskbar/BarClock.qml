@@ -42,5 +42,18 @@ PageBase {
             checked: Config.bar.clock.showSeconds
             onToggled: GlobalConfig.bar.clock.showSeconds = checked
         }
+
+        SectionHeader {
+            text: Tr.tr("Behaviour")
+        }
+
+        ToggleRow {
+            first: true
+            last: true
+            text: Tr.tr("Popout on hover")
+            subtext: Tr.tr("Show the calendar when hovering the clock")
+            checked: Config.bar.popouts.clock
+            onToggled: GlobalConfig.bar.popouts.clock = checked
+        }
     }
 }

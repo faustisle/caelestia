@@ -108,6 +108,7 @@ class BarTokens : public settings::ObjectNode {
     CONFIG_NODE(BarTokens, settings::ObjectNode)
 
     CONFIG_PROPERTY(int, innerWidth, 40)
+    CONFIG_PROPERTY(int, calendarWidth, 320)
     CONFIG_PROPERTY(int, trayMenuWidth, 300)
     CONFIG_PROPERTY(int, batteryWidth, 250)
     CONFIG_PROPERTY(int, networkWidth, 320)

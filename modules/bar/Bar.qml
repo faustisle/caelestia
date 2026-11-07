@@ -68,6 +68,10 @@ ColumnLayout {
                 popouts.hasCurrent = false;
                 tray.expanded = true;
             }
+        } else if (id === "clock" && Config.bar.popouts.clock) {
+            popouts.currentName = "calendar";
+            popouts.currentCenter = Qt.binding(() => ch.mapToItem(root, ch.width / 2, ch.height / 2).y);
+            popouts.hasCurrent = true;
         }
     }
 
