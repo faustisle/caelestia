@@ -61,11 +61,19 @@ StyledRect {
             unit: "%"
         }
 
+	Separator {
+            visible: cpuMetric.visible && tempMetric.visible
+        }
+
         Metric {
             visible: Config.bar.sysMonitor.showCpuTemp
             icon: "thermometer"
             value: root.tempValue
             unit: root.tempUnit
+        }
+
+	Separator {
+            visible: cpuMetric.visible && tempMetric.visible
         }
 
         Metric {
@@ -112,5 +120,12 @@ StyledRect {
             font: root.unitFont
             color: root.colour
         }
+    }
+
+    component Separator: StyledRect {
+        Layout.alignment: Qt.AlignHCenter
+        implicitWidth: 15          // tune
+        implicitHeight: 1
+        color: Colours.palette.m3outlineVariant
     }
 }
