@@ -30,7 +30,6 @@ class GeneralIdleTimeout : public settings::ObjectNode {
     CONFIG_PROPERTY(int, timeout, 300)
     CONFIG_PROPERTY(QVariant, idleAction, {}, .allowedTypes = settings::unionTypes<QString, QStringList>())
     CONFIG_PROPERTY(QVariant, returnAction, {}, .allowedTypes = settings::unionTypes<QString, QStringList>())
-    CONFIG_PROPERTY(bool, inhibitWhenAudio, false)
     CONFIG_PROPERTY(bool, inhibitWhenCharging, false)
     CONFIG_PROPERTY(bool, respectInhibitors, true)
 };
@@ -40,7 +39,6 @@ class GeneralIdle : public settings::ObjectNode {
     CONFIG_NODE(GeneralIdle, settings::ObjectNode)
 
     CONFIG_PROPERTY(bool, lockBeforeSleep, true)
-    CONFIG_PROPERTY(bool, inhibitWhenAudio, true)
     CONFIG_PROPERTY(bool, inhibitWhenCharging, false)
     CONFIG_LIST(GeneralIdleTimeoutList, timeouts,
         DEFAULT_ARG({
@@ -105,7 +103,6 @@ class GeneralConfig : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(QString, logo, {})
     CONFIG_GLOBAL_PROPERTY(QString, language, {})
     CONFIG_PROPERTY(bool, showOverFullscreen, false)
-    CONFIG_PROPERTY(qreal, mediaGifSpeedAdjustment, 300)
     CONFIG_PROPERTY(qreal, sessionGifSpeed, 0.7)
     CONFIG_GLOBAL_SUBOBJECT(GeneralApps, apps)
     CONFIG_GLOBAL_SUBOBJECT(GeneralIdle, idle)

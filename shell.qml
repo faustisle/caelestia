@@ -22,7 +22,6 @@ ShellRoot {
     Component.onCompleted: {
         // Force certain singletons to load on shell init instead of lazily
         Notifs;
-        Players;
         Brightness;
 
         if (GlobalConfig.utilities.vpn.enabled)

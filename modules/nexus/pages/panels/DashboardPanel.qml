@@ -59,12 +59,6 @@ PageBase {
         }
 
         ToggleRow {
-            text: Tr.tr("Media")
-            checked: Config.dashboard.showMedia
-            onToggled: GlobalConfig.dashboard.showMedia = checked
-        }
-
-        ToggleRow {
             last: true
             text: Tr.tr("Performance")
             checked: Config.dashboard.showPerformance

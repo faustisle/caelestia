@@ -3,7 +3,6 @@ qml_module(caelestia-services
     SOURCES
         service.cpp
         serviceref.cpp
-        beattracker.cpp
         audiocollector.cpp
         audioprovider.cpp
         cavaprovider.cpp
@@ -14,8 +13,6 @@ qml_module(caelestia-services
         memory.cpp
         diskinfo.cpp
         storage.cpp
-        lyriccandidate.cpp
-        lyrics.cpp
         sessionmanager.cpp
         networkusage.cpp
         hyprdevices.cpp
@@ -25,7 +22,6 @@ qml_module(caelestia-services
         Qt::DBus
         Qt::Network
         PkgConfig::Pipewire
-        PkgConfig::Aubio
         PkgConfig::Cava
         Sensors::Sensors
         caelestia-util

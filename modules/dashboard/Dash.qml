@@ -73,20 +73,6 @@ GridLayout {
         }
     }
 
-    Rect {
-        Layout.row: 0
-        Layout.column: 4
-        Layout.rowSpan: 2
-        Layout.preferredWidth: media.implicitWidth
-        Layout.fillHeight: true
-
-        radius: Tokens.rounding.extraLarge * 2
-
-        Media {
-            id: media
-        }
-    }
-
     component Rect: StyledRect {
         color: Colours.tPalette.m3surfaceContainer
     }

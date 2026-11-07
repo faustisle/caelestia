@@ -24,12 +24,6 @@ Item {
                 enabled: Config.dashboard.showDashboard
             },
             {
-                component: mediaComponent,
-                iconName: "queue_music",
-                text: Tr.tr("Media"),
-                enabled: Config.dashboard.showMedia
-            },
-            {
                 component: performanceComponent,
                 iconName: "speed",
                 text: Tr.tr("Performance"),
@@ -157,14 +151,6 @@ Item {
                 Dash {
                     screenState: root.screenState
                     facePicker: root.facePicker
-                }
-            }
-
-            Component {
-                id: mediaComponent
-
-                Media {
-                    screenState: root.screenState
                 }
             }
 

@@ -79,7 +79,6 @@ Dependencies:
 - [`libcava`](https://github.com/LukashonakV/cava)
 - [`networkmanager`](https://gitlab.freedesktop.org/NetworkManager/NetworkManager)
 - [`lm_sensors`](https://github.com/lm-sensors/lm-sensors)
-- [`aubio`](https://github.com/aubio/aubio)
 - [`libpipewire`](https://github.com/PipeWire/pipewire)
 - [`libqalculate`](https://github.com/Qalculate/libqalculate)
 - [`power-profiles-daemon`](https://gitlab.freedesktop.org/upower/power-profiles-daemon)
@@ -153,7 +152,7 @@ contains an example of how to use global shortcuts.
 All IPC commands can be accessed via `caelestia shell ...`, for example:
 
 ```sh
-caelestia shell mpris getActive trackTitle
+caelestia shell wallpaper list
 ```
 
 You can view the list of available IPC commands by running `caelestia shell -s`.
@@ -229,14 +228,14 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
 > - `appearance`: `anim.*`, `transparency.*`
 > - `bar.tray`: `hiddenIcons`, `iconSubs`
 > - `bar.workspaces`: `ignoredTags`, `specialWorkspaceIcons`, `windowIcons`, `workspaceIcons`
-> - `dashboard`: `mediaUpdateInterval`, `resourceUpdateInterval`
+> - `dashboard`: `resourceUpdateInterval`
 > - `general`: `apps.*`, `battery.*`, `idle.*`, `logo`
 > - `launcher`: `actionPrefix`, `actions`, `enableDangerousActions`, `favouriteApps`, `hiddenApps`, `specialPrefix`, `useFuzzy.*`, `vimKeybinds`
 > - `lock`: `enableFprint`, `enableHowdy`, `maxFprintTries`, `maxHowdyTries`, `triggerHowdyOnWake`
 > - `nexus`: `networkRescanInterval`
 > - `notifs`: `actionOnClick`, `defaultExpireTimeout`, `expire`, `fullscreen`, `fullscreenExpireTimeout`
-> - `paths`: `lyricsDir`, `wallpaperDir`
-> - `services`: `audioIncrement`, `brightnessIncrement`, `clockFormat`, `dataUnits`, `defaultPlayer`, `gpuType`, `lyricsBackend`, `maxVolume`, `playerAliases`, `sensorUnits`, `smartScheme`, `visualiserBars`
+> - `paths`: `wallpaperDir`
+> - `services`: `audioIncrement`, `brightnessIncrement`, `clockFormat`, `dataUnits`, `gpuType`, `maxVolume`, `sensorUnits`, `smartScheme`, `visualiserBars`
 > - `utilities`: `gameMode.*`, `toasts.*`, `vpn.*`
 >
 > </details>
@@ -418,7 +417,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
     "general": {
         "logo": "",
         "showOverFullscreen": false,
-        "mediaGifSpeedAdjustment": 300,
         "sessionGifSpeed": 0.7,
         "apps": {
             "terminal": ["foot"],
@@ -428,13 +426,11 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         },
         "idle": {
             "lockBeforeSleep": true,
-            "inhibitWhenAudio": true,
             "inhibitWhenCharging": false,
             "timeouts": [
                 {
                     "timeout": 180,
                     "idleAction": "lock",
-                    "inhibitWhenAudio": false,
                     "inhibitWhenCharging": false,
                     "respectInhibitors": true
                 },
@@ -658,9 +654,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "enabled": true,
         "showOnHover": true,
         "showDashboard": true,
-        "showMedia": true,
         "showPerformance": true,
-        "mediaUpdateInterval": 500,
         "resourceUpdateInterval": 1000,
         "dragThreshold": 50,
         "performance": {
@@ -840,12 +834,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "audioIncrement": 0.1,
         "brightnessIncrement": 0.1,
         "maxVolume": 1.0,
-        "smartScheme": true,
-        "defaultPlayer": "Spotify",
-        "playerAliases": [
-            { "from": "com.github.th_ch.youtube_music", "to": "YT Music" }
-        ],
-        "lyricsBackend": "Auto"
+        "smartScheme": true
     },
     "session": {
         "enabled": true,
@@ -885,8 +874,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             "numLockChanged": true,
             "kbLayoutChanged": true,
             "kbLimit": true,
-            "vpnChanged": true,
-            "nowPlaying": false
+            "vpnChanged": true
         },
         "vpn": {
             "enabled": false,
@@ -944,9 +932,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
     },
     "paths": {
         "wallpaperDir": "~/Pictures/Wallpapers",
-        "lyricsDir": "~/Music/lyrics/",
         "sessionGif": "root:/assets/kurukuru.gif",
-        "mediaGif": "root:/assets/bongocat.gif",
         "noNotifsPic": "root:/assets/dino.png",
         "lockNoNotifsPic": "root:/assets/dino.png"
     }
