@@ -23,6 +23,7 @@ CustomMouseArea {
     property bool osdShortcutActive
     property bool utilitiesShortcutActive
     property bool sidebarShortcutActive
+    property bool utilitiesSidebarActive
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
         const panelY = root.borderThickness + panel.y;
@@ -89,6 +90,11 @@ CustomMouseArea {
 
             if (Config.sidebar.showOnHover && !sidebarShortcutActive)
                 screenState.sidebar = false;
+
+            if (utilitiesSidebarActive) {
+                screenState.sidebar = false;
+                utilitiesSidebarActive = false;
+            }
         }
     }
 
@@ -239,6 +245,20 @@ CustomMouseArea {
         } else if (showUtilities) {
             // If hovering over utilities area while in shortcut mode, transition to hover control
             utilitiesShortcutActive = false;
+        }
+
+        // Pull the notification sidebar out together with the quick settings
+        if (Config.utilities.enabled && Config.sidebar.enabled && !pressed) {
+            if (showUtilities && !screenState.sidebar) {
+                screenState.sidebar = true;
+                utilitiesSidebarActive = true;
+            } else if (utilitiesSidebarActive) {
+                const inSidebarDock = inRightPanel(panels.sidebar, x, y) || inRightPanel(panels.utilities, x, y);
+                if (!inSidebarDock) {
+                    screenState.sidebar = false;
+                    utilitiesSidebarActive = false;
+                }
+            }
         }
 
         // Show popouts on hover
