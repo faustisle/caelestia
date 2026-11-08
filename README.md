@@ -501,7 +501,8 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "popouts": {
             "tray": true,
             "statusIcons": true,
-            "clock": true
+            "clock": true,
+            "sysMonitor": true
         },
         "workspaces": {
             "shown": 5,

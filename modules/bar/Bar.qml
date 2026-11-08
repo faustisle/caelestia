@@ -72,6 +72,10 @@ ColumnLayout {
             popouts.currentName = "calendar";
             popouts.currentCenter = Qt.binding(() => ch.mapToItem(root, ch.width / 2, ch.height / 2).y);
             popouts.hasCurrent = true;
+        } else if (id === "sysmon" && Config.bar.popouts.sysMonitor) {
+            popouts.currentName = "sysMonitor";
+            popouts.currentCenter = Qt.binding(() => ch.mapToItem(root, ch.width / 2, ch.height / 2).y);
+            popouts.hasCurrent = true;
         }
     }
 

@@ -25,6 +25,13 @@ PageBase {
         }
 
         ToggleRow {
+            text: Tr.tr("Show popout")
+            subtext: Tr.tr("Show performance details when hovering the system monitor")
+            checked: Config.bar.popouts.sysMonitor
+            onToggled: GlobalConfig.bar.popouts.sysMonitor = checked
+        }
+
+        ToggleRow {
             text: Tr.tr("Show icons")
             checked: Config.bar.sysMonitor.showIcons
             onToggled: GlobalConfig.bar.sysMonitor.showIcons = checked
