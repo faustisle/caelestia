@@ -24,7 +24,7 @@ Item {
     visible: offsetScale < 1
     anchors.rightMargin: (-implicitWidth - 5) * offsetScale
     implicitHeight: content.implicitHeight + totalPadding
-    implicitWidth: sidebar.width * (1 - sidebar.offsetScale) * horizontalStretch * sidebarLerp + Tokens.sizes.utilities.width * (1 - sidebarLerp)
+    implicitWidth: sidebar.width * horizontalStretch * sidebarLerp + Tokens.sizes.utilities.width * (1 - sidebarLerp)
     opacity: 1 - offsetScale
 
     states: State {
