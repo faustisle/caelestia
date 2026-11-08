@@ -26,13 +26,14 @@ CustomMouseArea {
     implicitHeight: inner.implicitHeight + inner.anchors.margins * 2
 
     function shiftMonth(delta: int): void {
-        root.animDirection = delta < 0 ? -1 : 1;
-        root.currentDate = new Date(root.currentDate.getFullYear(), root.currentDate.getMonth() + delta, 1);
+        const target = new Date(root.currentDate.getFullYear(), root.currentDate.getMonth() + delta, 1);
+        root.animDirection = target > root.currentDate ? -1 : 1;
+        root.currentDate = target;
     }
 
     function resetToday(): void {
         const now = new Date();
-        root.animDirection = now >= root.currentDate ? 1 : -1;
+        root.animDirection = now > root.currentDate ? -1 : 1;
         root.currentDate = now;
     }
 
