@@ -29,7 +29,7 @@ RowLayout {
         Layout.fillWidth: true
         spacing: Tokens.spacing.medium
 
-        Resources {
+        SessionControls {
             Layout.fillWidth: true
         }
 

@@ -60,19 +60,6 @@ GridLayout {
         }
     }
 
-    Rect {
-        Layout.row: 1
-        Layout.column: 3
-        Layout.preferredWidth: resources.implicitWidth
-        Layout.fillHeight: true
-
-        radius: Tokens.rounding.large
-
-        Resources {
-            id: resources
-        }
-    }
-
     component Rect: StyledRect {
         color: Colours.tPalette.m3surfaceContainer
     }

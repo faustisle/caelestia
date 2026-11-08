@@ -125,7 +125,6 @@ class DashboardTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, logoSize, 30)
     CONFIG_PROPERTY(int, uptimeSize, 30)
     CONFIG_PROPERTY(int, dateTimeWidth, 110)
-    CONFIG_PROPERTY(int, resourceProgressThickness, 6)
     CONFIG_PROPERTY(int, perfHeroCardWidth, 400)
     CONFIG_PROPERTY(int, perfUsageShapeSize, 100)
     CONFIG_PROPERTY(int, perfStorageTextWidth, 160)

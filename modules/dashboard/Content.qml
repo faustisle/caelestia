@@ -22,12 +22,6 @@ Item {
                 iconName: "dashboard",
                 text: Tr.tr("Dashboard"),
                 enabled: Config.dashboard.showDashboard
-            },
-            {
-                component: performanceComponent,
-                iconName: "speed",
-                text: Tr.tr("Performance"),
-                enabled: Config.dashboard.showPerformance
             }
         ];
         return allTabs.filter(tab => tab.enabled);
@@ -152,12 +146,6 @@ Item {
                     screenState: root.screenState
                     facePicker: root.facePicker
                 }
-            }
-
-            Component {
-                id: performanceComponent
-
-                Performance {}
             }
 
             Behavior on contentX {

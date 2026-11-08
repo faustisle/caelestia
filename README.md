@@ -645,7 +645,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "enabled": true,
         "showOnHover": true,
         "showDashboard": true,
-        "showPerformance": true,
         "resourceUpdateInterval": 1000,
         "dragThreshold": 50,
         "performance": {

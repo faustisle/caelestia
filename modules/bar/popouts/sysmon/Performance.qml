@@ -1,4 +1,3 @@
-import "performance"
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
@@ -41,7 +40,7 @@ Item {
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                text: Tr.tr("Enable widgets in the dashboard settings")
+                text: Tr.tr("Enable widgets in the system monitor settings")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }

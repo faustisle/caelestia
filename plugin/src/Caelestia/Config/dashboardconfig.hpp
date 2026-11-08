@@ -22,7 +22,6 @@ class DashboardConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, enabled, true)
     CONFIG_PROPERTY(bool, showOnHover, true)
     CONFIG_PROPERTY(bool, showDashboard, true)
-    CONFIG_PROPERTY(bool, showPerformance, true)
     CONFIG_PROPERTY(bool, showClockSeconds, false)
     CONFIG_GLOBAL_PROPERTY(int, resourceUpdateInterval, 1000)
     CONFIG_PROPERTY(int, dragThreshold, 50)

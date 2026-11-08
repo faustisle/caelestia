@@ -1,4 +1,4 @@
 import QtQuick
-import qs.modules.dashboard as Dashboard
+import "sysmon"
 
-Dashboard.Performance {}
+Performance {}
