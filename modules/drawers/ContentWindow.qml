@@ -204,7 +204,9 @@ StyledWindow {
             panel: panels.sidebar
             deformAmount: 0.03
             implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
-            topLeftRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
+            exclude: [utilsBg]
+            topLeftRadius: junctionRadius
+            topRightRadius: junctionRadius
         }
 
         PanelBg {
@@ -227,7 +229,10 @@ StyledWindow {
 
             panel: panels.utilities
             deformAmount: panels.sidebar.visible ? 0.03 : 0.15
-            bottomLeftRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
+            implicitHeight: panel.height + (panels.sidebar.visible ? 2 : 0)
+            exclude: [sidebarBg]
+            bottomLeftRadius: junctionRadius
+            bottomRightRadius: junctionRadius
         }
 
         PanelBg {
@@ -335,6 +340,7 @@ StyledWindow {
     component PanelBg: BlobRect {
         required property Item panel
         property real deformAmount: 0.15
+        readonly property real junctionRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
 
         group: blobGroup
         x: panel.x + bar.implicitWidth
