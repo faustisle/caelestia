@@ -25,27 +25,26 @@ PageBase {
 
         ToggleRow {
             first: true
+            last: true
             text: Tr.trCtx("Enabled", "toggle label")
             checked: Config.sidebar.enabled
             onToggled: GlobalConfig.sidebar.enabled = checked
         }
 
-        ToggleRow {
-            text: Tr.tr("Show on hover")
-            subtext: Tr.tr("Reveal when the cursor reaches the screen edge")
-            checked: Config.sidebar.showOnHover
-            onToggled: GlobalConfig.sidebar.showOnHover = checked
+        SectionHeader {
+            text: Tr.tr("Behaviour")
         }
 
         StepperRow {
+            first: true
             last: true
-            label: Tr.tr("Drag threshold")
-            subtext: Tr.tr("Pixels dragged before the sidebar opens")
-            value: Config.sidebar.dragThreshold
-            from: 0
-            to: 200
-            stepSize: 5
-            onMoved: v => GlobalConfig.sidebar.dragThreshold = v
+            label: Tr.tr("Hover threshold")
+            subtext: Tr.tr("Distance from the top edge where hover activates")
+            value: Config.sidebar.minHoverThreshold
+            from: 50
+            to: 500
+            stepSize: 10
+            onMoved: v => GlobalConfig.sidebar.minHoverThreshold = v
         }
     }
 }

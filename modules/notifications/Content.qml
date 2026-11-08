@@ -9,7 +9,6 @@ import qs.components
 import qs.components.containers
 import qs.components.widgets
 import qs.services
-import qs.modules.utilities as Utilities
 
 Item {
     id: root
@@ -17,7 +16,6 @@ Item {
     required property ScreenState screenState
     required property Item osdPanel
     required property Item sessionPanel
-    required property Item utilitiesPanel
     readonly property int padding: Tokens.padding.large
     readonly property int clampedPadding: CUtils.clamp(padding - Config.border.thickness, 0, padding)
 
@@ -43,12 +41,6 @@ Item {
 
         if (screenState.session) {
             const h = sessionPanel.y - clampedPadding;
-            if (height > h)
-                height = h;
-        }
-
-        if (screenState.utilities) {
-            const h = ((QsWindow.window as QsWindow)?.screen.height ?? 0) - (utilitiesPanel as Utilities.Wrapper).nonAnimHeight - Config.border.thickness * 2 - padding * 2 - Tokens.spacing.extraLarge;
             if (height > h)
                 height = h;
         }

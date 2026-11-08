@@ -17,6 +17,14 @@ Item {
         spacing: Tokens.spacing.medium
 
         StyledRect {
+            Layout.topMargin: Tokens.padding.large - layout.spacing
+            Layout.fillWidth: true
+            implicitHeight: 1
+
+            color: Colours.tPalette.m3outlineVariant
+        }
+
+        StyledRect {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
@@ -29,14 +37,6 @@ Item {
                 props: root.props
                 screenState: root.screenState
             }
-        }
-
-        StyledRect {
-            Layout.topMargin: Tokens.padding.large - layout.spacing
-            Layout.fillWidth: true
-            implicitHeight: 1
-
-            color: Colours.tPalette.m3outlineVariant
         }
     }
 }
