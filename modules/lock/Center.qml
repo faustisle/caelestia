@@ -30,7 +30,7 @@ Item {
         StyledText {
             Layout.alignment: Qt.AlignHCenter
 
-            text: Time.format("dddd • d MMM").toUpperCase()
+            text: Time.format("dddd • MMMM dd").toUpperCase()
             color: Colours.palette.m3onSurface
             font: Tokens.font.title.builders.medium.weight(Font.DemiBold).build()
         }
