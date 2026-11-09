@@ -15,7 +15,7 @@ Item {
     id: root
 
     implicitWidth: Tokens.sizes.bar.audioWidth
-    implicitHeight: layout.implicitHeight + Tokens.padding.medium * 2
+    implicitHeight: layout.implicitHeight + Tokens.padding.extraSmall * 2
 
     ColumnLayout {
         id: layout
@@ -26,7 +26,7 @@ Item {
         spacing: Tokens.spacing.small
 
         StyledText {
-            Layout.topMargin: Tokens.padding.medium
+            Layout.topMargin: Tokens.padding.extrasmall
             Layout.rightMargin: Tokens.padding.extraSmall
             text: Tr.tr("App volumes")
             font: Tokens.font.body.builders.medium.weight(Font.Medium).build()

@@ -20,7 +20,7 @@ ColumnLayout {
     spacing: Tokens.spacing.small
 
     StyledText {
-        Layout.topMargin: Tokens.padding.medium
+        Layout.topMargin: Tokens.padding.extraSmall
         Layout.rightMargin: Tokens.padding.extraSmall
         text: Tr.tr("Bluetooth")
         font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
