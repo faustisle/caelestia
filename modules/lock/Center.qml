@@ -5,42 +5,49 @@ import Caelestia.Config
 import qs.components
 import qs.services
 
-ColumnLayout {
+Item {
     id: root
 
     required property var lock
-    readonly property real centerScale: Math.min(1, (lock.screen?.height ?? 1440) / 1440)
+    readonly property real centerScale: Math.min(1, (lock.screen?.height ?? 1080) / 1080)
     readonly property int centerWidth: Tokens.sizes.lock.centerWidth * centerScale
 
     Layout.preferredWidth: centerWidth
     Layout.fillWidth: true
     Layout.fillHeight: true
 
-    spacing: Tokens.spacing.largeIncreased
+    ColumnLayout {
+        id: main
 
-    Clock {
-        Layout.alignment: Qt.AlignHCenter
-        Layout.topMargin: Tokens.padding.large
-        centerScale: root.centerScale
-    }
+        anchors.centerIn: parent
+        spacing: Tokens.spacing.largeIncreased
 
-    StyledText {
-        Layout.alignment: Qt.AlignHCenter
+        Clock {
+            Layout.alignment: Qt.AlignHCenter
+            centerScale: root.centerScale
+        }
 
-        text: Time.format("dddd • d MMM").toUpperCase()
-        color: Colours.palette.m3onSurface
-        font: Tokens.font.title.builders.medium.weight(Font.DemiBold).build()
-    }
+        StyledText {
+            Layout.alignment: Qt.AlignHCenter
 
-    PasswordInput {
-        Layout.alignment: Qt.AlignHCenter
-        centerScale: Math.max(0.8, root.centerScale)
-        centerWidth: root.centerWidth
-        lock: root.lock
+            text: Time.format("dddd • d MMM").toUpperCase()
+            color: Colours.palette.m3onSurface
+            font: Tokens.font.title.builders.medium.weight(Font.DemiBold).build()
+        }
+
+        PasswordInput {
+            Layout.alignment: Qt.AlignHCenter
+            centerScale: Math.max(0.8, root.centerScale)
+            centerWidth: root.centerWidth
+            lock: root.lock
+        }
     }
 
     StateMessage {
-        Layout.fillWidth: true
+        anchors.top: main.bottom
+        anchors.topMargin: Tokens.spacing.largeIncreased
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width
         pam: root.lock.pam
     }
 }
