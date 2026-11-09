@@ -11,14 +11,10 @@ RowLayout {
 
     readonly property real sideWidth: Math.round(width * Tokens.sizes.lock.sideWidthRatio)
 
-    spacing: Tokens.spacing.largeIncreased * 2
+    spacing: 0
 
     Center {
         lock: root.lock
-    }
-
-    Item {
-        Layout.fillWidth: true
     }
 
     ColumnLayout {
