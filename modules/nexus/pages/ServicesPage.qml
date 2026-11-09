@@ -59,11 +59,11 @@ PageBase {
             label: Tr.tr("System stats refresh")
             // TRANSLATORS: CPU and GPU are hardware abbreviations, leave them untranslated
             subtext: Tr.tr("CPU, memory and GPU update interval (seconds)")
-            value: GlobalConfig.dashboard.resourceUpdateInterval / 1000
+            value: GlobalConfig.services.resourceUpdateInterval / 1000
             from: 0.5
             to: 10
             stepSize: 0.5
-            onMoved: v => GlobalConfig.dashboard.resourceUpdateInterval = Math.round(v * 1000)
+            onMoved: v => GlobalConfig.services.resourceUpdateInterval = Math.round(v * 1000)
         }
 
         StepperRow {

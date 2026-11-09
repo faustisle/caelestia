@@ -10,14 +10,14 @@ import qs.services
 Item {
     id: root
 
-    implicitWidth: placeholder.active ? Tokens.sizes.dashboard.perfPlaceholderWidth : content.implicitWidth
+    implicitWidth: placeholder.active ? Tokens.sizes.sysMonitor.perfPlaceholderWidth : content.implicitWidth
     implicitHeight: placeholder.active ? placeholder.implicitHeight + Tokens.padding.extraLarge * 2 : content.implicitHeight
 
     Loader {
         id: placeholder
 
         anchors.centerIn: parent
-        active: !Config.dashboard.performance.showCpu && !(Config.dashboard.performance.showGpu && Gpu.type !== GpuType.None) && !Config.dashboard.performance.showMemory && !Config.dashboard.performance.showStorage && !Config.dashboard.performance.showNetwork && !(UPower.displayDevice.isLaptopBattery && Config.dashboard.performance.showBattery)
+        active: !Config.bar.sysMonitor.performance.showCpu && !(Config.bar.sysMonitor.performance.showGpu && Gpu.type !== GpuType.None) && !Config.bar.sysMonitor.performance.showMemory && !Config.bar.sysMonitor.performance.showStorage && !Config.bar.sysMonitor.performance.showNetwork && !(UPower.displayDevice.isLaptopBattery && Config.bar.sysMonitor.performance.showBattery)
         asynchronous: true
 
         sourceComponent: ColumnLayout {
@@ -68,7 +68,7 @@ Item {
                 WrappedLoader {
                     id: cpuCard
 
-                    active: Config.dashboard.performance.showCpu
+                    active: Config.bar.sysMonitor.performance.showCpu
 
                     sourceComponent: HeroCard {
                         icon: "memory"
@@ -87,7 +87,7 @@ Item {
                 WrappedLoader {
                     id: gpuCard
 
-                    active: Config.dashboard.performance.showGpu && Gpu.type !== GpuType.None
+                    active: Config.bar.sysMonitor.performance.showGpu && Gpu.type !== GpuType.None
 
                     sourceComponent: HeroCard {
                         icon: "desktop_windows"
@@ -111,21 +111,21 @@ Item {
                 WrappedLoader {
                     id: storageCard
 
-                    active: Config.dashboard.performance.showStorage
+                    active: Config.bar.sysMonitor.performance.showStorage
                     sourceComponent: StorageCard {}
                 }
 
                 WrappedLoader {
                     id: networkCard
 
-                    active: Config.dashboard.performance.showNetwork
+                    active: Config.bar.sysMonitor.performance.showNetwork
                     sourceComponent: NetworkCard {}
                 }
 
                 WrappedLoader {
                     id: memoryCard
 
-                    active: Config.dashboard.performance.showMemory
+                    active: Config.bar.sysMonitor.performance.showMemory
                     sourceComponent: MemoryCard {}
                 }
             }
@@ -133,7 +133,7 @@ Item {
 
         WrappedLoader {
             Layout.fillWidth: false
-            active: UPower.displayDevice.isLaptopBattery && Config.dashboard.performance.showBattery
+            active: UPower.displayDevice.isLaptopBattery && Config.bar.sysMonitor.performance.showBattery
             sourceComponent: BatteryTank {}
         }
     }

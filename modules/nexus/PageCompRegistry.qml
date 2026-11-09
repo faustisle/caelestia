@@ -109,9 +109,6 @@ QtObject {
                     PanelsPage {}
                 }
                 Component {
-                    DashboardPanel {}
-                }
-                Component {
                     TaskbarPanel {}
                 }
                 Component {

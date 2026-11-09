@@ -156,10 +156,7 @@ caelestia shell wallpaper list
 
 You can view the list of available IPC commands by running `caelestia shell -s`.
 
-### PFP/Wallpapers
-
-The profile picture for the dashboard is read from the file `~/.face`. You can set it by clicking it in the dashboard,
-or by manually copying or symlinking your image to the path.
+### Wallpapers
 
 The wallpapers for the wallpaper switcher are read from `~/Pictures/Wallpapers`
 by default. To change it, modify `paths.wallpaperDir` in `~/.config/caelestia/shell.json`.
@@ -227,7 +224,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
 > - `appearance`: `anim.*`, `transparency.*`
 > - `bar.tray`: `hiddenIcons`, `iconSubs`
 > - `bar.workspaces`: `ignoredTags`, `specialWorkspaceIcons`, `windowIcons`, `workspaceIcons`
-> - `dashboard`: `resourceUpdateInterval`
+> - `services`: `resourceUpdateInterval`
 > - `general`: `apps.*`, `battery.*`, `idle.*`, `logo`
 > - `launcher`: `actionPrefix`, `actions`, `enableDangerousActions`, `favouriteApps`, `hiddenApps`, `specialPrefix`, `useFuzzy.*`, `vimKeybinds`
 > - `lock`: `enableFprint`, `enableHowdy`, `maxFprintTries`, `maxHowdyTries`, `triggerHowdyOnWake`
@@ -568,7 +565,15 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             "showIcons": true,
             "showCpu": true,
             "showCpuTemp": true,
-            "showMemory": true
+            "showMemory": true,
+            "performance": {
+                "showBattery": true,
+                "showGpu": true,
+                "showCpu": true,
+                "showMemory": true,
+                "showStorage": true,
+                "showNetwork": true
+            }
         },
         "statusIcons": [
             {
@@ -640,21 +645,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "thickness": 10,
         "rounding": 25,
         "smoothing": 20
-    },
-    "dashboard": {
-        "enabled": true,
-        "showOnHover": true,
-        "showDashboard": true,
-        "resourceUpdateInterval": 1000,
-        "dragThreshold": 50,
-        "performance": {
-            "showBattery": true,
-            "showGpu": true,
-            "showCpu": true,
-            "showMemory": true,
-            "showStorage": true,
-            "showNetwork": true
-        }
     },
     "launcher": {
         "enabled": true,
@@ -785,7 +775,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
     "lock": {
         "enabled": true,
         "useWallpaper": false,
-        "recolourLogo": true,
         "enableFprint": true,
         "maxFprintTries": 3,
         "enableHowdy": true,
@@ -823,7 +812,8 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "audioIncrement": 0.1,
         "brightnessIncrement": 0.1,
         "maxVolume": 1.0,
-        "smartScheme": true
+        "smartScheme": true,
+        "resourceUpdateInterval": 1000
     },
     "session": {
         "enabled": true,

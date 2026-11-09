@@ -63,39 +63,39 @@ PageBase {
         ToggleRow {
             first: true
             text: Tr.tr("Battery")
-            checked: Config.dashboard.performance.showBattery
-            onToggled: GlobalConfig.dashboard.performance.showBattery = checked
+            checked: Config.bar.sysMonitor.performance.showBattery
+            onToggled: GlobalConfig.bar.sysMonitor.performance.showBattery = checked
         }
 
         ToggleRow {
             text: Tr.tr("GPU")
-            checked: Config.dashboard.performance.showGpu
-            onToggled: GlobalConfig.dashboard.performance.showGpu = checked
+            checked: Config.bar.sysMonitor.performance.showGpu
+            onToggled: GlobalConfig.bar.sysMonitor.performance.showGpu = checked
         }
 
         ToggleRow {
             text: Tr.tr("CPU")
-            checked: Config.dashboard.performance.showCpu
-            onToggled: GlobalConfig.dashboard.performance.showCpu = checked
+            checked: Config.bar.sysMonitor.performance.showCpu
+            onToggled: GlobalConfig.bar.sysMonitor.performance.showCpu = checked
         }
 
         ToggleRow {
             text: Tr.tr("Memory")
-            checked: Config.dashboard.performance.showMemory
-            onToggled: GlobalConfig.dashboard.performance.showMemory = checked
+            checked: Config.bar.sysMonitor.performance.showMemory
+            onToggled: GlobalConfig.bar.sysMonitor.performance.showMemory = checked
         }
 
         ToggleRow {
             text: Tr.tr("Storage")
-            checked: Config.dashboard.performance.showStorage
-            onToggled: GlobalConfig.dashboard.performance.showStorage = checked
+            checked: Config.bar.sysMonitor.performance.showStorage
+            onToggled: GlobalConfig.bar.sysMonitor.performance.showStorage = checked
         }
 
         ToggleRow {
             last: true
             text: Tr.tr("Network")
-            checked: Config.dashboard.performance.showNetwork
-            onToggled: GlobalConfig.dashboard.performance.showNetwork = checked
+            checked: Config.bar.sysMonitor.performance.showNetwork
+            onToggled: GlobalConfig.bar.sysMonitor.performance.showNetwork = checked
         }
     }
 }

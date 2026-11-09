@@ -4,7 +4,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Caelestia.Config
-import Caelestia.I18n
 import qs.utils
 
 Singleton {
@@ -16,13 +15,6 @@ Singleton {
     property list<string> osIdLike
     property string osLogo: Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`)
     property bool isDefaultLogo: true
-
-    property string uptime
-    // Uptime trimmed to its two largest components
-    property string uptimeShort
-    readonly property string user: Quickshell.env("USER")
-    readonly property string wm: Quickshell.env("XDG_CURRENT_DESKTOP") || Quickshell.env("XDG_SESSION_DESKTOP")
-    readonly property string shell: Quickshell.env("SHELL").split("/").pop()
 
     property string kernel
     property string hostname
@@ -108,39 +100,5 @@ Singleton {
         path: "/sys/class/dmi/id/bios_version"
         printErrors: false
         onLoaded: root.firmware = root.sanitiseDmi(text())
-    }
-
-    Timer {
-        running: true
-        repeat: true
-        interval: 15000
-        onTriggered: fileUptime.reload()
-    }
-
-    FileView {
-        id: fileUptime
-
-        path: "/proc/uptime"
-        onLoaded: {
-            const up = parseInt(text().split(" ")[0] ?? 0);
-
-            const days = Math.floor(up / 86400);
-            const hours = Math.floor((up % 86400) / 3600);
-            const minutes = Math.floor((up % 3600) / 60);
-
-            // TRANSLATORS: joins uptime components, e.g. "2 days, 3 hours"
-            const sep = Tr.trCtx(", ", "uptime component separator");
-
-            const parts = [];
-            if (days > 0)
-                parts.push(Tr.trN("%n day", "%n days", days));
-            if (hours > 0)
-                parts.push(Tr.trN("%n hour", "%n hours", hours));
-            if (minutes > 0 || parts.length === 0)
-                parts.push(Tr.trN("%n minute", "%n minutes", minutes));
-
-            root.uptime = parts.join(sep);
-            root.uptimeShort = parts.slice(0, 2).join(sep);
-        }
     }
 }

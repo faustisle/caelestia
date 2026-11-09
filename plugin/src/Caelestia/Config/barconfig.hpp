@@ -96,6 +96,17 @@ class BarClock : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, showSeconds, false)
 };
 
+class BarSysMonitorPerformance : public settings::ObjectNode {
+    CONFIG_NODE(BarSysMonitorPerformance, settings::ObjectNode)
+
+    CONFIG_PROPERTY(bool, showBattery, true)
+    CONFIG_PROPERTY(bool, showGpu, true)
+    CONFIG_PROPERTY(bool, showCpu, true)
+    CONFIG_PROPERTY(bool, showMemory, true)
+    CONFIG_PROPERTY(bool, showStorage, true)
+    CONFIG_PROPERTY(bool, showNetwork, true)
+};
+
 class BarSysMonitor : public settings::ObjectNode {
     CONFIG_NODE(BarSysMonitor, settings::ObjectNode)
 
@@ -104,6 +115,7 @@ class BarSysMonitor : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, showCpu, true)
     CONFIG_PROPERTY(bool, showCpuTemp, true)
     CONFIG_PROPERTY(bool, showMemory, true)
+    CONFIG_SUBOBJECT(BarSysMonitorPerformance, performance)
 };
 
 class BarConfig : public settings::ObjectNode {

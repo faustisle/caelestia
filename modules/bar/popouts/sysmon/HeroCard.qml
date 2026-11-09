@@ -21,7 +21,7 @@ StyledRect {
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.extraLarge
 
-    implicitWidth: Tokens.sizes.dashboard.perfHeroCardWidth
+    implicitWidth: Tokens.sizes.sysMonitor.perfHeroCardWidth
     implicitHeight: Math.max(tempProg.implicitHeight + detailsRow.implicitHeight + Tokens.spacing.large, usageShape.implicitHeight + usageLabel.implicitHeight) + Tokens.padding.large * 2
 
     CircularProgress {
@@ -115,7 +115,7 @@ StyledRect {
         anchors.bottom: parent.bottom
         anchors.margins: Tokens.padding.medium
 
-        implicitSize: Tokens.sizes.dashboard.perfUsageShapeSize
+        implicitSize: Tokens.sizes.sysMonitor.perfUsageShapeSize
         color: Colours.palette.m3secondaryContainer
         shape: {
             if (root.usage >= 0.8)

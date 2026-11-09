@@ -81,7 +81,7 @@ StyledRect {
             }
 
             ColumnLayout {
-                Layout.minimumWidth: Tokens.sizes.dashboard.perfStorageTextWidth
+                Layout.minimumWidth: Tokens.sizes.sysMonitor.perfStorageTextWidth
                 spacing: Tokens.spacing.extraSmall
 
                 StyledText {

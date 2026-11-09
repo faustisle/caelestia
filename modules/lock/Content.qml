@@ -11,14 +11,8 @@ RowLayout {
 
     spacing: Tokens.spacing.largeIncreased * 2
 
-    ColumnLayout {
+    Item {
         Layout.fillWidth: true
-        spacing: Tokens.spacing.medium
-
-        Fetch {
-            Layout.fillWidth: true
-            rootHeight: root.height
-        }
     }
 
     Center {

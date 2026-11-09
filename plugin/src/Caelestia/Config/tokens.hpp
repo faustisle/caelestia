@@ -116,15 +116,9 @@ class BarTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, kbLayoutWidth, 320)
 };
 
-class DashboardTokens : public settings::ObjectNode {
-    CONFIG_NODE(DashboardTokens, settings::ObjectNode)
+class SysMonitorTokens : public settings::ObjectNode {
+    CONFIG_NODE(SysMonitorTokens, settings::ObjectNode)
 
-    CONFIG_PROPERTY(int, tabIndicatorHeight, 3)
-    CONFIG_PROPERTY(int, tabIndicatorSpacing, 5)
-    CONFIG_PROPERTY(int, userWidth, 340)
-    CONFIG_PROPERTY(int, logoSize, 30)
-    CONFIG_PROPERTY(int, uptimeSize, 30)
-    CONFIG_PROPERTY(int, dateTimeWidth, 110)
     CONFIG_PROPERTY(int, perfHeroCardWidth, 400)
     CONFIG_PROPERTY(int, perfUsageShapeSize, 100)
     CONFIG_PROPERTY(int, perfStorageTextWidth, 160)
@@ -185,11 +179,6 @@ class LockTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(qreal, heightMult, 0.7)
     CONFIG_PROPERTY(qreal, ratio, 16.0 / 9.0)
     CONFIG_PROPERTY(int, centerWidth, 600)
-    CONFIG_PROPERTY(int, largeLogoWidth, 320)
-    CONFIG_PROPERTY(int, largeFontWidth, 400)
-    CONFIG_PROPERTY(int, fetch4LinesHeight, 600)
-    CONFIG_PROPERTY(int, fetch3LinesHeight, 500)
-    CONFIG_PROPERTY(int, showColourBoxRowHeight, 570)
 };
 
 class NexusTokens : public settings::ObjectNode {
@@ -216,7 +205,7 @@ class SizeTokens : public settings::ObjectNode {
     CONFIG_NODE(SizeTokens, settings::ObjectNode)
 
     CONFIG_SUBOBJECT(BarTokens, bar)
-    CONFIG_SUBOBJECT(DashboardTokens, dashboard)
+    CONFIG_SUBOBJECT(SysMonitorTokens, sysMonitor)
     CONFIG_SUBOBJECT(LauncherTokens, launcher)
     CONFIG_SUBOBJECT(NotifsTokens, notifs)
     CONFIG_SUBOBJECT(OsdTokens, osd)

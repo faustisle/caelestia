@@ -13,8 +13,8 @@ StyledRect {
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.extraLarge
 
-    implicitWidth: Tokens.sizes.dashboard.perfNetworkCardWidth
-    implicitHeight: Tokens.sizes.dashboard.perfNetworkCardHeight
+    implicitWidth: Tokens.sizes.sysMonitor.perfNetworkCardWidth
+    implicitHeight: Tokens.sizes.sysMonitor.perfNetworkCardHeight
 
     ServiceRef {
         service: NetworkUsage
@@ -83,7 +83,7 @@ StyledRect {
                     from: 0
                     to: 1
                     easing.type: Easing.Linear
-                    duration: GlobalConfig.dashboard.resourceUpdateInterval
+                    duration: GlobalConfig.services.resourceUpdateInterval
                 }
 
                 Behavior on smoothMax {

@@ -32,13 +32,6 @@ ColumnLayout {
         font: Tokens.font.title.builders.medium.weight(Font.DemiBold).build()
     }
 
-    ProfilePic {
-        Layout.alignment: Qt.AlignHCenter
-        Layout.topMargin: Tokens.spacing.extraExtraLarge * root.centerScale
-        Layout.bottomMargin: Tokens.spacing.extraLarge * root.centerScale
-        centerWidth: root.centerWidth
-    }
-
     PasswordInput {
         Layout.alignment: Qt.AlignHCenter
         centerScale: Math.max(0.8, root.centerScale)
