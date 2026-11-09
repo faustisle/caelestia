@@ -108,6 +108,11 @@ Item {
         }
 
         Popout {
+            name: "appvolumes"
+            sourceComponent: AppVolumes {}
+        }
+
+        Popout {
             name: "kblayout"
             sourceComponent: KbLayout {}
         }

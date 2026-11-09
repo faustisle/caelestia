@@ -135,6 +135,20 @@ StyledRect {
                     }
                 }
                 DelegateChoice {
+                    roleValue: "appVolumes"
+                    delegate: EntryWrapper {
+                        margin: Tokens.spacing.extraSmall / 2
+
+                        MaterialIcon {
+                            animate: true
+                            text: "headphones"
+                            color: root.colour
+                            fontStyle: Tokens.font.icon.medium
+                            fill: 1
+                        }
+                    }
+                }
+                DelegateChoice {
                     roleValue: "battery"
                     delegate: EntryWrapper {
                         BatteryStatus {

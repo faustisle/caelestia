@@ -15,6 +15,7 @@ PageBase {
             microphone: Tr.tr("Microphone"),
             network: Tr.tr("Network"),
             bluetooth: Tr.tr("Bluetooth"),
+            appVolumes: Tr.tr("App volumes"),
             battery: Tr.tr("Battery")
         })
 
