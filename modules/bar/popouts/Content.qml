@@ -137,7 +137,7 @@ Item {
 
                 required property SystemTrayItem modelData
 
-                name: `traymenu${root.trayItemsToIndices[modelData.id]}`
+                name: `traymenu${root.trayItemsToIndices[modelData?.id] ?? ""}`
                 sourceComponent: trayMenuComp
 
                 Connections {
@@ -156,7 +156,7 @@ Item {
 
                     TrayMenu {
                         popouts: root.popouts
-                        trayItem: trayMenu.modelData.menu // qmllint disable incompatible-type
+                        trayItem: trayMenu.modelData?.menu ?? null // qmllint disable incompatible-type
                     }
                 }
             }

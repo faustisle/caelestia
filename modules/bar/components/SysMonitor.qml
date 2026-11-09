@@ -55,28 +55,34 @@ StyledRect {
         spacing: Tokens.spacing.medium
 
         Metric {
+            id: cpuMetric
+
             visible: Config.bar.sysMonitor.showCpu
             icon: "memory"
             value: root.cpuValue
             unit: "%"
         }
 
-	Separator {
+        Separator {
             visible: cpuMetric.visible && tempMetric.visible
         }
 
         Metric {
+            id: tempMetric
+
             visible: Config.bar.sysMonitor.showCpuTemp
             icon: "thermometer"
             value: root.tempValue
             unit: root.tempUnit
         }
 
-	Separator {
-            visible: cpuMetric.visible && tempMetric.visible
+        Separator {
+            visible: tempMetric.visible && memoryMetric.visible
         }
 
         Metric {
+            id: memoryMetric
+
             visible: Config.bar.sysMonitor.showMemory
             icon: "memory_alt"
             iconFont: root.memoryIconFont
