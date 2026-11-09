@@ -177,8 +177,9 @@ class LockTokens : public settings::ObjectNode {
     CONFIG_NODE(LockTokens, settings::ObjectNode)
 
     CONFIG_PROPERTY(qreal, heightMult, 0.7)
-    CONFIG_PROPERTY(qreal, ratio, 16.0 / 9.0)
+    CONFIG_PROPERTY(qreal, ratio, 3.0 / 2.0)
     CONFIG_PROPERTY(int, centerWidth, 600)
+    CONFIG_PROPERTY(qreal, sideWidthRatio, 0.32)
 };
 
 class NexusTokens : public settings::ObjectNode {

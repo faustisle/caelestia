@@ -9,21 +9,25 @@ RowLayout {
 
     required property var lock
 
-    spacing: Tokens.spacing.largeIncreased * 2
+    readonly property real sideWidth: Math.round(width * Tokens.sizes.lock.sideWidthRatio)
 
-    Item {
-        Layout.fillWidth: true
-    }
+    spacing: Tokens.spacing.largeIncreased * 2
 
     Center {
         lock: root.lock
     }
 
-    ColumnLayout {
+    Item {
         Layout.fillWidth: true
+    }
+
+    ColumnLayout {
+        Layout.preferredWidth: root.sideWidth
+        Layout.maximumWidth: root.sideWidth
+        Layout.fillHeight: true
         spacing: Tokens.spacing.medium
 
-        SessionControls {
+        Resources {
             Layout.fillWidth: true
         }
 
