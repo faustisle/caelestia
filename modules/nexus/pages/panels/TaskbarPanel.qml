@@ -59,28 +59,28 @@ PageBase {
             icon: "workspaces"
             text: Tr.tr("Workspaces")
             subtext: Tr.tr("Indicators, window icons")
-            onClicked: root.nState.openSubPage(6)
+            onClicked: root.nState.openSubPage(5)
         }
 
         NavRow {
             icon: "widgets"
             text: Tr.tr("Tray")
             subtext: Tr.tr("System tray icons")
-            onClicked: root.nState.openSubPage(7)
+            onClicked: root.nState.openSubPage(6)
         }
 
         NavRow {
             icon: "monitor_heart"
             text: Tr.tr("System monitor")
             subtext: Tr.tr("CPU and memory usage")
-            onClicked: root.nState.openSubPage(8)
+            onClicked: root.nState.openSubPage(7)
         }
 
         NavRow {
             icon: "schedule"
             text: Tr.tr("Clock")
             subtext: Tr.tr("Date, icon, background")
-            onClicked: root.nState.openSubPage(9)
+            onClicked: root.nState.openSubPage(8)
         }
 
         NavRow {
@@ -88,7 +88,7 @@ PageBase {
             icon: "signal_cellular_alt"
             text: Tr.tr("Status icons")
             subtext: Tr.tr("Visible indicators")
-            onClicked: root.nState.openSubPage(10)
+            onClicked: root.nState.openSubPage(9)
         }
 
         // Scroll actions
