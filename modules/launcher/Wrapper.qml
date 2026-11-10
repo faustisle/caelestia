@@ -18,10 +18,10 @@ Item {
 
     readonly property real maxHeight: screen.height - Config.border.thickness * 2 + Tokens.padding.extraLarge;
 
-    // Keep the search bar centred while results grow downwards from it
+    // Sit a third of the way down the screen while results grow downwards from the search bar
     readonly property real spotlightTopMargin: {
         const searchCenter = content.item?.searchCenterOffset ?? implicitHeight / 2;
-        return Math.max(0, (parent?.height ?? screen.height) / 2 - searchCenter);
+        return Math.max(0, (parent?.height ?? screen.height) / 3 - searchCenter);
     }
 
     property real offsetScale: shouldBeActive ? 0 : 1
