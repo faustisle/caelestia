@@ -174,8 +174,13 @@ StyledWindow {
         PanelBg {
             id: launcherBg
 
+            readonly property bool spotlight: Config.launcher.spotlight
+
             panel: panels.launcher
             deformAmount: 0.1
+            visible: panel.visible
+            // The regular launcher slides off screen, but the spotlight one fades in place
+            opacity: spotlight ? panel.opacity : 1
         }
 
         PanelBg {
