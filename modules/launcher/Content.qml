@@ -19,18 +19,79 @@ Item {
     readonly property int padding: Tokens.padding.large
     readonly property int rounding: Tokens.rounding.extraLarge
 
+    readonly property bool spotlight: Config.launcher.spotlight
+    readonly property bool showResults: !spotlight || spotlightResults
+
+    // Offset from the top of the launcher to the centre of the search bar.
+    // Used to keep the search bar centred while results grow below it.
+    readonly property real searchCenterOffset: padding + search.height / 2
+
+    // Latched so the results do not collapse while the launcher is closing
+    property bool spotlightResults: false
+
+    function syncSpotlightResults(): void {
+        if (spotlight && screenState.launcher)
+            spotlightResults = search.text.length > 0;
+    }
+
+    onSpotlightChanged: syncSpotlightResults()
+
     implicitWidth: listWrapper.width + padding * 2
-    implicitHeight: search.height + listWrapper.height + padding + search.anchors.bottomMargin
+    implicitHeight: spotlight ? padding * 2 + search.height + listWrapper.height : search.height + listWrapper.height + padding + search.anchors.bottomMargin
+
+    states: [
+        State {
+            name: "regular"
+            when: !root.spotlight
+
+            AnchorChanges {
+                target: listWrapper
+                anchors.top: undefined
+                anchors.bottom: search.top
+            }
+            AnchorChanges {
+                target: search
+                anchors.top: undefined
+                anchors.bottom: parent.bottom
+            }
+        },
+        State {
+            name: "spotlight"
+            when: root.spotlight
+
+            AnchorChanges {
+                target: listWrapper
+                anchors.bottom: undefined
+                anchors.top: search.bottom
+            }
+            AnchorChanges {
+                target: search
+                anchors.bottom: undefined
+                anchors.top: parent.top
+            }
+        }
+    ]
 
     Item {
         id: listWrapper
 
+        readonly property real naturalHeight: list.height + root.padding
+
         implicitWidth: list.width
-        implicitHeight: list.height + root.padding
+        implicitHeight: naturalHeight
+        height: root.spotlight ? (root.showResults ? naturalHeight : 0) : naturalHeight
+        visible: !root.spotlight || height > 0
+        clip: root.spotlight
 
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: search.top
         anchors.bottomMargin: root.padding
+        anchors.topMargin: root.padding
+
+        Behavior on height {
+            enabled: root.spotlight
+
+            Anim {}
+        }
 
         ContentList {
             id: list
@@ -38,7 +99,7 @@ Item {
             content: root
             screenState: root.screenState
             panels: root.panels
-            maxHeight: root.maxHeight - search.implicitHeight - root.padding * 3
+            maxHeight: root.spotlight ? Math.max(0, root.maxHeight / 2 - search.height / 2 - root.padding * 2) : root.maxHeight - search.implicitHeight - root.padding * 3
             search: search
             padding: root.padding
             rounding: root.rounding
@@ -52,7 +113,6 @@ Item {
 
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
         anchors.margins: root.padding
         anchors.bottomMargin: CUtils.clamp(root.padding - Config.border.thickness, 0, root.padding)
 
@@ -113,6 +173,8 @@ Item {
             function onLauncherChanged(): void {
                 if (!root.screenState.launcher)
                     search.text = "";
+                else
+                    root.syncSpotlightResults();
             }
 
             function onSessionChanged(): void {
@@ -121,6 +183,14 @@ Item {
             }
 
             target: root.screenState
+        }
+
+        Connections {
+            function onTextChanged(): void {
+                root.syncSpotlightResults();
+            }
+
+            target: search
         }
     }
 }

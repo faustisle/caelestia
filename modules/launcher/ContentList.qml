@@ -19,12 +19,14 @@ Item {
     required property int padding
     required property int rounding
 
+    readonly property bool spotlight: Config.launcher.spotlight
     readonly property bool showWallpapers: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}wallpaper `)
     readonly property var currentList: showWallpapers ? wallpaperList.item : appList.item // Can be either ListView or PathView, so can't type properly
     property string animState: showWallpapers ? "wallpapers" : "apps"
 
     anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottom: parent.bottom
+    anchors.top: spotlight ? parent.top : undefined
+    anchors.bottom: spotlight ? undefined : parent.bottom
 
     clip: true
     state: animState

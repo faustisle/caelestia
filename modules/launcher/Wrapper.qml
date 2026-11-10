@@ -14,8 +14,15 @@ Item {
     required property var panels
 
     readonly property bool shouldBeActive: screenState.launcher && Config.launcher.enabled
+    readonly property bool spotlight: Config.launcher.spotlight
 
     readonly property real maxHeight: screen.height - Config.border.thickness * 2 + Tokens.padding.extraLarge;
+
+    // Keep the search bar centred while results grow downwards from it
+    readonly property real spotlightTopMargin: {
+        const searchCenter = content.item?.searchCenterOffset ?? implicitHeight / 2;
+        return Math.max(0, (parent?.height ?? screen.height) / 2 - searchCenter);
+    }
 
     property real offsetScale: shouldBeActive ? 0 : 1
 
@@ -27,10 +34,35 @@ Item {
     }
 
     visible: offsetScale < 1
-    anchors.bottomMargin: (-implicitHeight - 5) * offsetScale
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottomMargin: spotlight ? 0 : (-implicitHeight - 5) * offsetScale
+    anchors.topMargin: spotlight ? spotlightTopMargin + Tokens.spacing.small * offsetScale : 0
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth || 630 // Hard coded fallback for first open
     opacity: 1 - offsetScale
+
+    states: [
+        State {
+            name: "regular"
+            when: !root.spotlight
+
+            AnchorChanges {
+                target: root
+                anchors.top: undefined
+                anchors.bottom: parent.bottom
+            }
+        },
+        State {
+            name: "spotlight"
+            when: root.spotlight
+
+            AnchorChanges {
+                target: root
+                anchors.bottom: undefined
+                anchors.top: parent.top
+            }
+        }
+    ]
 
     Component.onCompleted: Qt.callLater(() => Apps) // Load apps on init
 

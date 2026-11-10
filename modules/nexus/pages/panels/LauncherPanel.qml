@@ -32,6 +32,13 @@ PageBase {
         }
 
         ToggleRow {
+            text: Tr.tr("Spotlight mode")
+            subtext: Tr.tr("Float in the centre of the screen, showing only the search bar at first")
+            checked: Config.launcher.spotlight
+            onToggled: GlobalConfig.launcher.spotlight = checked
+        }
+
+        ToggleRow {
             text: Tr.tr("Show on hover")
             subtext: Tr.tr("Reveal when the cursor reaches the screen edge")
             checked: Config.launcher.showOnHover

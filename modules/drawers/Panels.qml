@@ -99,9 +99,6 @@ Item {
         screen: root.screen
         screenState: root.screenState
         panels: root
-
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
     }
 
     BarPopouts.ClipWrapper {
