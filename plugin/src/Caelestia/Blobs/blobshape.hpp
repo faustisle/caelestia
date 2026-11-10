@@ -40,6 +40,7 @@ signals:
 
 protected:
     void componentComplete() override;
+    void itemChange(ItemChange change, const ItemChangeData& data) override;
     void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
     void updatePolish() override;
     QSGNode* updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData* data) override;

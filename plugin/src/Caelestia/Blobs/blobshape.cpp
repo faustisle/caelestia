@@ -114,6 +114,14 @@ void BlobShape::componentComplete() {
         registerWithGroup();
 }
 
+void BlobShape::itemChange(ItemChange change, const ItemChangeData& data) {
+    // Hidden shapes are skipped when collecting neighbours, so toggling visibility
+    // must re-render both the shape and anything it was deforming.
+    if (change == ItemVisibleHasChanged && m_group && isComponentComplete())
+        m_group->markDirty();
+    QQuickItem::itemChange(change, data);
+}
+
 void BlobShape::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) {
     QQuickItem::geometryChange(newGeometry, oldGeometry);
     updateCenteredDeformMatrix();
@@ -276,6 +284,10 @@ void BlobShape::collectNearbyRects(float pad, QVector<BlobShape*>& rectShapes) {
             break;
 
         if (other->isInvertedRect())
+            continue;
+
+        // Invisible shapes must not deform visible ones (e.g. a closed popout/launcher)
+        if (!other->isVisible())
             continue;
 
         // Shapes can opt out of merging with the inverted rect (e.g. a fully retracted popout)
