@@ -229,11 +229,14 @@ StyledWindow {
 
             // Extra width to prevent vertical movement deformation partially detaching panel from bar
             property real extraWidth: panels.popouts.isDetached ? 0 : 0.2
+            // Once fully closed, drop the shape entirely so blob smoothing cannot leave a residual bump on the bar
+            readonly property bool fullyClosed: !panels.popouts.hasCurrent && !panels.popouts.isDetached && panels.popoutsWrapper.offsetScale >= 0.999
 
             panel: panels.popoutsWrapper
             deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
+            visible: !fullyClosed
             x: panels.popoutsWrapper.x + panels.popouts.x + bar.implicitWidth - panels.popouts.width * extraWidth
-            implicitWidth: panels.popouts.width * (1 + extraWidth)
+            implicitWidth: fullyClosed ? 0 : panels.popouts.width * (1 + extraWidth)
 
             Behavior on extraWidth {
                 Anim {}
