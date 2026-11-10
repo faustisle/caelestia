@@ -76,10 +76,13 @@ Item {
         id: listWrapper
 
         readonly property real naturalHeight: list.height + root.padding
+        // Separate the results reveal from the list size so resizing the list
+        // does not queue a second animation behind the list's own resize.
+        property real reveal: root.spotlight ? (root.showResults ? 1 : 0) : 1
 
         implicitWidth: list.width
         implicitHeight: naturalHeight
-        height: root.spotlight ? (root.showResults ? naturalHeight : 0) : naturalHeight
+        height: naturalHeight * reveal
         visible: !root.spotlight || height > 0
         clip: root.spotlight
 
@@ -87,7 +90,7 @@ Item {
         anchors.bottomMargin: root.padding
         anchors.topMargin: root.padding
 
-        Behavior on height {
+        Behavior on reveal {
             enabled: root.spotlight
 
             Anim {}

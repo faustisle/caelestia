@@ -64,7 +64,7 @@ Item {
                 property: "opacity"
                 from: 1
                 to: 0
-                type: Anim.DefaultEffects
+                type: Anim.FastEffects
             }
             PropertyAction {}
             Anim {
@@ -72,7 +72,7 @@ Item {
                 property: "opacity"
                 from: 0
                 to: 1
-                type: Anim.DefaultEffects
+                type: Anim.FastEffects
             }
         }
     }
@@ -162,12 +162,16 @@ Item {
     Behavior on implicitWidth {
         enabled: root.screenState.launcher
 
-        Anim {}
+        Anim {
+            type: Anim.FastSpatial
+        }
     }
 
     Behavior on implicitHeight {
         enabled: root.screenState.launcher
 
-        Anim {}
+        Anim {
+            type: Anim.FastSpatial
+        }
     }
 }
