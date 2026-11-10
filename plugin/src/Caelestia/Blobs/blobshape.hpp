@@ -47,6 +47,7 @@ protected:
     [[nodiscard]] virtual bool isInvertedRect() const;
     [[nodiscard]] virtual bool isExcluded(const BlobShape* other) const;
     [[nodiscard]] virtual bool isCornerExcluded(const BlobShape* other) const;
+    [[nodiscard]] virtual bool shouldMergeWithInverted() const;
 
     virtual void cornerRadii(float out[4]) const;
     virtual void updatePhysics();

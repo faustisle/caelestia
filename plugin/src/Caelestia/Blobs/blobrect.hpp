@@ -15,6 +15,9 @@ class BlobRect : public BlobShape {
     Q_PROPERTY(qreal stiffness READ stiffness WRITE setStiffness NOTIFY stiffnessChanged)
     Q_PROPERTY(qreal damping READ damping WRITE setDamping NOTIFY dampingChanged)
     Q_PROPERTY(qreal deformScale READ deformScale WRITE setDeformScale NOTIFY deformScaleChanged)
+    Q_PROPERTY(bool mergeWithInverted READ mergeWithInverted WRITE setMergeWithInverted NOTIFY
+            mergeWithInvertedChanged)
+    Q_PROPERTY(bool physicsActive READ physicsActive NOTIFY physicsActiveChanged)
     Q_PROPERTY(QQmlListProperty<caelestia::shell::blobs::BlobRect> exclude READ exclude NOTIFY excludeChanged)
     Q_PROPERTY(QQmlListProperty<caelestia::shell::blobs::BlobRect> excludeCorners READ excludeCorners NOTIFY
             excludeCornersChanged)
@@ -37,6 +40,11 @@ public:
     [[nodiscard]] qreal deformScale() const;
     void setDeformScale(qreal s);
 
+    [[nodiscard]] bool mergeWithInverted() const;
+    void setMergeWithInverted(bool v);
+
+    [[nodiscard]] bool physicsActive() const;
+
     QQmlListProperty<BlobRect> exclude();
     QQmlListProperty<BlobRect> excludeCorners();
 
@@ -56,6 +64,8 @@ signals:
     void stiffnessChanged();
     void dampingChanged();
     void deformScaleChanged();
+    void mergeWithInvertedChanged();
+    void physicsActiveChanged();
     void excludeChanged();
     void excludeCornersChanged();
     void topLeftRadiusChanged();
@@ -69,10 +79,12 @@ protected:
 
     [[nodiscard]] bool isExcluded(const BlobShape* other) const override;
     [[nodiscard]] bool isCornerExcluded(const BlobShape* other) const override;
+    [[nodiscard]] bool shouldMergeWithInverted() const override;
     void cornerRadii(float out[4]) const override;
 
 private:
     void checkAtRest(float speed);
+    void setPhysicsActive(bool active);
 
     // Physics state
     QPointF m_prevScenePos;
@@ -94,6 +106,7 @@ private:
     qreal m_stiffness = 200.0;
     qreal m_damping = 16.0;
     qreal m_deformScale = 0.0005;
+    bool m_mergeWithInverted = true;
 
     qreal m_topLeftRadius = -1;
     qreal m_topRightRadius = -1;

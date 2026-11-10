@@ -153,6 +153,10 @@ bool BlobShape::isExcluded(const BlobShape* other) const {
     return false;
 }
 
+bool BlobShape::shouldMergeWithInverted() const {
+    return true;
+}
+
 bool BlobShape::isCornerExcluded(const BlobShape* other) const {
     Q_UNUSED(other);
     return false;
@@ -272,6 +276,10 @@ void BlobShape::collectNearbyRects(float pad, QVector<BlobShape*>& rectShapes) {
             break;
 
         if (other->isInvertedRect())
+            continue;
+
+        // Shapes can opt out of merging with the inverted rect (e.g. a fully retracted popout)
+        if (inverted && !other->shouldMergeWithInverted())
             continue;
 
         // Skip zero-size rects

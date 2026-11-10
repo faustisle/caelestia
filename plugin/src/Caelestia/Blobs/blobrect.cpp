@@ -32,7 +32,7 @@ void BlobRect::updatePolish() {
             m_deformMatrix = QMatrix4x4();
             emit rawDeformMatrixChanged();
             updateCenteredDeformMatrix();
-            m_physicsActive = false;
+            setPhysicsActive(false);
         } else {
             QMetaObject::invokeMethod(
                 this,
@@ -73,7 +73,7 @@ void BlobRect::updatePhysics() {
     if (!m_physicsActive) {
         if (speed < 5.0f)
             return;
-        m_physicsActive = true;
+        setPhysicsActive(true);
     }
 
     // Compute target deformation matrix from velocity
@@ -157,6 +157,30 @@ void BlobRect::setDeformScale(qreal s) {
     }
 }
 
+bool BlobRect::mergeWithInverted() const {
+    return m_mergeWithInverted;
+}
+
+void BlobRect::setMergeWithInverted(bool v) {
+    if (m_mergeWithInverted == v)
+        return;
+    m_mergeWithInverted = v;
+    emit mergeWithInvertedChanged();
+    if (m_group)
+        m_group->markDirty();
+}
+
+bool BlobRect::physicsActive() const {
+    return m_physicsActive;
+}
+
+void BlobRect::setPhysicsActive(bool active) {
+    if (m_physicsActive == active)
+        return;
+    m_physicsActive = active;
+    emit physicsActiveChanged();
+}
+
 qreal BlobRect::topLeftRadius() const {
     return m_topLeftRadius;
 }
@@ -222,6 +246,10 @@ bool BlobRect::isExcluded(const BlobShape* other) const {
     return std::ranges::any_of(m_exclude, [other](const auto& ptr) {
         return ptr == other;
     });
+}
+
+bool BlobRect::shouldMergeWithInverted() const {
+    return m_mergeWithInverted;
 }
 
 bool BlobRect::isCornerExcluded(const BlobShape* other) const {
@@ -348,7 +376,7 @@ void BlobRect::checkAtRest(float speed) {
         m_deformMatrix = QMatrix4x4(); // identity
         emit rawDeformMatrixChanged();
         updateCenteredDeformMatrix();
-        m_physicsActive = false;
+        setPhysicsActive(false);
     }
 }
 
