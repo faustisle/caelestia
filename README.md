@@ -413,7 +413,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
     "general": {
         "logo": "",
         "showOverFullscreen": false,
-        "sessionGifSpeed": 0.7,
         "apps": {
             "terminal": ["foot"],
             "audio": ["pwvucontrol"],
@@ -915,7 +914,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
     },
     "paths": {
         "wallpaperDir": "~/Pictures/Wallpapers",
-        "sessionGif": "root:/assets/kurukuru.gif",
         "noNotifsPic": "root:/assets/dino.png",
         "lockNoNotifsPic": "root:/assets/dino.png"
     }

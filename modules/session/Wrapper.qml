@@ -18,7 +18,7 @@ Item {
     visible: offsetScale < 1
     anchors.rightMargin: (-implicitWidth - 5 - sidebarOffset) * offsetScale
     implicitWidth: content.implicitWidth
-    implicitHeight: content.implicitHeight || 510 // Hard coded fallback for first open
+    implicitHeight: content.implicitHeight || Tokens.sizes.session.button * 4 + Tokens.spacing.large * 3 + Tokens.padding.large * 2
     opacity: 1 - offsetScale
 
     Behavior on offsetScale {
