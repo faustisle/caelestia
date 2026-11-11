@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Caelestia.Config
 import qs.components
+import qs.services
 import qs.modules.launcher.services
 
 Item {
@@ -15,6 +16,7 @@ Item {
 
     readonly property bool shouldBeActive: screenState.launcher && Config.launcher.enabled
     readonly property bool spotlight: Config.launcher.spotlight
+    readonly property Item searchBar: content.item?.searchBar ?? null
 
     readonly property real maxHeight: screen.height - Config.border.thickness * 2 + Tokens.padding.extraLarge;
 
@@ -40,6 +42,10 @@ Item {
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth || 630 // Hard coded fallback for first open
     opacity: 1 - offsetScale
+    // Render the whole launcher offscreen while it fades so the blob and the
+    // search pill are faded as one composited group instead of two translucent
+    // layers stacking on top of each other.
+    layer.enabled: root.spotlight
 
     states: [
         State {
@@ -68,6 +74,38 @@ Item {
 
     Behavior on offsetScale {
         Anim {}
+    }
+
+    // Keep the spotlight background inside the wrapper so it fades together
+    // with the search pill as a single composited group.
+    Item {
+        id: spotlightBg
+
+        anchors.fill: parent
+        visible: root.spotlight
+        opacity: Colours.tPalette.m3surface.a
+
+        StyledRect {
+            anchors.fill: parent
+            color: Colours.tPalette.m3surface
+            radius: Tokens.rounding.extraLarge
+        }
+    }
+
+    // Mirrors the search pill so the background can be pre-composed with the
+    // blob above. The real pill is made transparent in spotlight mode.
+    StyledRect {
+        id: spotlightSearchBg
+
+        readonly property Item search: root.searchBar
+
+        visible: root.spotlight && search !== null
+        x: search?.x ?? 0
+        y: search?.y ?? 0
+        width: search?.width ?? 0
+        height: search?.height ?? 0
+        radius: Tokens.rounding.full
+        color: Colours.tPalette.m3surfaceContainer
     }
 
     Loader {

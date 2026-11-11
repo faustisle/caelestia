@@ -10,6 +10,9 @@ TextFieldBase {
     readonly property alias searchIcon: searchIcon
     readonly property alias clearIcon: clearIcon
 
+    // Draw only the contents, leaving the background to the caller.
+    property bool backgroundless
+
     leftPadding: searchIcon.width + searchIcon.anchors.leftMargin + Tokens.spacing.medium
     rightPadding: clearIcon.width + clearIcon.anchors.rightMargin + Tokens.spacing.medium
     topPadding: Tokens.padding.large
@@ -24,7 +27,7 @@ TextFieldBase {
         id: bg
 
         anchors.fill: parent
-        color: Colours.tPalette.m3surfaceContainer
+        color: root.backgroundless ? "transparent" : Colours.tPalette.m3surfaceContainer
         radius: Tokens.rounding.full
 
         StateLayer {

@@ -19,6 +19,7 @@ Item {
     readonly property int padding: Tokens.padding.large
     readonly property int rounding: Tokens.rounding.extraLarge
 
+    readonly property alias searchBar: search
     readonly property bool spotlight: Config.launcher.spotlight
     readonly property bool showResults: !spotlight || spotlightResults
 
@@ -113,6 +114,7 @@ Item {
         id: search
 
         objectName: "launcherSearch"
+        backgroundless: root.spotlight
 
         anchors.left: parent.left
         anchors.right: parent.right

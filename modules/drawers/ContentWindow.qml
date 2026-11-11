@@ -185,11 +185,9 @@ StyledWindow {
 
             panel: panels.launcher
             deformAmount: 0.1
-            visible: panel.visible
-            // The regular launcher slides off screen, but the spotlight one fades in place.
-            // The search bar's own pill stacks another translucent layer on top of the blob,
-            // so pre-compose the blob to keep its edge and the pill at the same opacity.
-            opacity: spotlight ? 1 - (1 - panel.opacity) * (1 - panel.opacity) : 1
+            // Spotlight mode draws its own background inside the launcher wrapper
+            // so it can be group-faded together with the search pill.
+            visible: panel.visible && !spotlight
         }
 
         PanelBg {
