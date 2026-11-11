@@ -653,6 +653,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
     "launcher": {
         "enabled": true,
         "spotlight": true,
+        "dim": true,
         "showOnHover": false,
         "maxShown": 7,
         "maxWallpapers": 9,

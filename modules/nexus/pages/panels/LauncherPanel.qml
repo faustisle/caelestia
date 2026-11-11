@@ -39,6 +39,13 @@ PageBase {
         }
 
         ToggleRow {
+            text: Tr.tr("Dim screen")
+            subtext: Tr.tr("Darken the screen behind the launcher")
+            checked: Config.launcher.dim
+            onToggled: GlobalConfig.launcher.dim = checked
+        }
+
+        ToggleRow {
             text: Tr.tr("Show on hover")
             subtext: Tr.tr("Reveal when the cursor reaches the screen edge")
             checked: Config.launcher.showOnHover

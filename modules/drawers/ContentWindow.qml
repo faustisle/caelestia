@@ -42,6 +42,8 @@ StyledWindow {
     readonly property real borderRounding: (GameMode.enabled && GlobalConfig.utilities.gameMode.options["decoration:rounding"] === 0 ? 0 : contentItem.Config.border.rounding) * (1 - fsTransitionProg)
     readonly property real shadowOpacity: 0.7 * (1 - fsTransitionProg)
     readonly property real borderLayoutThickness: hasFullscreen ? 0 : contentItem.Config.border.thickness
+    // Shared screen dim opacity for the session menu and the launcher
+    readonly property real dimOpacity: 0.5
 
     property color surfaceColour: Colours.tPalette.m3surface
 
@@ -133,7 +135,12 @@ StyledWindow {
 
     StyledRect {
         anchors.fill: parent
-        opacity: (root.screenState.session && Config.session.enabled) || panels.popouts.detachedMode !== "" ? 0.5 : 0
+        opacity: {
+            const s = root.screenState;
+            const dimSession = s.session && Config.session.enabled;
+            const dimLauncher = s.launcher && Config.launcher.enabled && Config.launcher.dim;
+            return dimSession || dimLauncher || panels.popouts.detachedMode !== "" ? root.dimOpacity : 0;
+        }
         color: Colours.palette.m3scrim
 
         Behavior on opacity {
