@@ -132,14 +132,6 @@ CustomMouseArea {
                 osdShortcutActive = false;
                 root.panels.osd.hovered = true;
             }
-
-            // Show/hide session on drag
-            if (pressed && inRightPanel(panels.sessionWrapper, dragStart.x, dragStart.y) && withinPanelHeight(panels.sessionWrapper, x, y)) {
-                if (dragX < -Config.session.dragThreshold)
-                    screenState.session = true;
-                else if (dragX > Config.session.dragThreshold)
-                    screenState.session = false;
-            }
         } else {
             const outOfSidebar = x < width - panels.sidebar.width * (1 - panels.sidebar.offsetScale);
             // Show osd on hover
@@ -154,14 +146,6 @@ CustomMouseArea {
                 osdShortcutActive = false;
                 root.panels.osd.hovered = true;
             }
-
-            // Show/hide session on drag
-            if (pressed && outOfSidebar && inRightPanel(panels.sessionWrapper, dragStart.x, dragStart.y) && withinPanelHeight(panels.sessionWrapper, x, y)) {
-                if (dragX < -Config.session.dragThreshold)
-                    screenState.session = true;
-                else if (dragX > Config.session.dragThreshold)
-                    screenState.session = false;
-            }
         }
 
         // Show sidebar on hover at the top-right corner. The sidebar and the
@@ -171,7 +155,7 @@ CustomMouseArea {
             if (showSidebarHover && !screenState.sidebar) {
                 screenState.sidebar = true;
             } else if (!sidebarShortcutActive) {
-                const inSidebarArea = inRightPanel(panels.sidebar, x, y) || inRightPanel(panels.sessionWrapper, x, y) || inRightPanel(panels.utilities, x, y) || inRightPanel(panels.notifications, x, y);
+                const inSidebarArea = inRightPanel(panels.sidebar, x, y) || inRightPanel(panels.utilities, x, y) || inRightPanel(panels.notifications, x, y);
                 if (!inSidebarArea)
                     screenState.sidebar = false;
             } else if (showSidebarHover) {
@@ -248,7 +232,7 @@ CustomMouseArea {
         function onSidebarChanged() {
             if (root.screenState.sidebar) {
                 // Sidebar became visible, immediately check if this should be shortcut mode
-                const inSidebarArea = root.inRightPanel(root.panels.sidebar, root.mouseX, root.mouseY) || root.inRightPanel(root.panels.sessionWrapper, root.mouseX, root.mouseY) || root.inRightPanel(root.panels.utilities, root.mouseX, root.mouseY) || root.inSidebarHoverTrigger(root.mouseX, root.mouseY);
+                const inSidebarArea = root.inRightPanel(root.panels.sidebar, root.mouseX, root.mouseY) || root.inRightPanel(root.panels.utilities, root.mouseX, root.mouseY) || root.inSidebarHoverTrigger(root.mouseX, root.mouseY);
                 if (!inSidebarArea)
                     root.sidebarShortcutActive = true;
             } else {

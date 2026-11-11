@@ -191,15 +191,6 @@ StyledWindow {
         }
 
         PanelBg {
-            id: sessionBg
-
-            panel: panels.sessionWrapper
-            deformAmount: 0.2
-            x: panels.sessionWrapper.x + panels.session.x + bar.implicitWidth
-            implicitWidth: panels.session.width
-        }
-
-        PanelBg {
             id: sidebarBg
 
             panel: panels.sidebar
@@ -281,9 +272,6 @@ StyledWindow {
 
             launcher.transform: Matrix4x4 {
                 matrix: launcherBg.deformMatrix
-            }
-            session.transform: Matrix4x4 {
-                matrix: sessionBg.deformMatrix
             }
             sidebar.transform: Matrix4x4 {
                 matrix: sidebarBg.deformMatrix

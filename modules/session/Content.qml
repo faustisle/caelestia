@@ -2,20 +2,18 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Caelestia
 import Caelestia.Config
 import Caelestia.Services
 import qs.components
 import qs.components.controls
 import qs.services
 
-Column {
+Row {
     id: root
 
     required property ScreenState screenState
 
     padding: Tokens.padding.large
-    rightPadding: CUtils.clamp(padding - Config.border.thickness, 0, padding)
     spacing: Tokens.spacing.large
 
     SessionButton {
@@ -24,7 +22,7 @@ Column {
         icon: Config.session.icons.logout
         command: Config.session.commands.logout
 
-        KeyNavigation.down: shutdown
+        KeyNavigation.right: shutdown
 
         Component.onCompleted: forceActiveFocus()
 
@@ -44,8 +42,8 @@ Column {
         icon: Config.session.icons.shutdown
         command: Config.session.commands.shutdown
 
-        KeyNavigation.up: logout
-        KeyNavigation.down: hibernate
+        KeyNavigation.left: logout
+        KeyNavigation.right: hibernate
     }
 
     SessionButton {
@@ -54,8 +52,8 @@ Column {
         icon: Config.session.icons.hibernate
         command: Config.session.commands.hibernate
 
-        KeyNavigation.up: shutdown
-        KeyNavigation.down: reboot
+        KeyNavigation.left: shutdown
+        KeyNavigation.right: reboot
     }
 
     SessionButton {
@@ -64,7 +62,7 @@ Column {
         icon: Config.session.icons.reboot
         command: Config.session.commands.reboot
 
-        KeyNavigation.up: hibernate
+        KeyNavigation.left: hibernate
     }
 
     component SessionButton: IconButton {
@@ -94,19 +92,19 @@ Column {
                 return;
 
             if (event.modifiers & Qt.ControlModifier) {
-                if ((event.key === Qt.Key_J || event.key === Qt.Key_N) && KeyNavigation.down) {
-                    KeyNavigation.down.focus = true;
+                if ((event.key === Qt.Key_L || event.key === Qt.Key_N) && KeyNavigation.right) {
+                    KeyNavigation.right.focus = true;
                     event.accepted = true;
-                } else if ((event.key === Qt.Key_K || event.key === Qt.Key_P) && KeyNavigation.up) {
-                    KeyNavigation.up.focus = true;
+                } else if ((event.key === Qt.Key_H || event.key === Qt.Key_P) && KeyNavigation.left) {
+                    KeyNavigation.left.focus = true;
                     event.accepted = true;
                 }
-            } else if (event.key === Qt.Key_Tab && KeyNavigation.down) {
-                KeyNavigation.down.focus = true;
+            } else if (event.key === Qt.Key_Tab && KeyNavigation.right) {
+                KeyNavigation.right.focus = true;
                 event.accepted = true;
             } else if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
-                if (KeyNavigation.up) {
-                    KeyNavigation.up.focus = true;
+                if (KeyNavigation.left) {
+                    KeyNavigation.left.focus = true;
                     event.accepted = true;
                 }
             }
