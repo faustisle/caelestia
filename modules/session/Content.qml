@@ -12,9 +12,10 @@ Row {
     id: root
 
     required property ScreenState screenState
+    required property real scaleFactor
 
-    padding: Tokens.padding.large
-    spacing: Tokens.spacing.large
+    padding: Tokens.padding.large * scaleFactor
+    spacing: Tokens.spacing.large * scaleFactor
 
     SessionButton {
         id: logout
@@ -75,13 +76,13 @@ Row {
                 Quickshell.execDetached(command);
         }
 
-        implicitWidth: Tokens.sizes.session.button
-        implicitHeight: Tokens.sizes.session.button
+        implicitWidth: Tokens.sizes.session.button * root.scaleFactor
+        implicitHeight: Tokens.sizes.session.button * root.scaleFactor
 
         inactiveColour: activeFocus ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
         inactiveOnColour: activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
-        radius: pressed ? Tokens.rounding.medium : activeFocus ? Tokens.rounding.extraLarge : Tokens.rounding.largeIncreased
-        font: Tokens.font.icon.builders.large.scale(1.3).build()
+        radius: pressed ? Tokens.rounding.medium * root.scaleFactor : activeFocus ? Tokens.rounding.extraLarge * root.scaleFactor : Tokens.rounding.largeIncreased * root.scaleFactor
+        font: Tokens.font.icon.builders.large.scale(1.3 * root.scaleFactor).build()
         onClicked: exec()
 
         Keys.onEnterPressed: exec()
