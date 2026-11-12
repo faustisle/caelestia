@@ -18,6 +18,7 @@ Row {
     spacing: Tokens.spacing.large * scaleFactor
 
     readonly property var buttons: [logout, shutdown, hibernate, reboot]
+    readonly property real maxTitleWidth: Math.max(logout.titleWidth, shutdown.titleWidth, hibernate.titleWidth, reboot.titleWidth)
 
     Keys.onPressed: event => {
         const blocked = Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier | Qt.ShiftModifier;
@@ -95,13 +96,16 @@ Row {
         required property int number
         required property list<string> command
 
+        readonly property real contentPadding: Tokens.padding.medium * root.scaleFactor
+        readonly property real titleWidth: titleLabel.implicitWidth
+
         function exec(): void {
             if (!SessionManager.exec(command))
                 Quickshell.execDetached(command);
         }
 
-        implicitWidth: Tokens.sizes.session.button * root.scaleFactor
-        implicitHeight: Tokens.sizes.session.button * root.scaleFactor
+        implicitWidth: Math.max(Tokens.sizes.session.button * root.scaleFactor, root.maxTitleWidth + contentPadding * 2)
+        implicitHeight: Math.max(Tokens.sizes.session.button * root.scaleFactor, contentColumn.implicitHeight + contentPadding * 2)
 
         inactiveColour: activeFocus ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
         inactiveOnColour: activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
@@ -110,15 +114,18 @@ Row {
         onClicked: exec()
 
         Rectangle {
-            readonly property real badgePadding: Tokens.padding.extraSmall * root.scaleFactor / 2
+            id: badge
+
+            readonly property real paddingH: Tokens.padding.extraSmall * root.scaleFactor
+            readonly property real paddingV: Tokens.padding.extraSmall * root.scaleFactor / 2
 
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.margins: Tokens.padding.extraSmall * root.scaleFactor
 
-            implicitWidth: Math.max(height, badgeLabel.implicitWidth + badgePadding * 2)
-            height: badgeLabel.implicitHeight + badgePadding
-            radius: height / 2
+            implicitWidth: Math.max(height, badgeLabel.implicitWidth + paddingH * 2)
+            height: badgeLabel.implicitHeight + paddingV * 2
+            radius: Tokens.rounding.small * root.scaleFactor
             color: Qt.alpha(button.onColour, 0.12)
 
             StyledText {
@@ -127,11 +134,13 @@ Row {
                 anchors.centerIn: parent
                 text: button.number
                 color: button.onColour
-                font: Tokens.font.label.builders.small.weight(Font.Medium).scale(root.scaleFactor * 0.8).build()
+                font: Tokens.font.label.builders.small.scale(root.scaleFactor).build()
             }
         }
 
         Column {
+            id: contentColumn
+
             anchors.centerIn: parent
             spacing: Tokens.spacing.extraSmall * root.scaleFactor
 
@@ -144,10 +153,12 @@ Row {
             }
 
             StyledText {
+                id: titleLabel
+
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: button.title
                 color: button.onColour
-                font: Tokens.font.label.builders.medium.scale(root.scaleFactor).build()
+                font: Tokens.font.body.builders.small.scale(root.scaleFactor).build()
             }
         }
 
