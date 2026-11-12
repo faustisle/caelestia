@@ -49,6 +49,16 @@ void doInit() {
     return value;
 }
 
+[[nodiscard]] std::optional<double> readTempCrit(const sensors_chip_name* chip, const sensors_feature* feat) {
+    const auto* sf = sensors_get_subfeature(chip, feat, SENSORS_SUBFEATURE_TEMP_CRIT);
+    if (!sf)
+        return std::nullopt;
+    double value = 0.0;
+    if (sensors_get_value(chip, sf->number, &value) != 0 || value <= 0.0)
+        return std::nullopt;
+    return value;
+}
+
 [[nodiscard]] QByteArray featureLabel(const sensors_chip_name* chip, const sensors_feature* feat) {
     char* raw = sensors_get_label(chip, feat);
     if (!raw)
@@ -86,6 +96,30 @@ template <typename F> void forEachTempFeature(short busType, F&& fn) {
             fn(chip, feat, label);
         }
     }
+}
+
+// Value from the package sensor, falling back to Tctl when no package/Tdie
+// sensor exists
+template <typename Reader> std::optional<double> cpuPackageValue(Reader read) {
+    ensureInit();
+    if (!g_initOk.load(std::memory_order_acquire))
+        return std::nullopt;
+
+    std::optional<double> primary;  // Package id N / Tdie
+    std::optional<double> fallback; // Tctl
+
+    forEachTempFeature(
+        SENSORS_BUS_TYPE_ANY, [&](const sensors_chip_name* chip, const sensors_feature* feat, const QByteArray& label) {
+            if (labelStartsWith(label, "Package id ") || labelEquals(label, "Tdie")) {
+                if (const auto v = read(chip, feat))
+                    primary = v;
+            } else if (labelEquals(label, "Tctl")) {
+                if (const auto v = read(chip, feat))
+                    fallback = v;
+            }
+        });
+
+    return primary.has_value() ? primary : fallback;
 }
 
 enum class GpuTempKind : std::uint8_t {
@@ -136,25 +170,11 @@ void ensureInit() {
 }
 
 std::optional<double> cpuPackageTemp() {
-    ensureInit();
-    if (!g_initOk.load(std::memory_order_acquire))
-        return std::nullopt;
+    return cpuPackageValue(readTempInput);
+}
 
-    std::optional<double> primary;  // Package id N / Tdie
-    std::optional<double> fallback; // Tctl
-
-    forEachTempFeature(
-        SENSORS_BUS_TYPE_ANY, [&](const sensors_chip_name* chip, const sensors_feature* feat, const QByteArray& label) {
-            if (labelStartsWith(label, "Package id ") || labelEquals(label, "Tdie")) {
-                if (const auto v = readTempInput(chip, feat))
-                    primary = v;
-            } else if (labelEquals(label, "Tctl")) {
-                if (const auto v = readTempInput(chip, feat))
-                    fallback = v;
-            }
-        });
-
-    return primary.has_value() ? primary : fallback;
+std::optional<double> cpuPackageCriticalTemp() {
+    return cpuPackageValue(readTempCrit);
 }
 
 std::optional<double> gpuPciAverageTemp() {

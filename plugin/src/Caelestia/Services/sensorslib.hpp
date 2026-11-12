@@ -7,6 +7,7 @@ namespace caelestia::shell::services::sensorslib {
 void ensureInit();
 
 [[nodiscard]] std::optional<double> cpuPackageTemp();
+[[nodiscard]] std::optional<double> cpuPackageCriticalTemp();
 [[nodiscard]] std::optional<double> gpuPciAverageTemp();
 
 } // namespace caelestia::shell::services::sensorslib

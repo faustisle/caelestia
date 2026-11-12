@@ -15,7 +15,9 @@ StyledRect {
     readonly property color alertColour: Colours.palette.m3error
     readonly property real cpuThreshold: 80
     readonly property real memoryThreshold: 80
-    readonly property real tempThreshold: 80
+    // Alert at 90% of the CPU's critical temperature, clamped to an early
+    // warning point, falling back to a fixed value when hwmon exposes none.
+    readonly property real tempThreshold: Cpu.criticalTemperature > 0 ? Math.min(Cpu.criticalTemperature * 0.9, 95) : 80
     readonly property real alertHysteresis: 3
     readonly property int cpuSampleWindow: 3
     readonly property int padding: Config.bar.sysMonitor.background ? Tokens.padding.medium : Tokens.padding.extraSmall

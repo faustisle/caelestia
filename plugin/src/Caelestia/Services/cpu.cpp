@@ -28,6 +28,10 @@ qreal Cpu::temperature() const {
     return m_temperature;
 }
 
+qreal Cpu::criticalTemperature() const {
+    return m_criticalTemperature;
+}
+
 void Cpu::tick() {
     if (!m_nameLoaded) {
         readNameOnce();
@@ -98,6 +102,13 @@ void Cpu::refreshPercentage() {
 }
 
 void Cpu::refreshTemperature() {
+    const auto crit = sensorslib::cpuPackageCriticalTemp();
+    const qreal newCrit = crit.value_or(0.0);
+    if (std::abs(newCrit - m_criticalTemperature) > 0.05) {
+        m_criticalTemperature = newCrit;
+        emit criticalTemperatureChanged();
+    }
+
     const auto t = sensorslib::cpuPackageTemp();
     const qreal newTemp = t.value_or(0.0);
     if (std::abs(newTemp - m_temperature) > 0.05) {
