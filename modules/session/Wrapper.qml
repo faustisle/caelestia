@@ -21,15 +21,6 @@ Item {
     implicitHeight: content.implicitHeight || (Tokens.sizes.session.button + Tokens.padding.large * 2) * scaleFactor
     opacity: 1 - offsetScale
 
-    // Fade the background and buttons as a single composited group, matching
-    // the spotlight launcher.
-    layer.enabled: true
-    layer.effect: MultiEffect {
-        shadowEnabled: true
-        blurMax: 15 * root.scaleFactor
-        shadowColor: Qt.alpha(Colours.palette.m3shadow, 0.7)
-    }
-
     Behavior on offsetScale {
         Anim {}
     }
@@ -39,6 +30,16 @@ Item {
 
         anchors.fill: parent
         opacity: Colours.tPalette.m3surface.a
+
+        // Only the background goes through an offscreen layer for the shadow.
+        // Keeping the content out of it avoids resampling the text and icons at
+        // fractional sizes, which makes them blurry.
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            blurMax: 15 * root.scaleFactor
+            shadowColor: Qt.alpha(Colours.palette.m3shadow, 0.7)
+        }
 
         StyledRect {
             anchors.fill: parent
