@@ -12,7 +12,7 @@ Item {
     required property ScreenState screenState
 
     readonly property bool shouldBeActive: screenState.session && Config.session.enabled
-    readonly property real scaleFactor: 1.5
+    readonly property real scaleFactor: 1.3
 
     property real offsetScale: shouldBeActive ? 0 : 1
 
