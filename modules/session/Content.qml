@@ -97,6 +97,7 @@ Row {
         required property list<string> command
 
         readonly property real contentPadding: Tokens.padding.large * root.scaleFactor
+        readonly property real cornerRadius: Tokens.rounding.small * root.scaleFactor
         readonly property real titleWidth: titleLabel.implicitWidth
         readonly property real buttonSize: Math.max(Tokens.sizes.session.button * root.scaleFactor, root.maxTitleWidth + contentPadding * 2, contentColumn.implicitHeight + contentPadding * 2)
 
@@ -111,7 +112,7 @@ Row {
         inactiveColour: activeFocus ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
         inactiveOnColour: activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
         activeOnColour: Colours.palette.m3onPrimary
-        radius: pressed ? Tokens.rounding.medium * root.scaleFactor : activeFocus ? Tokens.rounding.extraLarge * root.scaleFactor : Tokens.rounding.largeIncreased * root.scaleFactor
+        radius: cornerRadius
         onClicked: exec()
 
         Rectangle {
@@ -126,7 +127,7 @@ Row {
 
             implicitWidth: Math.max(height, badgeLabel.implicitWidth + paddingH * 2)
             height: badgeLabel.implicitHeight + paddingV * 2
-            radius: Tokens.rounding.small * root.scaleFactor
+            radius: button.cornerRadius
             color: Qt.alpha(button.onColour, 0.12)
 
             StyledText {
