@@ -96,16 +96,17 @@ Row {
         required property int number
         required property list<string> command
 
-        readonly property real contentPadding: Tokens.padding.medium * root.scaleFactor
+        readonly property real contentPadding: Tokens.padding.large * root.scaleFactor
         readonly property real titleWidth: titleLabel.implicitWidth
+        readonly property real buttonSize: Math.max(Tokens.sizes.session.button * root.scaleFactor, root.maxTitleWidth + contentPadding * 2, contentColumn.implicitHeight + contentPadding * 2)
 
         function exec(): void {
             if (!SessionManager.exec(command))
                 Quickshell.execDetached(command);
         }
 
-        implicitWidth: Math.max(Tokens.sizes.session.button * root.scaleFactor, root.maxTitleWidth + contentPadding * 2)
-        implicitHeight: Math.max(Tokens.sizes.session.button * root.scaleFactor, contentColumn.implicitHeight + contentPadding * 2)
+        implicitWidth: buttonSize
+        implicitHeight: buttonSize
 
         inactiveColour: activeFocus ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
         inactiveOnColour: activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
@@ -121,7 +122,7 @@ Row {
 
             anchors.top: parent.top
             anchors.right: parent.right
-            anchors.margins: Tokens.padding.extraSmall * root.scaleFactor
+            anchors.margins: Tokens.padding.small * root.scaleFactor
 
             implicitWidth: Math.max(height, badgeLabel.implicitWidth + paddingH * 2)
             height: badgeLabel.implicitHeight + paddingV * 2
@@ -134,7 +135,7 @@ Row {
                 anchors.centerIn: parent
                 text: button.number
                 color: button.onColour
-                font: Tokens.font.label.builders.small.scale(root.scaleFactor).build()
+                font: Tokens.font.label.builders.small.scale(root.scaleFactor * 0.8).build()
             }
         }
 
@@ -158,7 +159,7 @@ Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: button.title
                 color: button.onColour
-                font: Tokens.font.body.builders.small.scale(root.scaleFactor).build()
+                font: Tokens.font.body.builders.small.scale(root.scaleFactor * 0.9).build()
             }
         }
 
