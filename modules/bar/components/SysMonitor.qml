@@ -12,6 +12,11 @@ StyledRect {
     id: root
 
     readonly property color colour: Colours.palette.m3tertiary
+    readonly property color alertColour: Colours.palette.m3error
+    readonly property real cpuThreshold: 80
+    readonly property real memoryThreshold: 80
+    readonly property real tempThreshold: 80
+    readonly property real alertHysteresis: 3
     readonly property int padding: Config.bar.sysMonitor.background ? Tokens.padding.medium : Tokens.padding.extraSmall
     readonly property var valueFont: Tokens.font.body.builders.small.scale(1.1).build()
     readonly property var unitFont: Tokens.font.body.builders.small.scale(0.8).build()
@@ -33,6 +38,22 @@ StyledRect {
     readonly property string memoryValue: (root.memoryInGiB ? root.memoryUsedMiB / 1024 : root.memoryUsedMiB).toFixed(1)
     readonly property string memoryUnit: root.memoryInGiB ? "GB" : "MB"
 
+    property bool cpuAlert: false
+    property bool memoryAlert: false
+    property bool tempAlert: false
+
+    function refreshAlerts(): void {
+        const hysteresis = root.alertHysteresis;
+        const cpu = isFinite(Cpu.percentage) ? Cpu.percentage * 100 : 0;
+        const memory = isFinite(Memory.percentage) ? Memory.percentage * 100 : 0;
+        const temp = isFinite(Cpu.temperature) ? Cpu.temperature : 0;
+        root.cpuAlert = root.cpuAlert ? cpu >= root.cpuThreshold - hysteresis : cpu >= root.cpuThreshold;
+        root.memoryAlert = root.memoryAlert ? memory >= root.memoryThreshold - hysteresis : memory >= root.memoryThreshold;
+        root.tempAlert = root.tempAlert ? temp >= root.tempThreshold - hysteresis : temp >= root.tempThreshold;
+    }
+
+    Component.onCompleted: refreshAlerts()
+
     implicitWidth: Tokens.sizes.bar.innerWidth
     implicitHeight: layout.implicitHeight + root.padding * 2
 
@@ -45,6 +66,26 @@ StyledRect {
 
     ServiceRef {
         service: Memory
+    }
+
+    Connections {
+        target: Cpu
+
+        function onPercentageChanged(): void {
+            root.refreshAlerts();
+        }
+
+        function onTemperatureChanged(): void {
+            root.refreshAlerts();
+        }
+    }
+
+    Connections {
+        target: Memory
+
+        function onChanged(): void {
+            root.refreshAlerts();
+        }
     }
 
     ColumnLayout {
@@ -61,6 +102,7 @@ StyledRect {
             icon: "memory"
             value: root.cpuValue
             unit: "%"
+            alert: root.cpuAlert
         }
 
         Separator {
@@ -74,6 +116,7 @@ StyledRect {
             icon: "thermometer"
             value: root.tempValue
             unit: root.tempUnit
+            alert: root.tempAlert
         }
 
         Separator {
@@ -88,6 +131,7 @@ StyledRect {
             iconFont: root.memoryIconFont
             value: root.memoryValue
             unit: root.memoryUnit
+            alert: root.memoryAlert
         }
     }
 
@@ -97,7 +141,10 @@ StyledRect {
         required property string icon
         required property string value
         required property string unit
+        property bool alert: false
         property font iconFont: root.iconFont
+
+        readonly property color metricColour: alert ? root.alertColour : root.colour
 
         Layout.fillWidth: true
         spacing: Tokens.spacing.extraSmall / 2
@@ -107,7 +154,7 @@ StyledRect {
             visible: Config.bar.sysMonitor.showIcons
             horizontalAlignment: Text.AlignHCenter
             text: metric.icon
-            color: root.colour
+            color: metric.metricColour
             fontStyle: metric.iconFont
         }
 
@@ -116,7 +163,7 @@ StyledRect {
             horizontalAlignment: Text.AlignHCenter
             text: metric.value
             font: root.valueFont
-            color: root.colour
+            color: metric.metricColour
         }
 
         StyledText {
@@ -124,7 +171,7 @@ StyledRect {
             horizontalAlignment: Text.AlignHCenter
             text: metric.unit
             font: root.unitFont
-            color: root.colour
+            color: metric.metricColour
         }
     }
 
