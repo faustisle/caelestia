@@ -17,6 +17,7 @@ StyledRect {
     readonly property real memoryThreshold: 80
     readonly property real tempThreshold: 80
     readonly property real alertHysteresis: 3
+    readonly property int cpuSampleWindow: 3
     readonly property int padding: Config.bar.sysMonitor.background ? Tokens.padding.medium : Tokens.padding.extraSmall
     readonly property var valueFont: Tokens.font.body.builders.small.scale(1.1).build()
     readonly property var unitFont: Tokens.font.body.builders.small.scale(0.8).build()
@@ -41,18 +42,29 @@ StyledRect {
     property bool cpuAlert: false
     property bool memoryAlert: false
     property bool tempAlert: false
+    property var cpuSamples: []
+
+    // Average the CPU samples so brief spikes don't flash the alert colour.
+    readonly property real cpuAverage: root.cpuSamples.length > 0 ? root.cpuSamples.reduce((sum, value) => sum + value, 0) / root.cpuSamples.length : 0
+
+    function sampleCpu(): void {
+        const value = isFinite(Cpu.percentage) ? Cpu.percentage * 100 : 0;
+        root.cpuSamples = root.cpuSamples.concat(value).slice(-root.cpuSampleWindow);
+    }
 
     function refreshAlerts(): void {
         const hysteresis = root.alertHysteresis;
-        const cpu = isFinite(Cpu.percentage) ? Cpu.percentage * 100 : 0;
         const memory = isFinite(Memory.percentage) ? Memory.percentage * 100 : 0;
         const temp = isFinite(Cpu.temperature) ? Cpu.temperature : 0;
-        root.cpuAlert = root.cpuAlert ? cpu >= root.cpuThreshold - hysteresis : cpu >= root.cpuThreshold;
+        root.cpuAlert = root.cpuAlert ? root.cpuAverage >= root.cpuThreshold - hysteresis : root.cpuAverage >= root.cpuThreshold;
         root.memoryAlert = root.memoryAlert ? memory >= root.memoryThreshold - hysteresis : memory >= root.memoryThreshold;
         root.tempAlert = root.tempAlert ? temp >= root.tempThreshold - hysteresis : temp >= root.tempThreshold;
     }
 
-    Component.onCompleted: refreshAlerts()
+    Component.onCompleted: {
+        sampleCpu();
+        refreshAlerts();
+    }
 
     implicitWidth: Tokens.sizes.bar.innerWidth
     implicitHeight: layout.implicitHeight + root.padding * 2
@@ -72,6 +84,7 @@ StyledRect {
         target: Cpu
 
         function onPercentageChanged(): void {
+            root.sampleCpu();
             root.refreshAlerts();
         }
 
