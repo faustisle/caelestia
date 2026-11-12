@@ -96,7 +96,7 @@ Row {
         required property int number
         required property list<string> command
 
-        readonly property real contentPadding: Tokens.padding.large * root.scaleFactor
+        readonly property real contentPadding: Tokens.padding.largeIncreased * root.scaleFactor
         readonly property real cornerRadius: Tokens.rounding.largeIncreased * root.scaleFactor
         readonly property real titleWidth: titleLabel.implicitWidth
         readonly property real buttonSize: Math.max(Tokens.sizes.session.button * root.scaleFactor, root.maxTitleWidth + contentPadding * 2, contentColumn.implicitHeight + contentPadding * 2)
@@ -123,11 +123,11 @@ Row {
 
             anchors.top: parent.top
             anchors.right: parent.right
-            anchors.margins: Tokens.padding.small * root.scaleFactor
+            anchors.margins: Tokens.padding.medium * root.scaleFactor
 
             implicitWidth: Math.max(height, badgeLabel.implicitWidth + paddingH * 2)
             height: badgeLabel.implicitHeight + paddingV * 2
-            radius: button.cornerRadius / button.buttonSize * height
+            radius: button.cornerRadius * 0.3
             color: Qt.alpha(button.onColour, 0.12)
 
             StyledText {
@@ -136,7 +136,7 @@ Row {
                 anchors.centerIn: parent
                 text: button.number
                 color: button.onColour
-                font: Tokens.font.label.builders.small.scale(root.scaleFactor * 0.8).build()
+                font: Tokens.font.label.builders.small.scale(root.scaleFactor * 0.75).build()
             }
         }
 
