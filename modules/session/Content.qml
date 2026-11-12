@@ -17,11 +17,25 @@ Row {
     padding: Tokens.padding.large * scaleFactor
     spacing: Tokens.spacing.large * scaleFactor
 
+    readonly property var buttons: [logout, shutdown, hibernate, reboot]
+
+    Keys.onPressed: event => {
+        const blocked = Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier | Qt.ShiftModifier;
+        if ((event.modifiers & blocked) === 0 && event.key >= Qt.Key_1 && event.key <= Qt.Key_4) {
+            const button = root.buttons[event.key - Qt.Key_1];
+            if (button) {
+                button.exec();
+                event.accepted = true;
+            }
+        }
+    }
+
     SessionButton {
         id: logout
 
         icon: Config.session.icons.logout
         title: "Log Out"
+        number: 1
         command: Config.session.commands.logout
 
         KeyNavigation.right: shutdown
@@ -43,6 +57,7 @@ Row {
 
         icon: Config.session.icons.shutdown
         title: "Shutdown"
+        number: 2
         command: Config.session.commands.shutdown
 
         KeyNavigation.left: logout
@@ -54,6 +69,7 @@ Row {
 
         icon: Config.session.icons.hibernate
         title: "Hibernate"
+        number: 3
         command: Config.session.commands.hibernate
 
         KeyNavigation.left: shutdown
@@ -65,6 +81,7 @@ Row {
 
         icon: Config.session.icons.reboot
         title: "Restart"
+        number: 4
         command: Config.session.commands.reboot
 
         KeyNavigation.left: hibernate
@@ -75,6 +92,7 @@ Row {
 
         required property string icon
         required property string title
+        required property int number
         required property list<string> command
 
         function exec(): void {
@@ -90,6 +108,28 @@ Row {
         activeOnColour: Colours.palette.m3onPrimary
         radius: pressed ? Tokens.rounding.medium * root.scaleFactor : activeFocus ? Tokens.rounding.extraLarge * root.scaleFactor : Tokens.rounding.largeIncreased * root.scaleFactor
         onClicked: exec()
+
+        Rectangle {
+            readonly property real badgePadding: Tokens.padding.extraSmall * root.scaleFactor / 2
+
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.margins: Tokens.padding.extraSmall * root.scaleFactor
+
+            implicitWidth: Math.max(height, badgeLabel.implicitWidth + badgePadding * 2)
+            height: badgeLabel.implicitHeight + badgePadding
+            radius: height / 2
+            color: Qt.alpha(button.onColour, 0.12)
+
+            StyledText {
+                id: badgeLabel
+
+                anchors.centerIn: parent
+                text: button.number
+                color: button.onColour
+                font: Tokens.font.label.builders.small.weight(Font.Medium).scale(root.scaleFactor * 0.8).build()
+            }
+        }
 
         Column {
             anchors.centerIn: parent
