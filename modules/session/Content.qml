@@ -21,6 +21,7 @@ Row {
         id: logout
 
         icon: Config.session.icons.logout
+        title: "Log Out"
         command: Config.session.commands.logout
 
         KeyNavigation.right: shutdown
@@ -41,6 +42,7 @@ Row {
         id: shutdown
 
         icon: Config.session.icons.shutdown
+        title: "Shutdown"
         command: Config.session.commands.shutdown
 
         KeyNavigation.left: logout
@@ -51,6 +53,7 @@ Row {
         id: hibernate
 
         icon: Config.session.icons.hibernate
+        title: "Hibernate"
         command: Config.session.commands.hibernate
 
         KeyNavigation.left: shutdown
@@ -61,14 +64,17 @@ Row {
         id: reboot
 
         icon: Config.session.icons.reboot
+        title: "Restart"
         command: Config.session.commands.reboot
 
         KeyNavigation.left: hibernate
     }
 
-    component SessionButton: IconButton {
+    component SessionButton: ButtonBase {
         id: button
 
+        required property string icon
+        required property string title
         required property list<string> command
 
         function exec(): void {
@@ -81,9 +87,29 @@ Row {
 
         inactiveColour: activeFocus ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
         inactiveOnColour: activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
+        activeOnColour: Colours.palette.m3onPrimary
         radius: pressed ? Tokens.rounding.medium * root.scaleFactor : activeFocus ? Tokens.rounding.extraLarge * root.scaleFactor : Tokens.rounding.largeIncreased * root.scaleFactor
-        font: Tokens.font.icon.builders.large.scale(1.3 * root.scaleFactor).build()
         onClicked: exec()
+
+        Column {
+            anchors.centerIn: parent
+            spacing: Tokens.spacing.extraSmall * root.scaleFactor
+
+            MaterialIcon {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: button.icon
+                color: button.onColour
+                fontStyle: Tokens.font.icon.builders.large.scale(1.3 * root.scaleFactor).build()
+                fill: 1
+            }
+
+            StyledText {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: button.title
+                color: button.onColour
+                font: Tokens.font.label.builders.medium.scale(root.scaleFactor).build()
+            }
+        }
 
         Keys.onEnterPressed: exec()
         Keys.onReturnPressed: exec()
