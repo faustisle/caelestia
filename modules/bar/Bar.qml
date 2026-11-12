@@ -19,6 +19,16 @@ ColumnLayout {
     required property bool fullscreen
     readonly property int vPadding: Tokens.padding.large
 
+    // Panel launcher button, used to anchor the regular launcher to its corner.
+    readonly property Item launcherButton: {
+        for (let i = 0; i < repeater.count; i++) {
+            const entry = repeater.itemAt(i);
+            if (entry?.entryId === "logo")
+                return entry.item;
+        }
+        return null;
+    }
+
     function closeTray(): void {
         if (!Config.bar.tray.compact)
             return;

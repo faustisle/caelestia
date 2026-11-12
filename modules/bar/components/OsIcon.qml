@@ -16,6 +16,8 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             const screenState = ShellState.forActive();
+            if (!screenState.launcher)
+                screenState.launcherRegular = true;
             screenState.launcher = !screenState.launcher;
         }
     }

@@ -30,6 +30,8 @@ Scope {
             if (root.hasFullscreen)
                 return;
             const v = ShellState.forActive();
+            if (!v.launcher)
+                v.launcherRegular = false;
             v.launcher = v.osd = v.utilities = !(v.launcher || v.osd || v.utilities);
         }
     }
@@ -56,6 +58,8 @@ Scope {
         onReleased: {
             if (!root.launcherInterrupted && !root.hasFullscreen) {
                 const screenState = ShellState.forActive();
+                if (!screenState.launcher)
+                    screenState.launcherRegular = false;
                 screenState.launcher = !screenState.launcher;
             }
             root.launcherInterrupted = false;
@@ -102,6 +106,8 @@ Scope {
                 if (root.hasFullscreen && ["launcher", "session"].includes(drawer))
                     return;
                 const screenState = ShellState.forActive();
+                if (drawer === "launcher" && !screenState.launcher)
+                    screenState.launcherRegular = false;
                 screenState[drawer] = !screenState[drawer];
             } else {
                 console.warn(lc, `Drawer "${drawer}" does not exist`);

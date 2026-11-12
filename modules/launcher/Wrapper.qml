@@ -13,12 +13,18 @@ Item {
     required property ShellScreen screen
     required property ScreenState screenState
     required property var panels
+    required property var bar
 
     readonly property bool shouldBeActive: screenState.launcher && Config.launcher.enabled
-    readonly property bool spotlight: Config.launcher.spotlight
+    readonly property bool spotlight: Config.launcher.spotlight && !screenState.launcherRegular
     readonly property Item searchBar: content.item?.searchBar ?? null
 
-    readonly property real maxHeight: screen.height - Config.border.thickness * 2 + Tokens.padding.extraLarge;
+    // Anchor the regular launcher to the panel launcher button instead of
+    // hardcoding a screen corner, so it follows a movable bar.
+    readonly property Item button: bar?.launcherButton ?? null
+    readonly property real regularTopMargin: root.button && root.parent ? root.button.mapToItem(root.parent, 0, 0).y : 0
+
+    readonly property real maxHeight: screen.height - Config.border.thickness * 2 + Tokens.padding.extraLarge
 
     // Sit a third of the way down the screen while results grow downwards from the search bar
     readonly property real spotlightTopMargin: {
@@ -36,9 +42,9 @@ Item {
     }
 
     visible: offsetScale < 1
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottomMargin: spotlight ? 0 : (-implicitHeight - 5) * offsetScale
-    anchors.topMargin: spotlight ? spotlightTopMargin + Tokens.spacing.small * offsetScale : 0
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.topMargin: (spotlight ? spotlightTopMargin : regularTopMargin) + Tokens.spacing.small * offsetScale
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth || 630 // Hard coded fallback for first open
     opacity: 1 - offsetScale
@@ -54,8 +60,8 @@ Item {
 
             AnchorChanges {
                 target: root
-                anchors.top: undefined
-                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.horizontalCenter: undefined
             }
         },
         State {
@@ -64,8 +70,8 @@ Item {
 
             AnchorChanges {
                 target: root
-                anchors.bottom: undefined
-                anchors.top: parent.top
+                anchors.left: undefined
+                anchors.horizontalCenter: parent.horizontalCenter
             }
         }
     ]
@@ -119,6 +125,7 @@ Item {
         sourceComponent: Content {
             screenState: root.screenState
             panels: root.panels
+            spotlight: root.spotlight
             maxHeight: root.maxHeight
         }
     }

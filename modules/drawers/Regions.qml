@@ -14,7 +14,6 @@ Region {
 
     readonly property real borderThickness: win.contentItem.Config.border.thickness
     readonly property real clampedThickness: win.contentItem.Config.border.clampedThickness
-    readonly property bool spotlight: win.contentItem.Config.launcher.spotlight
 
     x: bar.clampedWidth + win.dragMaskPadding
     y: clampedThickness + win.dragMaskPadding
@@ -24,7 +23,7 @@ Region {
 
     R {
         panel: root.panels.launcher
-        y: root.spotlight ? panel.y + root.borderThickness + (panel.height * root.panels.launcher.offsetScale) / 2 : root.win.height - height
+        y: panel.y + root.borderThickness + (panel.height * root.panels.launcher.offsetScale) / 2
         height: panel.height * (1 - root.panels.launcher.offsetScale) + root.borderThickness
     }
 

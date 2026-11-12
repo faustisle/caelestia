@@ -22,6 +22,7 @@ Item {
     readonly property int contentWidth: Tokens.sizes.bar.innerWidth + padding * 2
     readonly property int exclusiveZone: !disabled && (Config.bar.persistent || screenState.bar) ? contentWidth : Config.border.thickness
     readonly property bool shouldBeVisible: !fullscreen && !disabled && (Config.bar.persistent || screenState.bar || isHovered)
+    readonly property Item launcherButton: (content.item as Bar)?.launcherButton ?? null
     property bool isHovered
 
     function closeTray(): void {

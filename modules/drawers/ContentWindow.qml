@@ -181,7 +181,7 @@ StyledWindow {
         PanelBg {
             id: launcherBg
 
-            readonly property bool spotlight: Config.launcher.spotlight
+            readonly property bool spotlight: panels.launcher.spotlight
 
             panel: panels.launcher
             deformAmount: 0.1

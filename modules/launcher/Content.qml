@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Caelestia
 import Caelestia.Config
 import Caelestia.I18n
 import qs.components
@@ -15,12 +14,12 @@ Item {
     required property ScreenState screenState
     required property var panels
     required property real maxHeight
+    required property bool spotlight
 
     readonly property int padding: Tokens.padding.large
     readonly property int rounding: Tokens.rounding.extraLarge
 
     readonly property alias searchBar: search
-    readonly property bool spotlight: Config.launcher.spotlight
     readonly property bool showResults: !spotlight || spotlightResults
 
     // Offset from the top of the launcher to the centre of the search bar.
@@ -38,40 +37,7 @@ Item {
     onSpotlightChanged: syncSpotlightResults()
 
     implicitWidth: listWrapper.width + padding * 2
-    implicitHeight: spotlight ? padding * 2 + search.height + listWrapper.height : search.height + listWrapper.height + padding + search.anchors.bottomMargin
-
-    states: [
-        State {
-            name: "regular"
-            when: !root.spotlight
-
-            AnchorChanges {
-                target: listWrapper
-                anchors.top: undefined
-                anchors.bottom: search.top
-            }
-            AnchorChanges {
-                target: search
-                anchors.top: undefined
-                anchors.bottom: parent.bottom
-            }
-        },
-        State {
-            name: "spotlight"
-            when: root.spotlight
-
-            AnchorChanges {
-                target: listWrapper
-                anchors.bottom: undefined
-                anchors.top: search.bottom
-            }
-            AnchorChanges {
-                target: search
-                anchors.bottom: undefined
-                anchors.top: parent.top
-            }
-        }
-    ]
+    implicitHeight: padding * 2 + search.height + listWrapper.height
 
     Item {
         id: listWrapper
@@ -88,7 +54,7 @@ Item {
         clip: root.spotlight
 
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottomMargin: root.padding
+        anchors.top: search.bottom
         anchors.topMargin: root.padding
 
         Behavior on reveal {
@@ -118,8 +84,8 @@ Item {
 
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.top: parent.top
         anchors.margins: root.padding
-        anchors.bottomMargin: CUtils.clamp(root.padding - Config.border.thickness, 0, root.padding)
 
         topPadding: Math.round((Tokens.padding.medium + Tokens.padding.large) / 2)
         bottomPadding: Math.round((Tokens.padding.medium + Tokens.padding.large) / 2)
