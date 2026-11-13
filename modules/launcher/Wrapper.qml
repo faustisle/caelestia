@@ -13,16 +13,10 @@ Item {
     required property ShellScreen screen
     required property ScreenState screenState
     required property var panels
-    required property var bar
 
     readonly property bool shouldBeActive: screenState.launcher && Config.launcher.enabled
     readonly property bool spotlight: Config.launcher.spotlight && !screenState.launcherRegular
     readonly property Item searchBar: content.item?.searchBar ?? null
-
-    // Anchor the regular launcher to the panel launcher button instead of
-    // hardcoding a screen corner, so it follows a movable bar.
-    readonly property Item button: bar?.launcherButton ?? null
-    readonly property real regularTopMargin: root.button && root.parent ? root.button.mapToItem(root.parent, 0, 0).y : 0
 
     readonly property real maxHeight: screen.height - Config.border.thickness * 2 + Tokens.padding.extraLarge
 
@@ -44,7 +38,9 @@ Item {
     visible: offsetScale < 1
     anchors.top: parent.top
     anchors.left: parent.left
-    anchors.topMargin: (spotlight ? spotlightTopMargin : regularTopMargin) + Tokens.spacing.small * offsetScale
+    // Regular mode is attached to the panel top and pops out of the bar like
+    // the other drawers. Spotlight keeps its small offset while centred.
+    anchors.topMargin: spotlight ? spotlightTopMargin + Tokens.spacing.small * offsetScale : (-implicitHeight - 5) * offsetScale
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth || 630 // Hard coded fallback for first open
     opacity: 1 - offsetScale

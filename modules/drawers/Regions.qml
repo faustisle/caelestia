@@ -23,10 +23,9 @@ Region {
 
     R {
         panel: root.panels.launcher
-        y: panel.y + root.borderThickness + (panel.height * root.panels.launcher.offsetScale) / 2
         // A closed launcher must not contribute any clickable area, otherwise
         // its last size leaves an invisible strip that steals clicks.
-        height: panel.visible ? panel.height * (1 - root.panels.launcher.offsetScale) + root.borderThickness : 0
+        height: panel.visible ? panel.height : 0
     }
 
     R {
