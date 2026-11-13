@@ -69,6 +69,10 @@ CustomMouseArea {
     hoverEnabled: true
 
     onPressed: event => dragStart = Qt.point(event.x, event.y)
+    onClicked: event => {
+        if (event.x < bar.implicitWidth)
+            bar.togglePopout(event.y);
+    }
     onContainsMouseChanged: {
         if (!containsMouse) {
             // Only hide if not activated by shortcut

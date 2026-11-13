@@ -68,15 +68,32 @@ ColumnLayout {
                 popouts.hasCurrent = false;
                 tray.expanded = true;
             }
-        } else if (id === "clock" && Config.bar.popouts.clock) {
-            popouts.currentName = "calendar";
-            popouts.currentCenter = Qt.binding(() => ch.mapToItem(root, ch.width / 2, ch.height / 2).y);
-            popouts.hasCurrent = true;
-        } else if (id === "sysmon" && Config.bar.popouts.sysMonitor) {
-            popouts.currentName = "sysMonitor";
-            popouts.currentCenter = Qt.binding(() => ch.mapToItem(root, ch.width / 2, ch.height / 2).y);
-            popouts.hasCurrent = true;
         }
+    }
+
+    // Clock and system monitor popouts are click-only so hovering the bar for
+    // scrolling volume/brightness does not keep opening them.
+    function togglePopout(y: real): void {
+        const ch = childAt(width / 2, y) as EntryWrapper;
+        if (!ch)
+            return;
+
+        let name = "";
+        if (ch.entryId === "clock" && Config.bar.popouts.clock)
+            name = "calendar";
+        else if (ch.entryId === "sysmon" && Config.bar.popouts.sysMonitor)
+            name = "sysMonitor";
+        else
+            return;
+
+        if (popouts.hasCurrent && popouts.currentName === name) {
+            popouts.hasCurrent = false;
+            return;
+        }
+
+        popouts.currentName = name;
+        popouts.currentCenter = Qt.binding(() => ch.mapToItem(root, ch.width / 2, ch.height / 2).y);
+        popouts.hasCurrent = true;
     }
 
     function handleWheel(y: real, angleDelta: point): void {
