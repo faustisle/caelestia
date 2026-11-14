@@ -11,6 +11,8 @@ import qs.services
 StyledRect {
     id: root
 
+    required property bool horizontal
+
     readonly property color colour: Colours.palette.m3tertiary
     readonly property color alertColour: Colours.palette.m3error
     readonly property real cpuThreshold: 80
@@ -68,8 +70,8 @@ StyledRect {
         refreshAlerts();
     }
 
-    implicitWidth: Tokens.sizes.bar.innerWidth
-    implicitHeight: layout.implicitHeight + root.padding * 2
+    implicitWidth: horizontal ? layout.implicitWidth + root.padding * 2 : Tokens.sizes.bar.innerWidth
+    implicitHeight: horizontal ? Tokens.sizes.bar.innerWidth : layout.implicitHeight + root.padding * 2
 
     color: Qt.alpha(Colours.tPalette.m3surfaceContainer, Config.bar.sysMonitor.background ? Colours.tPalette.m3surfaceContainer.a : 0)
     radius: Tokens.rounding.full
@@ -103,12 +105,14 @@ StyledRect {
         }
     }
 
-    ColumnLayout {
+    GridLayout {
         id: layout
 
         anchors.fill: parent
         anchors.margins: root.padding
-        spacing: Tokens.spacing.medium
+        columns: root.horizontal ? -1 : 1
+        rowSpacing: Tokens.spacing.medium
+        columnSpacing: Tokens.spacing.medium
 
         Metric {
             id: cpuMetric
@@ -150,7 +154,7 @@ StyledRect {
         }
     }
 
-    component Metric: ColumnLayout {
+    component Metric: GridLayout {
         id: metric
 
         required property string icon
@@ -161,11 +165,15 @@ StyledRect {
 
         readonly property color metricColour: alert ? root.alertColour : root.colour
 
-        Layout.fillWidth: true
-        spacing: Tokens.spacing.extraSmall / 2
+        Layout.fillWidth: !root.horizontal
+        Layout.fillHeight: root.horizontal
+        columns: root.horizontal ? -1 : 1
+        rowSpacing: Tokens.spacing.extraSmall / 2
+        columnSpacing: Tokens.spacing.extraSmall / 2
 
         MaterialIcon {
-            Layout.fillWidth: true
+            Layout.fillWidth: !root.horizontal
+            Layout.alignment: root.horizontal ? Qt.AlignVCenter : Qt.AlignHCenter
             visible: Config.bar.sysMonitor.showIcons
             horizontalAlignment: Text.AlignHCenter
             text: metric.icon
@@ -174,7 +182,8 @@ StyledRect {
         }
 
         StyledText {
-            Layout.fillWidth: true
+            Layout.fillWidth: !root.horizontal
+            Layout.alignment: root.horizontal ? Qt.AlignVCenter : Qt.AlignHCenter
             horizontalAlignment: Text.AlignHCenter
             text: metric.value
             font: root.valueFont
@@ -182,7 +191,8 @@ StyledRect {
         }
 
         StyledText {
-            Layout.fillWidth: true
+            Layout.fillWidth: !root.horizontal
+            Layout.alignment: root.horizontal ? Qt.AlignVCenter : Qt.AlignHCenter
             horizontalAlignment: Text.AlignHCenter
             text: metric.unit
             font: root.unitFont
@@ -191,9 +201,9 @@ StyledRect {
     }
 
     component Separator: StyledRect {
-        Layout.alignment: Qt.AlignHCenter
-        implicitWidth: 15          // tune
-        implicitHeight: 1
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        implicitWidth: root.horizontal ? 1 : 15          // tune
+        implicitHeight: root.horizontal ? 15 : 1
         color: Colours.palette.m3outlineVariant
     }
 }

@@ -486,6 +486,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         }
     },
     "bar": {
+        "position": "left",
         "persistent": true,
         "showOnHover": true,
         "dragThreshold": 20,

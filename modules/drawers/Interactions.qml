@@ -15,6 +15,7 @@ CustomMouseArea {
     required property ScreenState screenState
     required property Panels panels
     required property Bar.BarWrapper bar
+    required property EdgeGeometry geometry
     required property real borderThickness
     required property bool fullscreen
 
@@ -24,43 +25,62 @@ CustomMouseArea {
     property bool sidebarShortcutActive
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
-        const panelY = root.borderThickness + panel.y;
+        const panelY = geometry.insetTop(borderThickness) + panel.y;
         return y >= panelY - Config.border.rounding && y <= panelY + panel.height + Config.border.rounding;
     }
 
     function withinPanelWidth(panel: Item, x: real, y: real): bool {
-        const panelX = bar.implicitWidth + panel.x;
+        const panelX = geometry.insetLeft(borderThickness) + panel.x;
         return x >= panelX - Config.border.rounding && x <= panelX + panel.width + Config.border.rounding;
     }
 
     function inLeftPanel(panel: Item, x: real, y: real): bool {
-        return x < bar.implicitWidth + panel.x + panel.width && withinPanelHeight(panel, x, y);
+        return x < geometry.insetLeft(borderThickness) + panel.x + panel.width && withinPanelHeight(panel, x, y);
+    }
+
+    // A vertical bar's popout starts at the screen edge, so a one-sided bound is enough for it.
+    // A horizontal bar's is centred on the hovered entry, so it needs bounding on both sides.
+    function inPopoutArea(x: real, y: real): bool {
+        const panel = panels.popoutsWrapper;
+        if (!geometry.horizontal)
+            return inLeftPanel(panel, x, y);
+        return withinPanelWidth(panel, x, y) && withinPanelHeight(panel, x, y);
     }
 
     function inRightPanel(panel: Item, x: real, y: real): bool {
-        return x > Math.min(width - Config.border.minThickness, bar.implicitWidth + panel.x) && withinPanelHeight(panel, x, y);
+        return x > Math.min(width - Config.border.minThickness, geometry.insetLeft(borderThickness) + panel.x) && withinPanelHeight(panel, x, y);
+    }
+
+    // The volume/brightness OSD normally hugs the right edge. When the bar sits on the
+    // right it moves to the left so the two do not overlap.
+    function inOsdArea(x: real, y: real): bool {
+        if (geometry.barOnRight) {
+            const panel = panels.osdWrapper;
+            return x < geometry.insetLeft(borderThickness) + panel.x + panel.width && withinPanelHeight(panel, x, y);
+        }
+        return inRightPanel(panels.osdWrapper, x, y);
     }
 
     function inTopPanel(panel: Item, x: real, y: real): bool {
         const panelHeight = panel.height * (1 - (panel.offsetScale ?? 0)); // qmllint disable missing-property
-        return y < Math.max(Config.border.minThickness, Config.border.thickness + panelHeight) && withinPanelWidth(panel, x, y);
+        return y < Math.max(Config.border.minThickness, geometry.insetTop(Config.border.thickness) + panelHeight) && withinPanelWidth(panel, x, y);
     }
 
     function inBottomPanel(panel: Item, x: real, y: real, isCorner = false): bool {
         const panelHeight = panel.height * (1 - (panel.offsetScale ?? 0)); // qmllint disable missing-property
-        return y > height - Math.max(Config.border.minThickness, Config.border.thickness + panelHeight) - (isCorner ? Config.border.rounding : 0) && withinPanelWidth(panel, x, y);
+        return y > height - Math.max(Config.border.minThickness, geometry.insetBottom(Config.border.thickness) + panelHeight) - (isCorner ? Config.border.rounding : 0) && withinPanelWidth(panel, x, y);
     }
 
     function inSidebarHoverTrigger(x: real, y: real): bool {
         const triggerY = Math.max(Config.sidebar.minHoverThreshold, panels.utilities.y + panels.utilities.height + borderThickness);
-        return x > Math.min(width - Config.border.minThickness, bar.implicitWidth + panels.sidebar.x) && y <= triggerY;
+        return x > Math.min(width - Config.border.minThickness, geometry.insetLeft(borderThickness) + panels.sidebar.x) && y <= triggerY;
     }
 
     function onWheel(event: WheelEvent): void {
         if (fullscreen)
             return;
-        if (event.x < bar.implicitWidth) {
-            bar.handleWheel(event.y, event.angleDelta);
+        if (geometry.barContains(event.x, event.y)) {
+            bar.handleWheel(geometry.axisPos(event.x, event.y), event.angleDelta);
         }
     }
 
@@ -70,8 +90,8 @@ CustomMouseArea {
 
     onPressed: event => dragStart = Qt.point(event.x, event.y)
     onClicked: event => {
-        if (event.x < bar.implicitWidth)
-            bar.togglePopout(event.y);
+        if (geometry.barContains(event.x, event.y))
+            bar.togglePopout(geometry.axisPos(event.x, event.y));
     }
     onContainsMouseChanged: {
         if (!containsMouse) {
@@ -107,25 +127,26 @@ CustomMouseArea {
         const dragY = y - dragStart.y;
 
         if (fullscreen) {
-            root.panels.osd.hovered = inRightPanel(panels.osdWrapper, x, y);
+            root.panels.osd.hovered = inOsdArea(x, y);
             return;
         }
 
         // Show bar in non-exclusive mode on hover
-        if (!screenState.bar && Config.bar.showOnHover && x < bar.clampedWidth)
+        if (!screenState.bar && Config.bar.showOnHover && geometry.barContains(x, y, true))
             bar.isHovered = true;
 
         // Show/hide bar on drag
-        if (pressed && dragStart.x < bar.clampedWidth) {
-            if (dragX > Config.bar.dragThreshold)
+        if (pressed && geometry.barContains(dragStart.x, dragStart.y, true)) {
+            const barDrag = geometry.inwardDrag(dragX, dragY);
+            if (barDrag > Config.bar.dragThreshold)
                 screenState.bar = true;
-            else if (dragX < -Config.bar.dragThreshold)
+            else if (barDrag < -Config.bar.dragThreshold)
                 screenState.bar = false;
         }
 
         if (panels.sidebar.offsetScale === 1) {
             // Show osd on hover
-            const showOsd = inRightPanel(panels.osdWrapper, x, y);
+            const showOsd = inOsdArea(x, y);
 
             // Always update visibility based on hover if not in shortcut mode
             if (!osdShortcutActive) {
@@ -139,7 +160,7 @@ CustomMouseArea {
         } else {
             const outOfSidebar = x < width - panels.sidebar.width * (1 - panels.sidebar.offsetScale);
             // Show osd on hover
-            const showOsd = outOfSidebar && inRightPanel(panels.osdWrapper, x, y);
+            const showOsd = outOfSidebar && inOsdArea(x, y);
 
             // Always update visibility based on hover if not in shortcut mode
             if (!osdShortcutActive) {
@@ -170,19 +191,36 @@ CustomMouseArea {
 
         // Show launcher on hover, or show/hide on drag if hover is disabled
         if (Config.launcher.showOnHover) {
-            if (!screenState.launcher && inBottomPanel(panels.launcher, x, y))
+            if (!screenState.launcher && inBottomPanel(panels.launcher, x, y) && !(geometry.barOnBottom && geometry.barContains(x, y)))
                 screenState.launcher = true;
-        } else if (pressed && inBottomPanel(panels.launcher, dragStart.x, dragStart.y) && withinPanelWidth(panels.launcher, x, y)) {
+        } else if (pressed && inBottomPanel(panels.launcher, dragStart.x, dragStart.y) && !(geometry.barOnBottom && geometry.barContains(dragStart.x, dragStart.y)) && withinPanelWidth(panels.launcher, x, y)) {
             if (dragY < -Config.launcher.dragThreshold)
                 screenState.launcher = true;
             else if (dragY > Config.launcher.dragThreshold)
                 screenState.launcher = false;
         }
 
+        // Show utilities on hover; on a bottom bar it rides the power entry instead of an edge zone
+        let showUtilities;
+        if (geometry.barOnBottom) {
+            const entry = geometry.barContains(x, y) ? bar.entryAt(geometry.axisPos(x, y)) : "";
+            showUtilities = entry === "power" || (screenState.utilities && !entry && inBottomPanel(panels.utilities, x, y, true));
+        } else {
+            showUtilities = inBottomPanel(panels.utilities, x, y, true);
+        }
+
+        // Always update visibility based on hover if not in shortcut mode
+        if (!utilitiesShortcutActive) {
+            screenState.utilities = showUtilities;
+        } else if (showUtilities) {
+            // If hovering over utilities area while in shortcut mode, transition to hover control
+            utilitiesShortcutActive = false;
+        }
+
         // Show popouts on hover
-        if (x < bar.implicitWidth) {
-            bar.checkPopout(y);
-        } else if ((!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) && !inLeftPanel(panels.popoutsWrapper, x, y)) {
+        if (geometry.barContains(x, y)) {
+            bar.checkPopout(geometry.axisPos(x, y));
+        } else if ((!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) && !inPopoutArea(x, y)) {
             popouts.hasCurrent = false;
             bar.closeTray();
         }
@@ -198,7 +236,7 @@ CustomMouseArea {
                 root.sidebarShortcutActive = false;
 
                 // Also hide OSD if it's not being hovered
-                const inOsdArea = root.inRightPanel(root.panels.osdWrapper, root.mouseX, root.mouseY);
+                const inOsdArea = root.inOsdArea(root.mouseX, root.mouseY);
 
                 if (!inOsdArea) {
                     root.screenState.osd = false;
@@ -210,7 +248,7 @@ CustomMouseArea {
         function onOsdChanged() {
             if (root.screenState.osd) {
                 // OSD became visible, immediately check if this should be shortcut mode
-                const inOsdArea = root.inRightPanel(root.panels.osdWrapper, root.mouseX, root.mouseY);
+                const inOsdArea = root.inOsdArea(root.mouseX, root.mouseY);
                 if (!inOsdArea) {
                     root.osdShortcutActive = true;
                 }

@@ -23,6 +23,7 @@ Item {
     required property int displayType
     required property bool showWindows
     required property var iconRules
+    required property bool horizontal
     property string activeLabel
     property string occupiedLabel
     property string label
@@ -59,9 +60,11 @@ Item {
             shape.shape = Qt.binding(() => isOccupied ? MaterialShape.Square : MaterialShape.Circle);
     }
 
-    anchors.horizontalCenter: parent?.horizontalCenter
-    LazyListView.preferredHeight: LazyListView.removing ? 0 : layout.implicitHeight + (hasWindows ? Tokens.padding.extraSmall : 0)
-    LazyListView.visibleHeight: LazyListView.preferredHeight
+    anchors.horizontalCenter: horizontal ? undefined : parent?.horizontalCenter
+    LazyListView.preferredHeight: horizontal ? -1 : (LazyListView.removing ? 0 : layout.implicitHeight + (hasWindows ? Tokens.padding.extraSmall : 0))
+    LazyListView.visibleHeight: horizontal ? -1 : LazyListView.preferredHeight
+    LazyListView.preferredWidth: horizontal ? (LazyListView.removing ? 0 : layout.implicitWidth + (hasWindows ? Tokens.padding.extraSmall : 0)) : -1
+    LazyListView.visibleWidth: horizontal ? LazyListView.preferredWidth : -1
 
     opacity: LazyListView.removing || LazyListView.adding ? 0 : 1
 
@@ -69,11 +72,31 @@ Item {
     Component.onCompleted: updateShape()
 
     Behavior on LazyListView.visibleHeight {
+        enabled: !root.horizontal
+
+        Anim {}
+    }
+
+    Behavior on LazyListView.visibleWidth {
+        enabled: root.horizontal
+
         Anim {}
     }
 
     Behavior on y {
-        enabled: root.LazyListView.ready
+        enabled: root.LazyListView.ready && !root.horizontal
+
+        Anim {}
+    }
+
+    Behavior on x {
+        enabled: root.LazyListView.ready && root.horizontal
+
+        Anim {}
+    }
+
+    Behavior on width {
+        enabled: root.horizontal
 
         Anim {}
     }
@@ -172,17 +195,20 @@ Item {
         }
     }
 
-    ColumnLayout {
+    GridLayout {
         id: layout
 
         anchors.fill: parent
-        spacing: 0
+        columns: root.horizontal ? -1 : 1
+        rowSpacing: 0
+        columnSpacing: 0
 
         Loader {
             id: indicator
 
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-            Layout.preferredHeight: Tokens.sizes.bar.innerWidth - Tokens.padding.small
+            Layout.alignment: root.horizontal ? Qt.AlignVCenter | Qt.AlignLeft : Qt.AlignHCenter | Qt.AlignTop
+            Layout.preferredWidth: root.horizontal ? Tokens.sizes.bar.innerWidth - Tokens.padding.small : -1
+            Layout.preferredHeight: root.horizontal ? -1 : Tokens.sizes.bar.innerWidth - Tokens.padding.small
             sourceComponent: {
                 if (root.displayType === BarWorkspaceDisplay.Icons)
                     return iconLoaderComponent;
@@ -199,16 +225,21 @@ Item {
 
             asynchronous: true
 
-            Layout.fillWidth: true
-            Layout.topMargin: -Tokens.spacing.extraSmall / 2
-            Layout.preferredHeight: root.hasWindows && item ? (item as LazyListView).layoutHeight : 0
+            Layout.fillWidth: !root.horizontal
+            Layout.fillHeight: root.horizontal
+            Layout.leftMargin: root.horizontal ? -Tokens.spacing.extraSmall / 2 : 0
+            Layout.topMargin: root.horizontal ? 0 : -Tokens.spacing.extraSmall / 2
+            Layout.preferredWidth: root.horizontal ? (root.hasWindows && item ? (item as LazyListView).layoutWidth : 0) : -1
+            Layout.preferredHeight: root.horizontal ? -1 : (root.hasWindows && item ? (item as LazyListView).layoutHeight : 0)
 
             visible: active
             active: root.showWindows && Config.bar.workspaces.maxWindowIcons > 0
 
             sourceComponent: LazyListView {
+                horizontal: root.horizontal
                 spacing: 0
-                implicitHeight: contentHeight
+                implicitWidth: root.horizontal ? contentWidth : -1
+                implicitHeight: root.horizontal ? -1 : contentHeight
                 cullDelegates: false
                 removeDuration: Tokens.anim.durations.expressiveDefaultEffects
 
@@ -239,7 +270,15 @@ Item {
                         }
                     }
 
+                    Behavior on x {
+                        enabled: root.horizontal
+
+                        Anim {}
+                    }
+
                     Behavior on y {
+                        enabled: !root.horizontal
+
                         Anim {}
                     }
                 }

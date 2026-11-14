@@ -15,6 +15,7 @@ ClipRect {
 
     required property ShellScreen screen
     required property bool fullscreen
+    required property bool horizontal
 
     readonly property HyprlandMonitor monitor: Hypr.monitorFor(screen)
     readonly property bool onSpecial: monitor?.lastIpcObject.specialWorkspace?.name !== ""
@@ -65,8 +66,8 @@ ClipRect {
         return index % shown;
     }
 
-    implicitWidth: Tokens.sizes.bar.innerWidth
-    implicitHeight: workspaces.layoutHeight + workspaces.anchors.margins * 2
+    implicitWidth: horizontal ? workspaces.layoutWidth + workspaces.anchors.margins * 2 : Tokens.sizes.bar.innerWidth
+    implicitHeight: horizontal ? Tokens.sizes.bar.innerWidth : workspaces.layoutHeight + workspaces.anchors.margins * 2
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.full
@@ -95,6 +96,7 @@ ClipRect {
             sourceComponent: OccupiedBg {
                 workspaces: root.workspaces
                 wsSpacing: workspaces.spacing
+                horizontal: root.horizontal
             }
 
             Behavior on opacity {
@@ -107,11 +109,14 @@ ClipRect {
         LazyListView {
             id: workspaces
 
+            horizontal: root.horizontal
             anchors.left: parent.left
-            anchors.right: parent.right
+            anchors.right: root.horizontal ? undefined : parent.right
             anchors.top: parent.top
+            anchors.bottom: root.horizontal ? parent.bottom : undefined
             anchors.margins: Tokens.padding.extraSmall
-            implicitHeight: contentHeight
+            implicitWidth: root.horizontal ? contentWidth : -1
+            implicitHeight: root.horizontal ? -1 : contentHeight
 
             spacing: Tokens.spacing.extraSmall
             removeDuration: Tokens.anim.durations.expressiveDefaultEffects
@@ -121,6 +126,7 @@ ClipRect {
             }
 
             delegate: Workspace {
+                horizontal: root.horizontal
                 activeWsId: root.activeWsId
                 ws: Config.bar.workspaces.showUnoccupied ? root.groupOffset + index + 1 : modelData
                 monitor: root.monitor
@@ -145,6 +151,7 @@ ClipRect {
             sourceComponent: GapMarkers {
                 workspaces: root.workspaces
                 wsSpacing: workspaces.spacing
+                horizontal: root.horizontal
             }
 
             Behavior on opacity {
@@ -156,11 +163,14 @@ ClipRect {
 
         Loader {
             asynchronous: true
-            anchors.left: workspaces.left
-            anchors.right: workspaces.right
+            anchors.left: root.horizontal ? undefined : workspaces.left
+            anchors.right: root.horizontal ? undefined : workspaces.right
+            anchors.top: root.horizontal ? workspaces.top : undefined
+            anchors.bottom: root.horizontal ? workspaces.bottom : undefined
             active: Config.bar.workspaces.activeIndicator
 
             sourceComponent: ActiveIndicator {
+                horizontal: root.horizontal
                 activeWs: {
                     CUtils.dependency(workspaces.itemsDirty);
                     return workspaces.itemAtIndex(root.activeWsIdx) as Workspace;
@@ -213,6 +223,7 @@ ClipRect {
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.extraSmall
                 monitor: root.monitor
+                horizontal: root.horizontal
 
                 scale: 0.5
                 Component.onCompleted: scale = Qt.binding(() => root.onSpecial ? 1 : 0.5)
@@ -237,6 +248,10 @@ ClipRect {
     }
 
     Behavior on implicitHeight {
+        Anim {}
+    }
+
+    Behavior on implicitWidth {
         Anim {}
     }
 }

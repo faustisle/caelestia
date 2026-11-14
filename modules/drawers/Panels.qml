@@ -18,6 +18,7 @@ Item {
     required property ShellScreen screen
     required property ScreenState screenState
     required property Bar.BarWrapper bar
+    required property EdgeGeometry geometry
     required property real borderThickness
 
     readonly property alias osd: osd
@@ -33,14 +34,17 @@ Item {
     readonly property alias sidebar: sidebar
 
     anchors.fill: parent
-    anchors.margins: borderThickness
-    anchors.leftMargin: bar.implicitWidth
+    anchors.leftMargin: geometry.insetLeft(borderThickness)
+    anchors.topMargin: geometry.insetTop(borderThickness)
+    anchors.rightMargin: geometry.insetRight(borderThickness)
+    anchors.bottomMargin: geometry.insetBottom(borderThickness)
 
     Item {
         id: osdWrapper
 
         anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
+        anchors.left: root.geometry.barOnRight ? parent.left : undefined
+        anchors.right: root.geometry.barOnRight ? undefined : parent.right
         clip: sidebar.visible || session.visible
 
         implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
@@ -51,10 +55,12 @@ Item {
 
             screen: root.screen
             screenState: root.screenState
-            sidebarOrSessionVisible: sidebar.visible || session.visible
+            sidebarOrSessionVisible: !root.geometry.barOnRight && (sidebar.visible || session.visible)
+            onLeft: root.geometry.barOnRight
 
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
+            anchors.left: root.geometry.barOnRight ? parent.left : undefined
+            anchors.right: root.geometry.barOnRight ? undefined : parent.right
         }
     }
 
@@ -74,7 +80,7 @@ Item {
         id: sessionWrapper
 
         anchors.centerIn: parent
-        anchors.horizontalCenterOffset: -root.bar.implicitWidth / 2
+        anchors.horizontalCenterOffset: root.geometry.barOnRight ? root.bar.implicitWidth / 2 : root.geometry.barOnLeft ? -root.bar.implicitWidth / 2 : 0
         clip: sidebar.visible
 
         implicitWidth: session.implicitWidth
@@ -101,6 +107,7 @@ Item {
         id: popoutsWrapper
 
         screen: root.screen
+        position: root.geometry.position
         borderThickness: root.borderThickness
     }
 

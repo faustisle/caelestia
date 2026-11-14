@@ -12,6 +12,8 @@ import qs.modules.bar.components.status
 StyledRect {
     id: root
 
+    required property bool horizontal
+
     property color colour: Colours.palette.m3secondary
     readonly property alias items: iconColumn
 
@@ -44,18 +46,22 @@ StyledRect {
     radius: Tokens.rounding.full
 
     clip: true
-    implicitWidth: Tokens.sizes.bar.innerWidth
-    implicitHeight: iconColumn.implicitHeight + Tokens.padding.medium * 2
+    implicitWidth: horizontal ? iconColumn.implicitWidth + Tokens.padding.medium * 2 : Tokens.sizes.bar.innerWidth
+    implicitHeight: horizontal ? Tokens.sizes.bar.innerWidth : iconColumn.implicitHeight + Tokens.padding.medium * 2
 
-    ColumnLayout {
+    GridLayout {
         id: iconColumn
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: Tokens.padding.medium
+        anchors.left: root.horizontal ? undefined : parent.left
+        anchors.right: root.horizontal ? undefined : parent.right
+        anchors.bottom: root.horizontal ? undefined : parent.bottom
+        anchors.bottomMargin: root.horizontal ? 0 : Tokens.padding.medium
+        anchors.verticalCenter: root.horizontal ? parent.verticalCenter : undefined
+        anchors.leftMargin: root.horizontal ? Tokens.padding.medium : 0
 
-        spacing: 0
+        columns: root.horizontal ? -1 : 1
+        rowSpacing: 0
+        columnSpacing: 0
 
         Repeater {
             model: ScriptModel {
@@ -170,9 +176,11 @@ StyledRect {
         default property Item item
         property string name: modelData.id.toLowerCase()
 
-        Layout.topMargin: Math.round(topGap)
-        Layout.bottomMargin: Math.round(bottomGap)
-        Layout.alignment: Qt.AlignHCenter
+        Layout.topMargin: root.horizontal ? 0 : Math.round(topGap)
+        Layout.bottomMargin: root.horizontal ? 0 : Math.round(bottomGap)
+        Layout.leftMargin: root.horizontal ? Math.round(topGap) : 0
+        Layout.rightMargin: root.horizontal ? Math.round(bottomGap) : 0
+        Layout.alignment: root.horizontal ? Qt.AlignVCenter : Qt.AlignHCenter
 
         implicitWidth: item?.implicitWidth ?? 0
         implicitHeight: item?.implicitHeight ?? 0

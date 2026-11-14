@@ -9,21 +9,37 @@ Item {
     id: root
 
     required property ShellScreen screen
+    required property string position
     required property real borderThickness
 
     readonly property alias content: content
-    property real offsetScale: x > 0 || content.hasCurrent ? 0 : 1
+    readonly property bool horizontal: position === "top" || position === "bottom"
+    readonly property bool barOnRight: position === "right"
+    property real offsetScale: content.hasCurrent || content.isDetached ? 0 : 1
 
     visible: width > 0 && height > 0
     clip: true
 
-    implicitWidth: content.implicitWidth * (1 - offsetScale)
-    implicitHeight: content.implicitHeight
+    implicitWidth: horizontal ? content.implicitWidth : content.implicitWidth * (1 - offsetScale)
+    implicitHeight: horizontal ? content.implicitHeight * (1 - offsetScale) : content.implicitHeight
 
-    x: content.isDetached ? (parent.width - content.nonAnimWidth) / 2 : 0
+    x: {
+        if (content.isDetached)
+            return (parent.width - content.nonAnimWidth) / 2;
+        if (!horizontal)
+            return barOnRight ? parent.width - implicitWidth : 0;
+
+        const off = content.currentCenter - borderThickness - content.nonAnimWidth / 2;
+        const diff = parent.width - Math.floor(off + content.nonAnimWidth);
+        if (diff < 0)
+            return off + diff;
+        return Math.max(off, 0);
+    }
     y: {
         if (content.isDetached)
             return (parent.height - content.nonAnimHeight) / 2;
+        if (horizontal)
+            return position === "bottom" ? parent.height - implicitHeight : 0;
 
         const off = content.currentCenter - borderThickness - content.nonAnimHeight / 2;
         const diff = parent.height - Math.floor(off + content.nonAnimHeight);
@@ -37,6 +53,8 @@ Item {
     }
 
     Behavior on x {
+        enabled: !root.horizontal || root.offsetScale < 1
+
         Anim {
             duration: content.animLength
             easing: content.animCurve
@@ -44,7 +62,7 @@ Item {
     }
 
     Behavior on y {
-        enabled: root.offsetScale < 1
+        enabled: !root.horizontal && root.offsetScale < 1
 
         Anim {
             duration: content.animLength
@@ -58,8 +76,18 @@ Item {
         screen: root.screen
         offsetScale: root.offsetScale
 
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: (-implicitWidth - 5) * root.offsetScale
+        // Only the anchors for the current bar edge resolve, the others are undefined
+        // qmllint disable Quick.anchor-combinations
+        anchors.verticalCenter: root.horizontal ? undefined : parent.verticalCenter
+        anchors.horizontalCenter: root.horizontal ? parent.horizontalCenter : undefined
+        anchors.left: !root.horizontal && !root.barOnRight ? parent.left : undefined
+        anchors.right: !root.horizontal && root.barOnRight ? parent.right : undefined
+        anchors.top: root.horizontal && root.position === "top" ? parent.top : undefined
+        anchors.bottom: root.horizontal && root.position === "bottom" ? parent.bottom : undefined
+        // qmllint enable Quick.anchor-combinations
+        anchors.leftMargin: !root.horizontal && !root.barOnRight ? (-implicitWidth - 5) * root.offsetScale : 0
+        anchors.rightMargin: !root.horizontal && root.barOnRight ? (-implicitWidth - 5) * root.offsetScale : 0
+        anchors.topMargin: root.horizontal && root.position === "top" ? (-implicitHeight - 5) * root.offsetScale : 0
+        anchors.bottomMargin: root.horizontal && root.position === "bottom" ? (-implicitHeight - 5) * root.offsetScale : 0
     }
 }
