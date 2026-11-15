@@ -15,10 +15,8 @@ MouseArea {
     required property LazyLoader loader
     required property ShellScreen screen
 
-    property real realBorderWidth: 2
-    property real realRounding: 0
-
     property bool selecting
+    property bool capturing
     property real ssx
     property real ssy
 
@@ -57,6 +55,10 @@ MouseArea {
         selecting = true;
         ssx = event.x;
         ssy = event.y;
+        sx = ssx;
+        sy = ssy;
+        ex = ssx;
+        ey = ssy;
     }
 
     onReleased: {
@@ -66,6 +68,7 @@ MouseArea {
         if (root.loader.freeze) {
             save();
         } else {
+            root.capturing = true;
             root.selecting = false;
             screencopy.visible = false;
             screencopy.active = true;
@@ -135,6 +138,7 @@ MouseArea {
 
             onHasContentChanged: {
                 if (hasContent && !root.loader.freeze) {
+                    root.capturing = false;
                     root.selecting = true;
                     root.save();
                 }
@@ -148,9 +152,9 @@ MouseArea {
         anchors.fill: parent
         color: Colours.palette.m3secondaryContainer
         opacity: 0.3
-        visible: root.selecting
+        visible: !root.capturing
 
-        layer.enabled: true
+        layer.enabled: root.selecting
         layer.effect: Mask {
             maskSource: selectionWrapper
             maskInverted: true
@@ -167,30 +171,10 @@ MouseArea {
         Rectangle {
             id: selectionRect
 
-            radius: root.realRounding
             x: root.rsx
             y: root.rsy
             implicitWidth: root.sw
             implicitHeight: root.sh
-        }
-    }
-
-    Rectangle {
-        id: border
-
-        visible: root.selecting
-        color: "transparent"
-        radius: root.realRounding > 0 ? root.realRounding + root.realBorderWidth : 0
-        border.width: root.realBorderWidth
-        border.color: Colours.palette.m3primary
-
-        x: selectionRect.x - root.realBorderWidth
-        y: selectionRect.y - root.realBorderWidth
-        implicitWidth: selectionRect.implicitWidth + root.realBorderWidth * 2
-        implicitHeight: selectionRect.implicitHeight + root.realBorderWidth * 2
-
-        Behavior on border.color {
-            CAnim {}
         }
     }
 
