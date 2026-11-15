@@ -16,14 +16,15 @@ MouseArea {
     required property ShellScreen screen
 
     property bool selecting
-    property bool capturing
+    property real realBorderWidth: 2
+    property real realRounding: 0
     property real ssx
     property real ssy
 
-    property real sx: 0
-    property real sy: 0
-    property real ex: screen.width
-    property real ey: screen.height
+    property real sx: screen.width / 2
+    property real sy: screen.height / 2
+    property real ex: screen.width / 2
+    property real ey: screen.height / 2
 
     property real rsx: Math.min(sx, ex)
     property real rsy: Math.min(sy, ey)
@@ -65,10 +66,15 @@ MouseArea {
         if (closeAnim.running)
             return;
 
+        if (root.sw < 1 || root.sh < 1) {
+            closeAnim.start();
+            return;
+        }
+
         if (root.loader.freeze) {
             save();
         } else {
-            root.capturing = true;
+            overlay.visible = false;
             root.selecting = false;
             screencopy.visible = false;
             screencopy.active = true;
@@ -138,7 +144,7 @@ MouseArea {
 
             onHasContentChanged: {
                 if (hasContent && !root.loader.freeze) {
-                    root.capturing = false;
+                    overlay.visible = true;
                     root.selecting = true;
                     root.save();
                 }
@@ -152,9 +158,8 @@ MouseArea {
         anchors.fill: parent
         color: Colours.palette.m3secondaryContainer
         opacity: 0.3
-        visible: !root.capturing
 
-        layer.enabled: root.selecting
+        layer.enabled: true
         layer.effect: Mask {
             maskSource: selectionWrapper
             maskInverted: true
@@ -171,10 +176,30 @@ MouseArea {
         Rectangle {
             id: selectionRect
 
+            radius: root.realRounding
             x: root.rsx
             y: root.rsy
             implicitWidth: root.sw
             implicitHeight: root.sh
+        }
+    }
+
+    Rectangle {
+        id: border
+
+        visible: root.selecting
+        color: "transparent"
+        radius: root.realRounding > 0 ? root.realRounding + root.realBorderWidth : 0
+        border.width: root.realBorderWidth
+        border.color: Colours.palette.m3primary
+
+        x: selectionRect.x - root.realBorderWidth
+        y: selectionRect.y - root.realBorderWidth
+        implicitWidth: selectionRect.implicitWidth + root.realBorderWidth * 2
+        implicitHeight: selectionRect.implicitHeight + root.realBorderWidth * 2
+
+        Behavior on border.color {
+            CAnim {}
         }
     }
 
