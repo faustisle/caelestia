@@ -175,7 +175,7 @@ CustomMouseArea {
 
         // Show sidebar on hover at the top-right corner. The sidebar and the
         // quick settings attach to each other, so this reveals both at once.
-        if (Config.sidebar.enabled && !pressed && !popouts.hasCurrent && !popouts.isDetached && !inRightPanel(panels.notifications, x, y)) {
+        if (Config.sidebar.enabled && !pressed && !popouts.hasCurrent && !popouts.isDetached && !(panels.notifications.visible && inRightPanel(panels.notifications, x, y))) {
             const showSidebarHover = inSidebarHoverTrigger(x, y);
             if (showSidebarHover) {
                 if (!screenState.sidebar)
