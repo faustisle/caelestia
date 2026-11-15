@@ -66,14 +66,8 @@ CustomMouseArea {
     }
 
     function inSidebarHoverTrigger(x: real, y: real): bool {
-        const barTop = geometry.insetTop(borderThickness);
-        // Use the open sidebar's edge so the trigger does not move while the
-        // panel animates. In a top bar only the rightmost 50px should trigger,
-        // so hovering the clock or system monitor does not open the sidebar.
-        const triggerWidth = geometry.barOnTop && y < barTop ? 50 : panels.sidebar.implicitWidth;
-        const triggerX = width - borderThickness - triggerWidth;
-        const triggerY = Math.max(Config.sidebar.minHoverThreshold, barTop + panels.utilities.y + panels.utilities.height + borderThickness);
-        return x > Math.min(width - Config.border.minThickness, triggerX) && y <= triggerY;
+        const size = 50;
+        return x > width - size && y <= size;
     }
 
     function onWheel(event: WheelEvent): void {

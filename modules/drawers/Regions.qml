@@ -20,13 +20,13 @@ Region {
     height: win.height - geometry.insetTop(clampedThickness, true) - geometry.insetBottom(clampedThickness, true) - win.dragMaskPadding * 2
     intersection: Intersection.Xor
 
-    // The sidebar hover trigger needs to reach the top-right corner even when
-    // the base interaction region starts below the screen border.
+    // Keep a small input hotspot at the top-right corner for the sidebar hover
+    // trigger, even when the base region starts below the screen border.
     Region {
-        x: root.win.width - root.borderThickness - root.panels.sidebar.implicitWidth
+        x: root.win.width - 50
         y: 0
-        width: root.geometry.barOnTop ? 0 : root.panels.sidebar.implicitWidth + root.borderThickness
-        height: root.geometry.barOnTop ? 0 : root.geometry.insetTop(root.borderThickness)
+        width: 50
+        height: 50
         intersection: Intersection.Combine
     }
 
