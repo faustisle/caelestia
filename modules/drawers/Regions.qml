@@ -23,10 +23,10 @@ Region {
     // Keep a small input hotspot at the top-right corner for the sidebar hover
     // trigger, even when the base region starts below the screen border.
     Region {
-        x: root.win.width - 50
+        x: root.win.width - 25
         y: 0
-        width: 50
-        height: 50
+        width: 25
+        height: 25
         intersection: Intersection.Combine
     }
 

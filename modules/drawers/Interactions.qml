@@ -66,7 +66,7 @@ CustomMouseArea {
     }
 
     function inSidebarHoverTrigger(x: real, y: real): bool {
-        const size = 50;
+        const size = 25;
         return x > width - size && y <= size;
     }
 
