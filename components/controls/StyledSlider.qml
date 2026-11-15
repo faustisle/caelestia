@@ -26,7 +26,13 @@ Slider {
     property real pos: visualPosition
     property real filledWidth
 
+    readonly property real trackLength: Math.max(1, width - handle.implicitWidth - handle.anchors.leftMargin)
+
     signal interaction(v: real)
+
+    function positionAt(x: real): real {
+        return CUtils.clamp((x - handle.anchors.leftMargin - handle.implicitWidth / 2) / trackLength, 0, 1);
+    }
 
     Component.onCompleted: filledWidth = Qt.binding(() => (width - handle.implicitWidth - handle.anchors.leftMargin) * pos)
 
@@ -176,17 +182,17 @@ Slider {
         onPressed: e => {
             widthBehavior.enabled = false;
             pressStartX = e.x;
-            pressStartPos = root.visualPosition;
+            pressStartPos = root.positionAt(e.x);
+            dragMovement = 0;
+            root.interaction(pressStartPos);
         }
         onPositionChanged: e => {
-            dragMovement = (e.x - pressStartX) / width;
+            dragMovement = (e.x - pressStartX) / root.trackLength;
             if (root.interactionOnMove)
                 root.interaction(posBinding.value);
         }
         onReleased: e => {
-            const clickPos = e.x / width;
-            const finalPos = mouse.dragMovement !== 0 ? posBinding.value : CUtils.clamp(clickPos, 0, 1);
-            root.interaction(finalPos);
+            root.interaction(root.positionAt(e.x));
             widthBehavior.enabled = true;
             dragMovement = 0;
         }
