@@ -98,6 +98,7 @@ Item {
         screen: root.screen
         screenState: root.screenState
         panels: root
+        barOnBottom: root.geometry.barOnBottom
     }
 
     BarPopouts.ClipWrapper {

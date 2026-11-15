@@ -13,6 +13,7 @@ Item {
     required property ShellScreen screen
     required property ScreenState screenState
     required property var panels
+    required property bool barOnBottom
 
     readonly property bool shouldBeActive: screenState.launcher && Config.launcher.enabled
     readonly property bool spotlight: Config.launcher.spotlight && !screenState.launcherRegular
@@ -36,11 +37,13 @@ Item {
     }
 
     visible: offsetScale < 1
-    anchors.top: parent.top
+    anchors.top: spotlight || !barOnBottom ? parent.top : undefined
+    anchors.bottom: !spotlight && barOnBottom ? parent.bottom : undefined
     anchors.left: parent.left
-    // Regular mode is attached to the panel top and pops out of the bar like
-    // the other drawers. Spotlight keeps its small offset while centred.
-    anchors.topMargin: spotlight ? spotlightTopMargin + Tokens.spacing.small * offsetScale : (-implicitHeight - 5) * offsetScale
+    // Regular mode pops out of the bar it is attached to, like the other
+    // drawers. Spotlight keeps its small offset while centred.
+    anchors.topMargin: spotlight ? spotlightTopMargin + Tokens.spacing.small * offsetScale : barOnBottom ? 0 : (-implicitHeight - 5) * offsetScale
+    anchors.bottomMargin: !spotlight && barOnBottom ? (-implicitHeight - 5) * offsetScale : 0
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth || 630 // Hard coded fallback for first open
     opacity: 1 - offsetScale
