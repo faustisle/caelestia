@@ -21,6 +21,7 @@ Slider {
 
     property color fgColour: enabled ? Colours.palette.m3primary : Qt.alpha(Colours.palette.m3onSurface, 0.38)
     property color bgColour: enabled ? Colours.palette.m3secondaryContainer : Qt.alpha(Colours.palette.m3onSurface, 0.1)
+    readonly property int waveThickness: Math.max(4, Math.round(height * 0.25))
 
     property real pos: visualPosition
     property real filledWidth
@@ -43,12 +44,12 @@ Slider {
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: Tokens.spacing.extraSmall
 
-            implicitHeight: parent.height * (parent.height <= 12 ? opacity : Math.min(opacity * 2, 1))
+            implicitHeight: root.wavy ? root.waveThickness : parent.height * (parent.height <= 12 ? opacity : Math.min(opacity * 2, 1))
             opacity: Math.min(width, 12) / 12
 
-            radius: root.radius
-            topLeftRadius: Tokens.rounding.extraSmall / 2
-            bottomLeftRadius: Tokens.rounding.extraSmall / 2
+            radius: root.wavy ? root.waveThickness / 2 : root.radius
+            topLeftRadius: root.wavy ? root.waveThickness / 2 : Tokens.rounding.extraSmall / 2
+            bottomLeftRadius: root.wavy ? root.waveThickness / 2 : Tokens.rounding.extraSmall / 2
             color: root.bgColour
         }
 
@@ -117,7 +118,8 @@ Slider {
             id: waveComp
 
             WavyLine {
-                lineWidth: root.height * 0.7
+                lineWidth: root.waveThickness
+                amplitudeMultiplier: 1
                 frequency: root.waveFrequency
                 startX: x
                 fullLength: root.width - handle.implicitWidth - handle.anchors.leftMargin

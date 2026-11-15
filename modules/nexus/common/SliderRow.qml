@@ -79,6 +79,9 @@ ConnectedRect {
                     implicitHeight: parent.implicitHeight
 
                     radius: Tokens.rounding.small
+                    wavy: true
+                    animateWave: true
+                    waveDuration: 1600
                     value: root.value
                     enabled: root.enabled
                     onInteraction: v => root.moved(v)
