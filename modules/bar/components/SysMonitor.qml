@@ -171,6 +171,7 @@ StyledRect {
             visible: root.compact && root.hasMetrics
             icon: root.compactIcon
             iconFont: root.compactIconFont
+            iconSpacing: root.horizontal ? Tokens.spacing.extraSmall : 0
             value: root.compactValue
             unit: root.compactUnit
             alert: root.compactAlert
@@ -181,6 +182,7 @@ StyledRect {
 
             visible: !root.compact && Config.bar.sysMonitor.showCpu
             icon: "memory"
+            iconSpacing: Tokens.spacing.extraSmall
             value: root.cpuValue
             unit: "%"
             alert: root.cpuAlert
@@ -195,6 +197,7 @@ StyledRect {
 
             visible: !root.compact && Config.bar.sysMonitor.showCpuTemp
             icon: "thermometer"
+            iconSpacing: Tokens.spacing.extraSmall
             value: root.tempValue
             unit: root.tempUnit
             alert: root.tempAlert
@@ -210,6 +213,7 @@ StyledRect {
             visible: !root.compact && Config.bar.sysMonitor.showMemory
             icon: "memory_alt"
             iconFont: root.memoryIconFont
+            iconSpacing: Tokens.spacing.extraSmall
             value: root.memoryValue
             unit: root.memoryUnit
             alert: root.memoryAlert
@@ -224,6 +228,7 @@ StyledRect {
         required property string unit
         property bool alert: false
         property font iconFont: root.iconFont
+        property real iconSpacing: 0
 
         readonly property color metricColour: alert ? root.alertColour : root.colour
 
@@ -236,6 +241,7 @@ StyledRect {
         MaterialIcon {
             Layout.fillWidth: !root.horizontal
             Layout.alignment: root.horizontal ? Qt.AlignVCenter : Qt.AlignHCenter
+            Layout.rightMargin: root.horizontal ? metric.iconSpacing : 0
             visible: Config.bar.sysMonitor.showIcons
             horizontalAlignment: Text.AlignHCenter
             text: metric.icon

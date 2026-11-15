@@ -152,7 +152,7 @@ StyledRect {
 
         visible: root.horizontal
         anchors.centerIn: parent
-        spacing: Tokens.spacing.extraSmall
+        spacing: Tokens.spacing.small
 
         Loader {
             asynchronous: true
