@@ -70,6 +70,13 @@ PageBase {
             onToggled: GlobalConfig.bar.showOnHover = checked
         }
 
+        ToggleRow {
+            text: Tr.tr("Adaptive compact")
+            subtext: Tr.tr("Compact the tray and system monitor when the bar runs out of room")
+            checked: Config.bar.adaptiveCompact
+            onToggled: GlobalConfig.bar.adaptiveCompact = checked
+        }
+
         StepperRow {
             last: true
             label: Tr.tr("Drag threshold")

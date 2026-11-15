@@ -19,6 +19,7 @@ GridLayout {
     required property bool fullscreen
     required property bool horizontal
     readonly property int axisPadding: Tokens.padding.large
+    property bool autoCompact: false
 
     function closeTray(): void {
         if (!Config.bar.tray.compact)
@@ -135,9 +136,65 @@ GridLayout {
         }
     }
 
+    function entryItem(id: string): Item {
+        for (let i = 0; i < repeater.count; i++) {
+            const entry = repeater.itemAt(i) as EntryWrapper;
+            if (entry?.entryId === id)
+                return entry.item;
+        }
+        return null;
+    }
+
+    function refreshAutoCompact(): void {
+        if (!GlobalConfig.bar.adaptiveCompact) {
+            autoCompact = false;
+            return;
+        }
+
+        const available = horizontal ? width : height;
+        if (available <= 0)
+            return;
+
+        let expanded = horizontal ? implicitWidth : implicitHeight;
+
+        const tray = entryItem("tray") as Tray;
+        if (tray && !GlobalConfig.bar.tray.compact)
+            expanded += tray.expandedLength - (horizontal ? tray.implicitWidth : tray.implicitHeight);
+
+        const sysmon = entryItem("sysmon") as SysMonitor;
+        if (sysmon && !GlobalConfig.bar.sysMonitor.compact && sysmon.expandedLength > 0)
+            expanded += sysmon.expandedLength - (horizontal ? sysmon.implicitWidth : sysmon.implicitHeight);
+
+        if (!autoCompact && expanded > available)
+            autoCompact = true;
+        else if (autoCompact && expanded < available - Tokens.spacing.large)
+            autoCompact = false;
+    }
+
+    onImplicitWidthChanged: compactTimer.restart()
+    onImplicitHeightChanged: compactTimer.restart()
+    onWidthChanged: compactTimer.restart()
+    onHeightChanged: compactTimer.restart()
+    Component.onCompleted: compactTimer.restart()
+
     columns: horizontal ? -1 : 1
     rowSpacing: Tokens.spacing.medium
     columnSpacing: Tokens.spacing.medium
+
+    Timer {
+        id: compactTimer
+
+        interval: 80
+        onTriggered: root.refreshAutoCompact()
+    }
+
+    Connections {
+        function onAdaptiveCompactChanged(): void {
+            compactTimer.restart();
+        }
+
+        target: GlobalConfig.bar
+    }
 
     Repeater {
         id: repeater
@@ -181,6 +238,7 @@ GridLayout {
                     Tray {
                         objectName: "taskbarTray"
                         horizontal: root.horizontal
+                        autoCompact: root.autoCompact
                     }
                 }
             }
@@ -190,7 +248,7 @@ GridLayout {
                     SysMonitor {
                         objectName: "taskbarSysMonitor"
                         horizontal: root.horizontal
-                        compact: root.Config.bar.sysMonitor.compact
+                        compact: GlobalConfig.bar.sysMonitor.compact || root.autoCompact
                     }
                 }
             }

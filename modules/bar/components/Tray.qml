@@ -11,6 +11,10 @@ StyledRect {
     id: root
 
     required property bool horizontal
+    property bool autoCompact
+
+    readonly property bool compact: Config.bar.tray.compact || autoCompact
+    readonly property real expandedLength: horizontal ? layout.implicitWidth + padding * 2 : layout.implicitHeight + padding * 2
 
     readonly property alias layout: layout
     readonly property alias items: items
@@ -22,7 +26,7 @@ StyledRect {
     property bool expanded
 
     readonly property real nonAnimSize: {
-        if (!Config.bar.tray.compact)
+        if (!root.compact)
             return (horizontal ? layout.implicitWidth : layout.implicitHeight) + padding * 2;
         const pad = (Config.bar.tray.background ? Tokens.padding.extraSmall : 0) + padding;
         const iconSize = horizontal ? expandIcon.implicitWidth : expandIcon.implicitHeight;
@@ -54,7 +58,7 @@ StyledRect {
         rowSpacing: Tokens.spacing.small
         columnSpacing: Tokens.spacing.small
 
-        opacity: root.expanded || !Config.bar.tray.compact ? 1 : 0
+        opacity: root.expanded || !root.compact ? 1 : 0
 
         add: Transition {
             Anim {
@@ -103,7 +107,7 @@ StyledRect {
         anchors.bottom: root.horizontal ? undefined : parent.bottom
         anchors.right: root.horizontal ? parent.right : undefined
 
-        active: Config.bar.tray.compact && items.count > 0
+        active: root.compact && items.count > 0
 
         sourceComponent: Item {
             implicitWidth: root.horizontal ? expandIconInner.implicitWidth - Tokens.padding.small : expandIconInner.implicitWidth

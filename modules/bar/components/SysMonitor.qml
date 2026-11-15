@@ -44,6 +44,7 @@ StyledRect {
     readonly property string memoryUnit: root.memoryInGiB ? "GB" : "MB"
 
     property bool compact
+    property real expandedLength
     property bool cpuAlert: false
     property bool memoryAlert: false
     property bool tempAlert: false
@@ -88,9 +89,19 @@ StyledRect {
         root.tempAlert = root.tempAlert ? temp >= root.tempThreshold - hysteresis : temp >= root.tempThreshold;
     }
 
+    function updateExpandedLength(): void {
+        if (!root.compact)
+            root.expandedLength = root.horizontal ? root.implicitWidth : root.implicitHeight;
+    }
+
+    onCompactChanged: updateExpandedLength()
+    onImplicitWidthChanged: updateExpandedLength()
+    onImplicitHeightChanged: updateExpandedLength()
+
     Component.onCompleted: {
         sampleCpu();
         refreshAlerts();
+        updateExpandedLength();
     }
 
     implicitWidth: horizontal ? layout.implicitWidth + root.padding * 2 : Tokens.sizes.bar.innerWidth
