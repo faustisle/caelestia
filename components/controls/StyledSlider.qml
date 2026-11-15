@@ -120,11 +120,11 @@ Slider {
             WavyLine {
                 lineWidth: root.waveThickness
                 amplitudeMultiplier: 1
-                // Keep the wave wavelength proportional to the filled track:
-                // shorter fills get a higher frequency.
-                frequency: Math.min(32, Math.max(2, Math.round(root.waveFrequency * (root.width - handle.implicitWidth - handle.anchors.leftMargin) / Math.max(1, root.filledWidth))))
+                frequency: root.waveFrequency
                 startX: x
-                fullLength: root.width - handle.implicitWidth - handle.anchors.leftMargin
+                // Scaling the reference length keeps the wavelength proportional
+                // to the filled track, so the frequency changes continuously.
+                fullLength: Math.max(root.filledWidth, root.waveFrequency * 8)
                 color: root.fgColour
 
                 implicitWidth: root.filledWidth
