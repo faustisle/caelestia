@@ -30,21 +30,5 @@ PageBase {
             checked: Config.sidebar.enabled
             onToggled: GlobalConfig.sidebar.enabled = checked
         }
-
-        SectionHeader {
-            text: Tr.tr("Behaviour")
-        }
-
-        StepperRow {
-            first: true
-            last: true
-            label: Tr.tr("Hover threshold")
-            subtext: Tr.tr("Distance from the top edge where hover activates")
-            value: Config.sidebar.minHoverThreshold
-            from: 50
-            to: 500
-            stepSize: 10
-            onMoved: v => GlobalConfig.sidebar.minHoverThreshold = v
-        }
     }
 }
