@@ -118,6 +118,8 @@ Slider {
             id: waveComp
 
             WavyLine {
+                id: wave
+
                 lineWidth: root.waveThickness
                 amplitudeMultiplier: 1
                 frequency: root.waveFrequency
@@ -130,14 +132,15 @@ Slider {
                 implicitWidth: root.filledWidth
                 implicitHeight: lineWidth * amplitudeMultiplier * 2 + lineWidth
 
-                Anim on waveProgress {
-                    running: true
-                    paused: !root.animateWave
-                    from: 0
-                    to: 1
-                    duration: root.waveDuration
-                    easing.type: Easing.Linear
-                    loops: Animation.Infinite
+                // Advance the phase ourselves so the speed can change smoothly
+                // with the fill instead of restarting a duration-based animation.
+                FrameAnimation {
+                    running: root.animateWave && wave.visible
+                    onTriggered: {
+                        const track = Math.max(1, root.width - handle.implicitWidth - handle.anchors.leftMargin);
+                        const duration = Math.max(300, root.waveDuration * wave.fullLength / track);
+                        wave.waveProgress = (wave.waveProgress + frameTime * 1000 / duration) % 1;
+                    }
                 }
 
                 Behavior on color {
