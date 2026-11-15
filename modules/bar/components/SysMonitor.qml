@@ -196,6 +196,7 @@ StyledRect {
             id: tempMetric
 
             visible: !root.compact && Config.bar.sysMonitor.showCpuTemp
+            Layout.leftMargin: -Tokens.spacing.extraSmall
             icon: "thermometer"
             iconSpacing: Tokens.spacing.extraSmall
             value: root.tempValue
