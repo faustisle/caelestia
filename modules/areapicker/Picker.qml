@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 import Caelestia
 import Caelestia.I18n
@@ -16,11 +15,10 @@ MouseArea {
     required property LazyLoader loader
     required property ShellScreen screen
 
-    property bool onClient
+    property real realBorderWidth: 2
+    property real realRounding: 0
 
-    property real realBorderWidth: onClient ? (Hypr.options["general:border_size"] ?? 1) : 2
-    property real realRounding: onClient ? (Hypr.options["decoration:rounding"] ?? 0) : 0
-
+    property bool selecting
     property real ssx
     property real ssy
 
@@ -33,52 +31,6 @@ MouseArea {
     property real rsy: Math.min(sy, ey)
     property real sw: Math.abs(sx - ex)
     property real sh: Math.abs(sy - ey)
-
-    property list<var> clients: {
-        const mon = Hypr.monitorFor(screen);
-        if (!mon)
-            return [];
-
-        const special = mon.lastIpcObject?.specialWorkspace;
-        const wsId = special?.name ? special.id : mon.activeWorkspace?.id;
-        if (wsId === undefined)
-            return [];
-
-        return Hypr.toplevelsForWs(wsId).sort((a, b) => {
-            // Pinned first, then fullscreen, then floating, then any other
-            const ac = a?.lastIpcObject;
-            const bc = b?.lastIpcObject;
-            if (!ac || !bc)
-                return !ac - !bc; // Missing IPC last
-            return (bc.pinned - ac.pinned) || ((bc.fullscreen !== 0) - (ac.fullscreen !== 0)) || (bc.floating - ac.floating);
-        });
-    }
-
-    function checkClientRects(x: real, y: real): void {
-        for (const client of clients) {
-            if (!client)
-                continue;
-
-            const ipc = client.lastIpcObject;
-            if (!ipc?.at || !ipc?.size)
-                continue;
-
-            let {
-                at: [cx, cy],
-                size: [cw, ch]
-            } = ipc;
-            cx -= screen.x;
-            cy -= screen.y;
-            if (cx <= x && cy <= y && cx + cw >= x && cy + ch >= y) {
-                onClient = true;
-                sx = cx;
-                sy = cy;
-                ex = cx + cw;
-                ey = cy + ch;
-                break;
-            }
-        }
-    }
 
     function save(): void {
         const tmpfile = Qt.resolvedUrl(`/tmp/caelestia-picker-${Quickshell.processId}-${Date.now()}.png`);
@@ -93,40 +45,15 @@ MouseArea {
         });
     }
 
-    onClientsChanged: checkClientRects(mouseX, mouseY)
-
     anchors.fill: parent
     opacity: 0
     hoverEnabled: true
     cursorShape: Qt.CrossCursor
 
-    Component.onCompleted: {
-        Hypr.extras.refreshOptions();
-
-        // Break binding if frozen
-        if (loader.freeze)
-            clients = clients;
-
-        opacity = 1;
-
-        const ipc = clients[0]?.lastIpcObject;
-        if (ipc?.at && ipc?.size) {
-            const cx = ipc.at[0] - screen.x;
-            const cy = ipc.at[1] - screen.y;
-            onClient = true;
-            sx = cx;
-            sy = cy;
-            ex = cx + ipc.size[0];
-            ey = cy + ipc.size[1];
-        } else {
-            sx = screen.width / 2 - 100;
-            sy = screen.height / 2 - 100;
-            ex = screen.width / 2 + 100;
-            ey = screen.height / 2 + 100;
-        }
-    }
+    Component.onCompleted: opacity = 1
 
     onPressed: event => {
+        selecting = true;
         ssx = event.x;
         ssy = event.y;
     }
@@ -138,24 +65,18 @@ MouseArea {
         if (root.loader.freeze) {
             save();
         } else {
-            overlay.visible = border.visible = false;
+            root.selecting = false;
             screencopy.visible = false;
             screencopy.active = true;
         }
     }
 
     onPositionChanged: event => {
-        const x = event.x;
-        const y = event.y;
-
         if (pressed) {
-            onClient = false;
             sx = ssx;
             sy = ssy;
-            ex = x;
-            ey = y;
-        } else {
-            checkClientRects(x, y);
+            ex = event.x;
+            ey = event.y;
         }
     }
 
@@ -200,17 +121,6 @@ MouseArea {
         }
     }
 
-    Process {
-        running: true
-        command: ["hyprctl", "cursorpos", "-j"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const pos = JSON.parse(text);
-                root.checkClientRects(pos.x - root.screen.x, pos.y - root.screen.y);
-            }
-        }
-    }
-
     Loader {
         id: screencopy
 
@@ -224,7 +134,7 @@ MouseArea {
 
             onHasContentChanged: {
                 if (hasContent && !root.loader.freeze) {
-                    overlay.visible = border.visible = true;
+                    root.selecting = true;
                     root.save();
                 }
             }
@@ -237,6 +147,7 @@ MouseArea {
         anchors.fill: parent
         color: Colours.palette.m3secondaryContainer
         opacity: 0.3
+        visible: root.selecting
 
         layer.enabled: true
         layer.effect: Mask {
@@ -266,6 +177,7 @@ MouseArea {
     Rectangle {
         id: border
 
+        visible: root.selecting
         color: "transparent"
         radius: root.realRounding > 0 ? root.realRounding + root.realBorderWidth : 0
         border.width: root.realBorderWidth
