@@ -26,6 +26,7 @@ Item {
     required property bool showWindows
     required property var iconRules
     required property bool horizontal
+    readonly property int indicatorSize: (horizontal ? Tokens.sizes.bar.horizontalInnerWidth : Tokens.sizes.bar.innerWidth) - Tokens.padding.small
     property string activeLabel
     property string occupiedLabel
     property string label
@@ -114,7 +115,7 @@ Item {
         id: shapeComponent
 
         MaterialShape {
-            implicitSize: Tokens.sizes.bar.innerWidth - Tokens.padding.small
+            implicitSize: root.indicatorSize
 
             color: root.fgColour
             scale: root.focused ? 2 / 3 : root.isOccupied ? 1 / 3 : 1 / 4
@@ -215,8 +216,8 @@ Item {
             id: indicator
 
             Layout.alignment: root.horizontal ? Qt.AlignVCenter | Qt.AlignHCenter : Qt.AlignHCenter | Qt.AlignTop
-            Layout.preferredWidth: root.horizontal ? Tokens.sizes.bar.innerWidth - Tokens.padding.small : -1
-            Layout.preferredHeight: root.horizontal ? -1 : Tokens.sizes.bar.innerWidth - Tokens.padding.small
+            Layout.preferredWidth: root.horizontal ? root.indicatorSize : -1
+            Layout.preferredHeight: root.horizontal ? -1 : root.indicatorSize
             sourceComponent: {
                 if (root.displayType === BarWorkspaceDisplay.Icons)
                     return iconLoaderComponent;

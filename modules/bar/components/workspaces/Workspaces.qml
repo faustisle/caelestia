@@ -57,7 +57,7 @@ ClipRect {
     property real blur: onSpecial ? 1 : 0
 
     readonly property real normalWidth: horizontal ? workspaces.layoutWidth + workspaces.anchors.margins * 2 : Tokens.sizes.bar.innerWidth
-    readonly property real normalHeight: horizontal ? Tokens.sizes.bar.innerWidth : workspaces.layoutHeight + workspaces.anchors.margins * 2
+    readonly property real normalHeight: horizontal ? Tokens.sizes.bar.horizontalInnerWidth : workspaces.layoutHeight + workspaces.anchors.margins * 2
     readonly property real specialWidth: horizontal ? (specialWs.item?.activeWidth ?? 0) + Tokens.padding.extraSmall * 2 : normalWidth
     readonly property real specialHeight: horizontal ? normalHeight : (specialWs.item?.activeHeight ?? 0) + Tokens.padding.extraSmall * 2
 

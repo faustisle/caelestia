@@ -23,7 +23,7 @@ StyledRect {
     }
 
     implicitWidth: horizontal ? horizontalLayout.implicitWidth + root.padding * 2 : Tokens.sizes.bar.innerWidth
-    implicitHeight: horizontal ? Tokens.sizes.bar.innerWidth : layout.implicitHeight + root.padding * 2
+    implicitHeight: horizontal ? Tokens.sizes.bar.horizontalInnerWidth : layout.implicitHeight + root.padding * 2
 
     color: Qt.alpha(Colours.tPalette.m3surfaceContainer, Config.bar.clock.background ? Colours.tPalette.m3surfaceContainer.a : 0)
     radius: Tokens.rounding.full
