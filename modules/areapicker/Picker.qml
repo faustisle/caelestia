@@ -6,7 +6,6 @@ import Quickshell.Wayland
 import Caelestia
 import Caelestia.I18n
 import qs.components
-import qs.components.effects
 import qs.services
 
 MouseArea {
@@ -41,6 +40,9 @@ MouseArea {
             `;
 
             Quickshell.execDetached(["sh", "-c", script, "sh", path, Tr.tr("Screenshot taken"), Tr.tr("Screenshot copied to clipboard"), Tr.tr("Edit")]);
+            if (!root.loader.freeze)
+                screencopy.active = false;
+
             closeAnim.start();
         });
     }
@@ -152,35 +154,42 @@ MouseArea {
         }
     }
 
-    StyledRect {
+    Item {
         id: overlay
 
         anchors.fill: parent
-        color: Colours.palette.m3secondaryContainer
         opacity: 0.3
 
-        layer.enabled: true
-        layer.effect: Mask {
-            maskSource: selectionWrapper
-            maskInverted: true
+        Rectangle {
+            x: 0
+            y: 0
+            width: parent.width
+            height: Math.max(0, root.rsy)
+            color: Colours.palette.m3secondaryContainer
         }
-    }
-
-    Item {
-        id: selectionWrapper
-
-        anchors.fill: parent
-        layer.enabled: true
-        visible: false
 
         Rectangle {
-            id: selectionRect
+            x: 0
+            y: Math.min(parent.height, root.rsy + root.sh)
+            width: parent.width
+            height: Math.max(0, parent.height - y)
+            color: Colours.palette.m3secondaryContainer
+        }
 
-            radius: root.realRounding
-            x: root.rsx
+        Rectangle {
+            x: 0
             y: root.rsy
-            implicitWidth: root.sw
-            implicitHeight: root.sh
+            width: Math.max(0, root.rsx)
+            height: Math.min(root.sh, parent.height - y)
+            color: Colours.palette.m3secondaryContainer
+        }
+
+        Rectangle {
+            x: Math.min(parent.width, root.rsx + root.sw)
+            y: root.rsy
+            width: Math.max(0, parent.width - x)
+            height: Math.min(root.sh, parent.height - y)
+            color: Colours.palette.m3secondaryContainer
         }
     }
 
@@ -193,10 +202,10 @@ MouseArea {
         border.width: root.realBorderWidth
         border.color: Colours.palette.m3primary
 
-        x: selectionRect.x - root.realBorderWidth
-        y: selectionRect.y - root.realBorderWidth
-        implicitWidth: selectionRect.implicitWidth + root.realBorderWidth * 2
-        implicitHeight: selectionRect.implicitHeight + root.realBorderWidth * 2
+        x: root.rsx - root.realBorderWidth
+        y: root.rsy - root.realBorderWidth
+        implicitWidth: root.sw + root.realBorderWidth * 2
+        implicitHeight: root.sh + root.realBorderWidth * 2
 
         Behavior on border.color {
             CAnim {}
