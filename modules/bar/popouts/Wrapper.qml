@@ -13,6 +13,7 @@ Item {
 
     required property ShellScreen screen
     required property real offsetScale
+    required property bool horizontal
 
     readonly property alias content: content
     readonly property alias nexus: nexus
@@ -131,7 +132,11 @@ Item {
         }
     }
 
+    // Horizontal popouts reveal vertically, so their width must be final from
+    // the start instead of growing in sideways.
     Behavior on implicitWidth {
+        enabled: !root.horizontal
+
         Anim {
             duration: root.animLength
             easing: root.animCurve

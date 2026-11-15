@@ -51,8 +51,11 @@ Item {
         Anim {}
     }
 
+    // Horizontal popouts only move along the bar's axis, from under the module
+    // that opened them. Animating x would make a first launch slide in from the
+    // previous popout's position.
     Behavior on x {
-        enabled: !root.horizontal || root.offsetScale < 1
+        enabled: !root.horizontal
 
         Anim {
             duration: content.animLength
@@ -74,6 +77,7 @@ Item {
 
         screen: root.screen
         offsetScale: root.offsetScale
+        horizontal: root.horizontal
 
         // Only the anchors for the current bar edge resolve, the others are undefined
         // qmllint disable Quick.anchor-combinations
