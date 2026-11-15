@@ -22,7 +22,7 @@ Item {
     readonly property int clampedExtent: Math.max(Config.border.minThickness, extent)
     readonly property int padding: Math.max(Tokens.padding.small, Config.border.thickness)
     // Horizontal bars use tighter vertical padding so they take less screen space.
-    readonly property int horizontalBarPadding: (Tokens.padding.small + Tokens.padding.extraSmall) / 2
+    readonly property int horizontalBarPadding: Tokens.padding.extraSmall
     readonly property int contentThickness: Tokens.sizes.bar.innerWidth + (horizontal ? horizontalBarPadding : padding) * 2
     readonly property int exclusiveZone: !disabled && (Config.bar.persistent || screenState.bar) ? contentThickness : Config.border.thickness
     readonly property bool shouldBeVisible: !fullscreen && !disabled && (Config.bar.persistent || screenState.bar || isHovered)
