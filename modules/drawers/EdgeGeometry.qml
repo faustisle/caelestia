@@ -8,13 +8,12 @@ QtObject {
     required property var win
     required property string configPosition
 
-    readonly property bool validPosition: configPosition === "left" || configPosition === "top" || configPosition === "bottom" || configPosition === "right"
+    readonly property bool validPosition: configPosition === "left" || configPosition === "top" || configPosition === "bottom"
     readonly property string position: validPosition ? configPosition : "left"
     readonly property bool horizontal: position === "top" || position === "bottom"
     readonly property bool barOnLeft: position === "left"
     readonly property bool barOnTop: position === "top"
     readonly property bool barOnBottom: position === "bottom"
-    readonly property bool barOnRight: position === "right"
 
     readonly property real barExtent: bar.extent
     readonly property real barClamped: bar.clampedExtent
@@ -32,7 +31,7 @@ QtObject {
     }
 
     function insetRight(border: real, clamped = false): real {
-        return barOnRight ? (clamped ? barClamped : barExtent) : border;
+        return border;
     }
 
     function barContains(x: real, y: real, clamped = false): bool {
@@ -41,8 +40,6 @@ QtObject {
             return y < extent;
         if (barOnBottom)
             return y > win.height - extent;
-        if (barOnRight)
-            return x > win.width - extent;
         return x < extent;
     }
 
@@ -51,8 +48,6 @@ QtObject {
             return dragY;
         if (barOnBottom)
             return -dragY;
-        if (barOnRight)
-            return -dragX;
         return dragX;
     }
 
@@ -61,7 +56,7 @@ QtObject {
     }
 
     onConfigPositionChanged: {
-        if (configPosition !== "" && configPosition !== "left" && configPosition !== "top" && configPosition !== "bottom" && configPosition !== "right")
+        if (configPosition !== "" && configPosition !== "left" && configPosition !== "top" && configPosition !== "bottom")
             console.warn(`Invalid bar position '${configPosition}', falling back to left`);
     }
 }

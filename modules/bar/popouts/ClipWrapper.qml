@@ -14,7 +14,6 @@ Item {
 
     readonly property alias content: content
     readonly property bool horizontal: position === "top" || position === "bottom"
-    readonly property bool barOnRight: position === "right"
     property real offsetScale: content.hasCurrent || content.isDetached ? 0 : 1
 
     visible: width > 0 && height > 0
@@ -27,7 +26,7 @@ Item {
         if (content.isDetached)
             return (parent.width - content.nonAnimWidth) / 2;
         if (!horizontal)
-            return barOnRight ? parent.width - implicitWidth : 0;
+            return 0;
 
         const off = content.currentCenter - borderThickness - content.nonAnimWidth / 2;
         const diff = parent.width - Math.floor(off + content.nonAnimWidth);
@@ -80,13 +79,11 @@ Item {
         // qmllint disable Quick.anchor-combinations
         anchors.verticalCenter: root.horizontal ? undefined : parent.verticalCenter
         anchors.horizontalCenter: root.horizontal ? parent.horizontalCenter : undefined
-        anchors.left: !root.horizontal && !root.barOnRight ? parent.left : undefined
-        anchors.right: !root.horizontal && root.barOnRight ? parent.right : undefined
+        anchors.left: !root.horizontal ? parent.left : undefined
         anchors.top: root.horizontal && root.position === "top" ? parent.top : undefined
         anchors.bottom: root.horizontal && root.position === "bottom" ? parent.bottom : undefined
         // qmllint enable Quick.anchor-combinations
-        anchors.leftMargin: !root.horizontal && !root.barOnRight ? (-implicitWidth - 5) * root.offsetScale : 0
-        anchors.rightMargin: !root.horizontal && root.barOnRight ? (-implicitWidth - 5) * root.offsetScale : 0
+        anchors.leftMargin: !root.horizontal ? (-implicitWidth - 5) * root.offsetScale : 0
         anchors.topMargin: root.horizontal && root.position === "top" ? (-implicitHeight - 5) * root.offsetScale : 0
         anchors.bottomMargin: root.horizontal && root.position === "bottom" ? (-implicitHeight - 5) * root.offsetScale : 0
     }

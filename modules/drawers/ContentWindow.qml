@@ -105,7 +105,7 @@ StyledWindow {
         height: panels.notifications.height
 
         Region {
-            x: geometry.barOnRight ? 0 : root.width - width
+            x: root.width - width
             y: panels.osdWrapper.y + root.borderThickness
             width: panels.osdWrapper.width * (1 - panels.osd.offsetScale) + root.borderThickness
             height: panels.osd.height
@@ -249,7 +249,7 @@ StyledWindow {
             deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
             mergeWithInverted: !fullyClosed || physicsActive
             visible: !fullyClosed || physicsActive
-            x: panels.popoutsWrapper.x + panels.popouts.x + geometry.insetLeft(root.borderThickness) - (geometry.horizontal || geometry.barOnRight ? 0 : panels.popouts.width * extraExtent)
+            x: panels.popoutsWrapper.x + panels.popouts.x + geometry.insetLeft(root.borderThickness) - (geometry.horizontal ? 0 : panels.popouts.width * extraExtent)
             y: panels.popoutsWrapper.y + panels.popouts.y + geometry.insetTop(root.borderThickness) - (geometry.barOnTop ? panels.popouts.height * extraExtent : 0)
             implicitWidth: panels.popouts.width * (geometry.horizontal ? 1 : 1 + extraExtent)
             implicitHeight: panels.popouts.height * (geometry.horizontal ? 1 + extraExtent : 1)
@@ -308,8 +308,7 @@ StyledWindow {
 
             // Anchored on one corner and sized by binding: an opposing pair of anchors sizes the
             // item instead, and keeps that size once the pair is dropped
-            anchors.left: geometry.barOnRight ? undefined : parent.left
-            anchors.right: geometry.barOnRight ? parent.right : undefined
+            anchors.left: parent.left
             anchors.top: geometry.barOnBottom ? undefined : parent.top
             anchors.bottom: geometry.barOnBottom ? parent.bottom : undefined
 

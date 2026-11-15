@@ -22,10 +22,6 @@ PageBase {
         MenuItem {
             text: Tr.tr("Bottom")
             value: "bottom"
-        },
-        MenuItem {
-            text: Tr.tr("Right")
-            value: "right"
         }
     ]
 

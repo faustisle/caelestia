@@ -51,13 +51,7 @@ CustomMouseArea {
         return x > Math.min(width - Config.border.minThickness, geometry.insetLeft(borderThickness) + panel.x) && withinPanelHeight(panel, x, y);
     }
 
-    // The volume/brightness OSD normally hugs the right edge. When the bar sits on the
-    // right it moves to the left so the two do not overlap.
     function inOsdArea(x: real, y: real): bool {
-        if (geometry.barOnRight) {
-            const panel = panels.osdWrapper;
-            return x < geometry.insetLeft(borderThickness) + panel.x + panel.width && withinPanelHeight(panel, x, y);
-        }
         return inRightPanel(panels.osdWrapper, x, y);
     }
 

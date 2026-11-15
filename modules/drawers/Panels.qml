@@ -43,8 +43,7 @@ Item {
         id: osdWrapper
 
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: root.geometry.barOnRight ? parent.left : undefined
-        anchors.right: root.geometry.barOnRight ? undefined : parent.right
+        anchors.right: parent.right
         clip: sidebar.visible || session.visible
 
         implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
@@ -55,12 +54,10 @@ Item {
 
             screen: root.screen
             screenState: root.screenState
-            sidebarOrSessionVisible: !root.geometry.barOnRight && (sidebar.visible || session.visible)
-            onLeft: root.geometry.barOnRight
+            sidebarOrSessionVisible: sidebar.visible || session.visible
 
             anchors.verticalCenter: parent.verticalCenter
-            anchors.left: root.geometry.barOnRight ? parent.left : undefined
-            anchors.right: root.geometry.barOnRight ? undefined : parent.right
+            anchors.right: parent.right
         }
     }
 
@@ -80,7 +77,7 @@ Item {
         id: sessionWrapper
 
         anchors.centerIn: parent
-        anchors.horizontalCenterOffset: root.geometry.barOnRight ? root.bar.implicitWidth / 2 : root.geometry.barOnLeft ? -root.bar.implicitWidth / 2 : 0
+        anchors.horizontalCenterOffset: root.geometry.barOnLeft ? -root.bar.implicitWidth / 2 : 0
         clip: sidebar.visible
 
         implicitWidth: session.implicitWidth

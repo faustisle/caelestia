@@ -86,8 +86,7 @@ Item {
     Loader {
         id: content
 
-        anchors.left: root.horizontal || root.position === "right" ? undefined : parent.left
-        anchors.right: root.horizontal || root.position === "right" ? parent.right : undefined
+        anchors.left: root.horizontal ? undefined : parent.left
         anchors.top: root.horizontal && root.position !== "top" ? parent.top : undefined
         anchors.bottom: root.horizontal && root.position !== "bottom" ? parent.bottom : undefined
 

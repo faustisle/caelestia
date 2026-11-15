@@ -43,7 +43,7 @@ Region {
 
     R {
         panel: root.panels.osdWrapper
-        x: root.geometry.barOnRight ? 0 : root.win.width - width
+        x: root.win.width - width
         width: panel.width * (1 - root.panels.osd.offsetScale) + root.borderThickness
     }
 
