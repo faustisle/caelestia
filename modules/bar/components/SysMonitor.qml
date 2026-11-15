@@ -45,6 +45,7 @@ StyledRect {
 
     property bool compact
     property real expandedLength
+    property real compactLength
     property bool cpuAlert: false
     property bool memoryAlert: false
     property bool tempAlert: false
@@ -89,19 +90,28 @@ StyledRect {
         root.tempAlert = root.tempAlert ? temp >= root.tempThreshold - hysteresis : temp >= root.tempThreshold;
     }
 
-    function updateExpandedLength(): void {
-        if (!root.compact)
-            root.expandedLength = root.horizontal ? root.implicitWidth : root.implicitHeight;
+    function updateLengths(): void {
+        if (!root.compact) {
+            const expanded = root.horizontal ? root.implicitWidth : root.implicitHeight;
+            if (expanded > 0)
+                root.expandedLength = expanded;
+        }
+
+        const metric = root.compact ? compactMetricView : root.compactMetric === 0 ? cpuMetric : root.compactMetric === 1 ? tempMetric : memoryMetric;
+        const compact = (root.horizontal ? metric.implicitWidth : metric.implicitHeight) + root.padding * 2;
+        if (compact > 0)
+            root.compactLength = compact;
     }
 
-    onCompactChanged: updateExpandedLength()
-    onImplicitWidthChanged: updateExpandedLength()
-    onImplicitHeightChanged: updateExpandedLength()
+    onCompactChanged: updateLengths()
+    onCompactMetricChanged: updateLengths()
+    onImplicitWidthChanged: updateLengths()
+    onImplicitHeightChanged: updateLengths()
 
     Component.onCompleted: {
         sampleCpu();
         refreshAlerts();
-        updateExpandedLength();
+        updateLengths();
     }
 
     implicitWidth: horizontal ? layout.implicitWidth + root.padding * 2 : Tokens.sizes.bar.innerWidth

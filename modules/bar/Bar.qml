@@ -19,7 +19,8 @@ GridLayout {
     required property bool fullscreen
     required property bool horizontal
     readonly property int axisPadding: Tokens.padding.large
-    property bool autoCompact: false
+    property bool autoCompactTray: false
+    property bool autoCompactSysmon: false
 
     function closeTray(): void {
         if (!Config.bar.tray.compact)
@@ -147,7 +148,8 @@ GridLayout {
 
     function refreshAutoCompact(): void {
         if (!GlobalConfig.bar.adaptiveCompact) {
-            autoCompact = false;
+            autoCompactTray = false;
+            autoCompactSysmon = false;
             return;
         }
 
@@ -155,20 +157,58 @@ GridLayout {
         if (available <= 0)
             return;
 
-        let expanded = horizontal ? implicitWidth : implicitHeight;
-
         const tray = entryItem("tray") as Tray;
-        if (tray && !GlobalConfig.bar.tray.compact)
-            expanded += tray.expandedLength - (horizontal ? tray.implicitWidth : tray.implicitHeight);
-
         const sysmon = entryItem("sysmon") as SysMonitor;
-        if (sysmon && !GlobalConfig.bar.sysMonitor.compact && sysmon.expandedLength > 0)
-            expanded += sysmon.expandedLength - (horizontal ? sysmon.implicitWidth : sysmon.implicitHeight);
 
-        if (!autoCompact && expanded > available)
-            autoCompact = true;
-        else if (autoCompact && expanded < available - Tokens.spacing.large)
-            autoCompact = false;
+        let traySaving = 0;
+        if (tray && !GlobalConfig.bar.tray.compact)
+            traySaving = Math.max(0, tray.expandedLength - tray.compactLength);
+
+        let sysmonSaving = 0;
+        if (sysmon && !GlobalConfig.bar.sysMonitor.compact && sysmon.compactLength > 0)
+            sysmonSaving = Math.max(0, sysmon.expandedLength - sysmon.compactLength);
+
+        let expanded = horizontal ? implicitWidth : implicitHeight;
+        if (autoCompactTray)
+            expanded += traySaving;
+        if (autoCompactSysmon)
+            expanded += sysmonSaving;
+
+        if (expanded < available - Tokens.spacing.large) {
+            autoCompactTray = false;
+            autoCompactSysmon = false;
+            return;
+        }
+
+        if (expanded <= available)
+            return;
+
+        const candidates = [];
+        if (sysmonSaving > 0)
+            candidates.push({
+                sysmon: true,
+                saving: sysmonSaving
+            });
+        if (traySaving > 0)
+            candidates.push({
+                sysmon: false,
+                saving: traySaving
+            });
+        candidates.sort((a, b) => b.saving - a.saving);
+
+        let overflow = expanded - available;
+        autoCompactTray = false;
+        autoCompactSysmon = false;
+
+        for (const candidate of candidates) {
+            if (overflow <= 0)
+                break;
+            if (candidate.sysmon)
+                autoCompactSysmon = true;
+            else
+                autoCompactTray = true;
+            overflow -= candidate.saving;
+        }
     }
 
     onImplicitWidthChanged: compactTimer.restart()
@@ -238,7 +278,7 @@ GridLayout {
                     Tray {
                         objectName: "taskbarTray"
                         horizontal: root.horizontal
-                        autoCompact: root.autoCompact
+                        autoCompact: root.autoCompactTray
                     }
                 }
             }
@@ -248,7 +288,7 @@ GridLayout {
                     SysMonitor {
                         objectName: "taskbarSysMonitor"
                         horizontal: root.horizontal
-                        compact: GlobalConfig.bar.sysMonitor.compact || root.autoCompact
+                        compact: GlobalConfig.bar.sysMonitor.compact || root.autoCompactSysmon
                     }
                 }
             }

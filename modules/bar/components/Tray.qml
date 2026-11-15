@@ -15,6 +15,11 @@ StyledRect {
 
     readonly property bool compact: Config.bar.tray.compact || autoCompact
     readonly property real expandedLength: horizontal ? layout.implicitWidth + padding * 2 : layout.implicitHeight + padding * 2
+    readonly property real compactLength: {
+        const pad = (Config.bar.tray.background ? Tokens.padding.extraSmall : 0) + padding;
+        const iconSize = horizontal ? expandIcon.implicitWidth : expandIcon.implicitHeight;
+        return Math.max(Config.bar.tray.background ? (horizontal ? height : width) : 0, iconSize + pad);
+    }
 
     readonly property alias layout: layout
     readonly property alias items: items
@@ -106,8 +111,9 @@ StyledRect {
         anchors.verticalCenter: root.horizontal ? parent.verticalCenter : undefined
         anchors.bottom: root.horizontal ? undefined : parent.bottom
         anchors.right: root.horizontal ? parent.right : undefined
+        visible: root.compact
 
-        active: root.compact && items.count > 0
+        active: items.count > 0
 
         sourceComponent: Item {
             implicitWidth: root.horizontal ? expandIconInner.implicitWidth - Tokens.padding.small : expandIconInner.implicitWidth
