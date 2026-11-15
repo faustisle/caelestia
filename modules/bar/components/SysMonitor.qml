@@ -103,15 +103,15 @@ StyledRect {
             root.compactLength = compact;
     }
 
-    onCompactChanged: updateLengths()
-    onCompactMetricChanged: updateLengths()
-    onImplicitWidthChanged: updateLengths()
-    onImplicitHeightChanged: updateLengths()
+    onCompactChanged: lengthTimer.restart()
+    onCompactMetricChanged: lengthTimer.restart()
+    onImplicitWidthChanged: lengthTimer.restart()
+    onImplicitHeightChanged: lengthTimer.restart()
 
     Component.onCompleted: {
         sampleCpu();
         refreshAlerts();
-        updateLengths();
+        lengthTimer.restart();
     }
 
     implicitWidth: horizontal ? layout.implicitWidth + root.padding * 2 : Tokens.sizes.bar.innerWidth
@@ -147,6 +147,13 @@ StyledRect {
         }
 
         target: Memory
+    }
+
+    Timer {
+        id: lengthTimer
+
+        interval: 60
+        onTriggered: root.updateLengths()
     }
 
     GridLayout {
