@@ -51,11 +51,13 @@ StyledRect {
 
     readonly property bool hasMetrics: Config.bar.sysMonitor.showCpu || Config.bar.sysMonitor.showCpuTemp || Config.bar.sysMonitor.showMemory
     readonly property int compactMetric: {
+        if (Config.bar.sysMonitor.showMemory && memoryAlert)
+            return 2;
         if (Config.bar.sysMonitor.showCpu && cpuAlert)
             return 0;
         if (Config.bar.sysMonitor.showCpuTemp && tempAlert)
             return 1;
-        if (Config.bar.sysMonitor.showMemory && memoryAlert)
+        if (Config.bar.sysMonitor.showMemory)
             return 2;
         if (Config.bar.sysMonitor.showCpu)
             return 0;
