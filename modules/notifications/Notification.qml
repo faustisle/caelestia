@@ -81,10 +81,19 @@ StyledRect {
             }
         }
         onClicked: event => {
-            if (!GlobalConfig.notifs.actionOnClick || event.button !== Qt.LeftButton)
+            if (event.button !== Qt.LeftButton)
                 return;
 
             const actions = root.modelData.actions;
+            const defaultAction = actions.find(action => action.identifier === "default");
+            if (defaultAction) {
+                defaultAction.invoke();
+                return;
+            }
+
+            if (!GlobalConfig.notifs.actionOnClick)
+                return;
+
             if (actions.length === 1)
                 actions[0].invoke();
         }
