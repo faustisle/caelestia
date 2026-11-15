@@ -66,7 +66,7 @@ Item {
     anchors.horizontalCenter: horizontal ? undefined : parent?.horizontalCenter
     LazyListView.preferredHeight: horizontal ? -1 : (LazyListView.removing ? 0 : layout.implicitHeight + (hasWindows ? Tokens.padding.extraSmall : 0))
     LazyListView.visibleHeight: horizontal ? -1 : LazyListView.preferredHeight
-    LazyListView.preferredWidth: horizontal ? (LazyListView.removing ? 0 : layout.implicitWidth + (hasWindows ? Tokens.padding.extraSmall : 0)) : -1
+    LazyListView.preferredWidth: horizontal ? (LazyListView.removing ? 0 : layout.implicitWidth) : -1
     LazyListView.visibleWidth: horizontal ? LazyListView.preferredWidth : -1
 
     opacity: LazyListView.removing || LazyListView.adding ? 0 : 1
@@ -235,8 +235,9 @@ Item {
 
             Layout.fillWidth: !root.horizontal
             Layout.fillHeight: root.horizontal
-            Layout.leftMargin: root.horizontal ? -Tokens.spacing.extraSmall / 2 : 0
+            Layout.leftMargin: root.horizontal && root.hasWindows ? -Tokens.spacing.extraSmall / 2 : 0
             Layout.topMargin: root.horizontal ? 0 : -Tokens.spacing.extraSmall / 2
+            Layout.rightMargin: root.horizontal && root.hasWindows ? 6 : 0
             Layout.preferredWidth: root.horizontal ? (root.hasWindows && item ? (item as LazyListView).layoutWidth : 0) : -1
             Layout.preferredHeight: root.horizontal ? -1 : (root.hasWindows && item ? (item as LazyListView).layoutHeight : 0)
 
