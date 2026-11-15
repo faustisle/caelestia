@@ -110,6 +110,7 @@ class BarSysMonitorPerformance : public settings::ObjectNode {
 class BarSysMonitor : public settings::ObjectNode {
     CONFIG_NODE(BarSysMonitor, settings::ObjectNode)
 
+    CONFIG_PROPERTY(bool, compact, false)
     CONFIG_PROPERTY(bool, background, false)
     CONFIG_PROPERTY(bool, showIcons, true)
     CONFIG_PROPERTY(bool, showCpu, true)

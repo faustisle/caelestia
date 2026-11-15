@@ -32,6 +32,13 @@ PageBase {
         }
 
         ToggleRow {
+            text: Tr.tr("Compact")
+            subtext: Tr.tr("Show a single summary row and keep alert colours")
+            checked: Config.bar.sysMonitor.compact
+            onToggled: GlobalConfig.bar.sysMonitor.compact = checked
+        }
+
+        ToggleRow {
             text: Tr.tr("Show icons")
             checked: Config.bar.sysMonitor.showIcons
             onToggled: GlobalConfig.bar.sysMonitor.showIcons = checked

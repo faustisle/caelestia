@@ -43,10 +43,31 @@ StyledRect {
     readonly property string memoryValue: (root.memoryInGiB ? root.memoryUsedMiB / 1024 : root.memoryUsedMiB).toFixed(1)
     readonly property string memoryUnit: root.memoryInGiB ? "GB" : "MB"
 
+    property bool compact
     property bool cpuAlert: false
     property bool memoryAlert: false
     property bool tempAlert: false
     property var cpuSamples: []
+
+    readonly property bool hasMetrics: Config.bar.sysMonitor.showCpu || Config.bar.sysMonitor.showCpuTemp || Config.bar.sysMonitor.showMemory
+    readonly property int compactMetric: {
+        if (Config.bar.sysMonitor.showCpu && cpuAlert)
+            return 0;
+        if (Config.bar.sysMonitor.showCpuTemp && tempAlert)
+            return 1;
+        if (Config.bar.sysMonitor.showMemory && memoryAlert)
+            return 2;
+        if (Config.bar.sysMonitor.showCpu)
+            return 0;
+        if (Config.bar.sysMonitor.showCpuTemp)
+            return 1;
+        return 2;
+    }
+    readonly property string compactIcon: compactMetric === 0 ? "memory" : compactMetric === 1 ? "thermometer" : "memory_alt"
+    readonly property string compactValue: compactMetric === 0 ? cpuValue : compactMetric === 1 ? tempValue : memoryValue
+    readonly property string compactUnit: compactMetric === 0 ? "%" : compactMetric === 1 ? tempUnit : memoryUnit
+    readonly property font compactIconFont: compactMetric === 2 ? memoryIconFont : iconFont
+    readonly property bool compactAlert: compactMetric === 0 ? cpuAlert : compactMetric === 1 ? tempAlert : memoryAlert
 
     // Average the CPU samples so brief spikes don't flash the alert colour.
     readonly property real cpuAverage: root.cpuSamples.length > 0 ? root.cpuSamples.reduce((sum, value) => sum + value, 0) / root.cpuSamples.length : 0
@@ -85,8 +106,6 @@ StyledRect {
     }
 
     Connections {
-        target: Cpu
-
         function onPercentageChanged(): void {
             root.sampleCpu();
             root.refreshAlerts();
@@ -95,14 +114,16 @@ StyledRect {
         function onTemperatureChanged(): void {
             root.refreshAlerts();
         }
+
+        target: Cpu
     }
 
     Connections {
-        target: Memory
-
         function onChanged(): void {
             root.refreshAlerts();
         }
+
+        target: Memory
     }
 
     GridLayout {
@@ -115,9 +136,20 @@ StyledRect {
         columnSpacing: Tokens.spacing.medium
 
         Metric {
+            id: compactMetricView
+
+            visible: root.compact && root.hasMetrics
+            icon: root.compactIcon
+            iconFont: root.compactIconFont
+            value: root.compactValue
+            unit: root.compactUnit
+            alert: root.compactAlert
+        }
+
+        Metric {
             id: cpuMetric
 
-            visible: Config.bar.sysMonitor.showCpu
+            visible: !root.compact && Config.bar.sysMonitor.showCpu
             icon: "memory"
             value: root.cpuValue
             unit: "%"
@@ -125,13 +157,13 @@ StyledRect {
         }
 
         Separator {
-            visible: cpuMetric.visible && tempMetric.visible
+            visible: !root.compact && cpuMetric.visible && tempMetric.visible
         }
 
         Metric {
             id: tempMetric
 
-            visible: Config.bar.sysMonitor.showCpuTemp
+            visible: !root.compact && Config.bar.sysMonitor.showCpuTemp
             icon: "thermometer"
             value: root.tempValue
             unit: root.tempUnit
@@ -139,13 +171,13 @@ StyledRect {
         }
 
         Separator {
-            visible: tempMetric.visible && memoryMetric.visible
+            visible: !root.compact && tempMetric.visible && memoryMetric.visible
         }
 
         Metric {
             id: memoryMetric
 
-            visible: Config.bar.sysMonitor.showMemory
+            visible: !root.compact && Config.bar.sysMonitor.showMemory
             icon: "memory_alt"
             iconFont: root.memoryIconFont
             value: root.memoryValue

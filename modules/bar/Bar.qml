@@ -190,6 +190,7 @@ GridLayout {
                     SysMonitor {
                         objectName: "taskbarSysMonitor"
                         horizontal: root.horizontal
+                        compact: root.Config.bar.sysMonitor.compact
                     }
                 }
             }
