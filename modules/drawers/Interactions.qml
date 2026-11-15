@@ -194,23 +194,6 @@ CustomMouseArea {
                 screenState.launcher = false;
         }
 
-        // Show utilities on hover; on a bottom bar it rides the power entry instead of an edge zone
-        let showUtilities;
-        if (geometry.barOnBottom) {
-            const entry = geometry.barContains(x, y) ? bar.entryAt(geometry.axisPos(x, y)) : "";
-            showUtilities = entry === "power" || (screenState.utilities && !entry && inBottomPanel(panels.utilities, x, y, true));
-        } else {
-            showUtilities = inBottomPanel(panels.utilities, x, y, true);
-        }
-
-        // Always update visibility based on hover if not in shortcut mode
-        if (!utilitiesShortcutActive) {
-            screenState.utilities = showUtilities;
-        } else if (showUtilities) {
-            // If hovering over utilities area while in shortcut mode, transition to hover control
-            utilitiesShortcutActive = false;
-        }
-
         // Show popouts on hover
         if (geometry.barContains(x, y)) {
             bar.checkPopout(geometry.axisPos(x, y));
