@@ -92,13 +92,19 @@ Item {
         }
     }
 
-    Launcher.Wrapper {
-        id: launcher
+    Item {
+        anchors.fill: parent
+        // Keep the launcher's spawn animation from showing through the bar
+        clip: true
 
-        screen: root.screen
-        screenState: root.screenState
-        panels: root
-        barOnBottom: root.geometry.barOnBottom
+        Launcher.Wrapper {
+            id: launcher
+
+            screen: root.screen
+            screenState: root.screenState
+            panels: root
+            barOnBottom: root.geometry.barOnBottom
+        }
     }
 
     BarPopouts.ClipWrapper {
