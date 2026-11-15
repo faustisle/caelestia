@@ -33,7 +33,7 @@ Item {
                 return (root.workspaces[index - 1]?.focused ?? false) ? root.wsSpacing / 2 : 0;
             }
 
-            anchors.left: parent?.left
+            anchors.left: root.horizontal ? undefined : parent?.left
             anchors.right: root.horizontal ? undefined : parent?.right
             anchors.top: root.horizontal ? parent?.top : undefined
             anchors.bottom: root.horizontal ? parent?.bottom : undefined
