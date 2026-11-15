@@ -66,8 +66,14 @@ CustomMouseArea {
     }
 
     function inSidebarHoverTrigger(x: real, y: real): bool {
-        const triggerY = Math.max(Config.sidebar.minHoverThreshold, panels.utilities.y + panels.utilities.height + borderThickness);
-        return x > Math.min(width - Config.border.minThickness, geometry.insetLeft(borderThickness) + panels.sidebar.x) && y <= triggerY;
+        const barTop = geometry.insetTop(borderThickness);
+        // Use the open sidebar's edge so the trigger does not move while the
+        // panel animates. In a top bar only the rightmost 50px should trigger,
+        // so hovering the clock or system monitor does not open the sidebar.
+        const triggerWidth = y < barTop ? 50 : panels.sidebar.implicitWidth;
+        const triggerX = width - borderThickness - triggerWidth;
+        const triggerY = Math.max(Config.sidebar.minHoverThreshold, barTop + panels.utilities.y + panels.utilities.height + borderThickness);
+        return x > Math.min(width - Config.border.minThickness, triggerX) && y <= triggerY;
     }
 
     function onWheel(event: WheelEvent): void {
@@ -171,15 +177,15 @@ CustomMouseArea {
         // quick settings attach to each other, so this reveals both at once.
         if (Config.sidebar.enabled && !pressed) {
             const showSidebarHover = inSidebarHoverTrigger(x, y);
-            if (showSidebarHover && !screenState.sidebar) {
-                screenState.sidebar = true;
+            if (showSidebarHover) {
+                if (!screenState.sidebar)
+                    screenState.sidebar = true;
+                else if (sidebarShortcutActive)
+                    sidebarShortcutActive = false; // Transition from shortcut to hover control
             } else if (!sidebarShortcutActive) {
                 const inSidebarArea = inRightPanel(panels.sidebar, x, y) || inRightPanel(panels.utilities, x, y) || inRightPanel(panels.notifications, x, y);
                 if (!inSidebarArea)
                     screenState.sidebar = false;
-            } else if (showSidebarHover) {
-                // If hovering over sidebar area while in shortcut mode, transition to hover control
-                sidebarShortcutActive = false;
             }
         }
 
