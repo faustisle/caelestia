@@ -28,6 +28,8 @@ Item {
         CUtils.dependency(view.itemsDirty);
         return view.itemAtIndex(activeIdx) as Workspace;
     }
+    readonly property real activeWidth: activeWs?.LazyListView.preferredWidth ?? 0
+    readonly property real activeHeight: activeWs?.LazyListView.preferredHeight ?? 0
 
     function ensureVisible(animate = true): void {
         if (!activeWs)

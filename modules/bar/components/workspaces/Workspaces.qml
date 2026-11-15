@@ -56,6 +56,11 @@ ClipRect {
 
     property real blur: onSpecial ? 1 : 0
 
+    readonly property real normalWidth: horizontal ? workspaces.layoutWidth + workspaces.anchors.margins * 2 : Tokens.sizes.bar.innerWidth
+    readonly property real normalHeight: horizontal ? Tokens.sizes.bar.innerWidth : workspaces.layoutHeight + workspaces.anchors.margins * 2
+    readonly property real specialWidth: horizontal ? (specialWs.item?.activeWidth ?? 0) + Tokens.padding.extraSmall * 2 : normalWidth
+    readonly property real specialHeight: horizontal ? normalHeight : (specialWs.item?.activeHeight ?? 0) + Tokens.padding.extraSmall * 2
+
     function workspaceIndex(id: int): int {
         if (!Config.bar.workspaces.showUnoccupied)
             return wsIds.indexOf(id);
@@ -66,8 +71,8 @@ ClipRect {
         return index % shown;
     }
 
-    implicitWidth: horizontal ? workspaces.layoutWidth + workspaces.anchors.margins * 2 : Tokens.sizes.bar.innerWidth
-    implicitHeight: horizontal ? Tokens.sizes.bar.innerWidth : workspaces.layoutHeight + workspaces.anchors.margins * 2
+    implicitWidth: horizontal ? Math.max(normalWidth, onSpecial ? specialWidth : 0) : normalWidth
+    implicitHeight: horizontal ? normalHeight : Math.max(normalHeight, onSpecial ? specialHeight : 0)
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.full
@@ -213,6 +218,9 @@ ClipRect {
         opacity: root.onSpecial ? 1 : 0
 
         sourceComponent: Item {
+            readonly property alias activeWidth: specialWsView.activeWidth
+            readonly property alias activeHeight: specialWsView.activeHeight
+
             StyledRect {
                 anchors.fill: parent
                 radius: Tokens.rounding.full
@@ -220,6 +228,8 @@ ClipRect {
             }
 
             SpecialWorkspaces {
+                id: specialWsView
+
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.extraSmall
                 monitor: root.monitor
