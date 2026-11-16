@@ -53,9 +53,16 @@ Singleton {
             root.osIdLike = fd("ID_LIKE").split(" ");
 
             const logo = Quickshell.iconPath(fd("LOGO"), true);
+            root.osLogo = Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`);
+            root.isDefaultLogo = true;
+
             if (GlobalConfig.general.logo === "caelestia") {
                 root.osLogo = Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`);
                 root.isDefaultLogo = true;
+            } else if (GlobalConfig.general.logo.startsWith("distro:")) {
+                const id = GlobalConfig.general.logo.substring("distro:".length);
+                root.osLogo = Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logos/${id}.svg`);
+                root.isDefaultLogo = false;
             } else if (GlobalConfig.general.logo) {
                 root.osLogo = Quickshell.iconPath(GlobalConfig.general.logo, true) || "file://" + Paths.absolutePath(GlobalConfig.general.logo);
                 root.isDefaultLogo = false;

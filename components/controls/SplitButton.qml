@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
 import qs.components
+import qs.components.effects
 import qs.services
 
 Row {
@@ -18,6 +19,7 @@ Row {
     property bool disabled
     property bool menuOnTop
     property string fallbackIcon
+    property string fallbackImage
     property string fallbackText
     property real minLeftWidth
 
@@ -35,6 +37,8 @@ Row {
     property color textColour: type == SplitButton.Filled ? Colours.palette.m3onPrimary : Colours.palette.m3onSecondaryContainer
     property color disabledColour: Qt.alpha(Colours.palette.m3onSurface, 0.1)
     property color disabledTextColour: Qt.alpha(Colours.palette.m3onSurface, 0.38)
+
+    readonly property string iconImage: active?.activeImage ?? fallbackImage
 
     spacing: Math.floor(Tokens.spacing.extraSmall / 2)
 
@@ -64,10 +68,19 @@ Row {
             anchors.horizontalCenterOffset: Math.floor(root.verticalPadding / 4)
             spacing: Tokens.spacing.small
 
+            ColouredIcon {
+                Layout.alignment: Qt.AlignVCenter
+                visible: root.iconImage !== ""
+                source: root.iconImage
+                implicitSize: Math.round(Tokens.font.icon.small.pointSize * 1.3)
+                colour: root.disabled ? root.disabledTextColour : root.textColour
+            }
+
             MaterialIcon {
                 id: iconLabel
 
                 Layout.alignment: Qt.AlignVCenter
+                visible: root.iconImage === ""
                 animate: true
                 text: root.active?.activeIcon ?? root.fallbackIcon
                 color: root.disabled ? root.disabledTextColour : root.textColour

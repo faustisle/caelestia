@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Caelestia.Config
 import Caelestia.I18n
 import qs.components.controls
+import qs.utils
 import qs.modules.nexus.common
 
 PageBase {
@@ -25,6 +26,99 @@ PageBase {
         }
     ]
 
+    readonly property list<MenuItem> logoItems: [
+        MenuItem {
+            text: Tr.tr("Auto (distro)")
+            value: ""
+            image: SysInfo.osLogo
+        },
+        MenuItem {
+            text: Tr.tr("Caelestia")
+            value: "caelestia"
+            image: Qt.resolvedUrl("../../../../assets/logo.svg")
+        },
+        MenuItem {
+            text: "Arch Linux"
+            value: "distro:archlinux"
+            image: Qt.resolvedUrl("../../../../assets/logos/archlinux.svg")
+        },
+        MenuItem {
+            text: "CachyOS"
+            value: "distro:cachyos"
+            image: Qt.resolvedUrl("../../../../assets/logos/cachyos.svg")
+        },
+        MenuItem {
+            text: "EndeavourOS"
+            value: "distro:endeavouros"
+            image: Qt.resolvedUrl("../../../../assets/logos/endeavouros.svg")
+        },
+        MenuItem {
+            text: "Manjaro"
+            value: "distro:manjaro"
+            image: Qt.resolvedUrl("../../../../assets/logos/manjaro.svg")
+        },
+        MenuItem {
+            text: "Debian"
+            value: "distro:debian"
+            image: Qt.resolvedUrl("../../../../assets/logos/debian.svg")
+        },
+        MenuItem {
+            text: "Ubuntu"
+            value: "distro:ubuntu"
+            image: Qt.resolvedUrl("../../../../assets/logos/ubuntu.svg")
+        },
+        MenuItem {
+            text: "Linux Mint"
+            value: "distro:linuxmint"
+            image: Qt.resolvedUrl("../../../../assets/logos/linuxmint.svg")
+        },
+        MenuItem {
+            text: "Pop!_OS"
+            value: "distro:popos"
+            image: Qt.resolvedUrl("../../../../assets/logos/popos.svg")
+        },
+        MenuItem {
+            text: "Fedora"
+            value: "distro:fedora"
+            image: Qt.resolvedUrl("../../../../assets/logos/fedora.svg")
+        },
+        MenuItem {
+            text: "openSUSE"
+            value: "distro:opensuse"
+            image: Qt.resolvedUrl("../../../../assets/logos/opensuse.svg")
+        },
+        MenuItem {
+            text: "NixOS"
+            value: "distro:nixos"
+            image: Qt.resolvedUrl("../../../../assets/logos/nixos.svg")
+        },
+        MenuItem {
+            text: "Gentoo"
+            value: "distro:gentoo"
+            image: Qt.resolvedUrl("../../../../assets/logos/gentoo.svg")
+        },
+        MenuItem {
+            text: "Void Linux"
+            value: "distro:voidlinux"
+            image: Qt.resolvedUrl("../../../../assets/logos/voidlinux.svg")
+        },
+        MenuItem {
+            text: "Alpine Linux"
+            value: "distro:alpinelinux"
+            image: Qt.resolvedUrl("../../../../assets/logos/alpinelinux.svg")
+        },
+        MenuItem {
+            text: "Kali Linux"
+            value: "distro:kalilinux"
+            image: Qt.resolvedUrl("../../../../assets/logos/kalilinux.svg")
+        },
+        MenuItem {
+            text: "Raspberry Pi OS"
+            value: "distro:raspberrypi"
+            image: Qt.resolvedUrl("../../../../assets/logos/raspberrypi.svg")
+        }
+    ]
+
     title: Tr.tr("Taskbar")
     isSubPage: true
 
@@ -42,12 +136,20 @@ PageBase {
 
         SelectRow {
             first: true
-            last: true
             label: Tr.tr("Position")
             subtext: Tr.tr("Which screen edge the bar sits on")
             menuItems: root.positionItems
             active: root.positionItems.find(i => i.value === GlobalConfig.bar.position) ?? root.positionItems[0]
             onSelected: item => GlobalConfig.bar.position = item.value
+        }
+
+        SelectRow {
+            last: true
+            label: Tr.tr("Launcher logo")
+            subtext: Tr.tr("Icon shown on the launcher button")
+            menuItems: root.logoItems
+            active: root.logoItems.find(i => i.value === GlobalConfig.general.logo) ?? root.logoItems[0]
+            onSelected: item => GlobalConfig.general.logo = item.value
         }
 
         // Behaviour
