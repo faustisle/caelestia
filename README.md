@@ -488,6 +488,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             "enabled": true,
             "showLabels": true,
             "showFiles": true,
+            "doubleClick": true,
             "iconSize": 48,
             "position": "top-right",
             "order": []

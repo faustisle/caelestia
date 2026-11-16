@@ -421,7 +421,20 @@ done`, "sh", Paths.desktop, ...paths]);
                         return;
                     }
 
-                    Desktop.launch(tile.modelData);
+                    if (!root.iconsConfig.doubleClick)
+                        Desktop.launch(tile.modelData);
+                }
+                onDoubleClicked: mouse => {
+                    if (mouse.button !== Qt.LeftButton)
+                        return;
+
+                    if (root.dragMoved) {
+                        root.dragMoved = false;
+                        return;
+                    }
+
+                    if (root.iconsConfig.doubleClick)
+                        Desktop.launch(tile.modelData);
                 }
             }
         }

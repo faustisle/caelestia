@@ -71,6 +71,13 @@ PageBase {
             onToggled: GlobalConfig.background.desktopIcons.showFiles = checked
         }
 
+        ToggleRow {
+            text: Tr.tr("Double-click to open")
+            subtext: Tr.tr("Require two clicks to open desktop items")
+            checked: root.iconsConfig.doubleClick
+            onToggled: GlobalConfig.background.desktopIcons.doubleClick = checked
+        }
+
         StepperRow {
             label: Tr.tr("Icon size")
             subtext: Tr.tr("Size of the icons (px)")
