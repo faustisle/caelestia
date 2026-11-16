@@ -16,6 +16,7 @@ StyledRect {
     required property color tertiary
     required property color surface
     required property bool active
+    property bool interactive: true
 
     readonly property color contentColour: active ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
     readonly property color subtextColour: active ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurfaceVariant
@@ -32,6 +33,7 @@ StyledRect {
     StateLayer {
         anchors.fill: parent
         radius: root.radius
+        enabled: root.interactive
         onClicked: root.clicked()
     }
 
