@@ -215,16 +215,11 @@ Singleton {
 
     function commandFor(monitor: var): string {
         const quote = value => JSON.stringify(String(value));
-        if (monitor.disabled) {
-            return Hypr.usingLua ? `eval hl.monitor({ output = ${quote(monitor.name)}, disabled = true })` : `keyword monitor ${quote(`${monitor.name},disable`)}`;
-        }
+        if (monitor.disabled)
+            return `keyword monitor ${quote(`${monitor.name},disable`)}`;
 
         const mode = monitor.mode || "preferred";
         const position = `${Math.round(monitor.x)}x${Math.round(monitor.y)}`;
-        if (Hypr.usingLua) {
-            return `eval hl.monitor({ output = ${quote(monitor.name)}, mode = ${quote(mode)}, position = ${quote(position)}, scale = ${monitor.scale}, transform = ${monitor.transform} })`;
-        }
-
         return `keyword monitor ${quote(`${monitor.name},${mode},${position},${monitor.scale},${monitor.transform}`)}`;
     }
 

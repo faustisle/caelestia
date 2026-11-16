@@ -15,6 +15,12 @@ PageBase {
 
     readonly property var sel: HyprDisplay.selected
 
+    property list<MenuItem> modeItems: []
+    property var modeObjects: []
+    readonly property Component modeItemComponent: Component {
+        MenuItem {}
+    }
+
     readonly property list<MenuItem> rotationItems: [
         MenuItem {
             text: Tr.trCtx("Normal", "display rotation")
@@ -38,10 +44,45 @@ PageBase {
         return root.rotationItems.find(item => item.value === value) ?? root.rotationItems[0];
     }
 
+    function rebuildModeItems(): void {
+        for (const item of root.modeObjects)
+            item.destroy();
+
+        root.modeObjects = [];
+
+        if (!root.sel) {
+            root.modeItems = [];
+            return;
+        }
+
+        const seen = new Set();
+        for (const mode of root.sel.availableModes) {
+            const value = String(mode).replace(/Hz$/, "");
+            if (seen.has(value))
+                continue;
+
+            seen.add(value);
+            root.modeObjects.push(root.modeItemComponent.createObject(root, {
+                text: value,
+                value: value
+            }));
+        }
+
+        root.modeItems = root.modeObjects;
+    }
+
     title: Tr.tr("Displays")
     isSubPage: false
 
-    Component.onCompleted: HyprDisplay.enter()
+    onSelChanged: root.rebuildModeItems()
+    Component.onCompleted: {
+        HyprDisplay.enter();
+        root.rebuildModeItems();
+    }
+    Component.onDestruction: {
+        for (const item of root.modeObjects)
+            item.destroy();
+    }
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -91,23 +132,15 @@ PageBase {
             }
         }
 
-        DialogSelectButton {
-            id: modeSelect
-
-            rootParent: root.flickable
-            icon: "monitor"
-            label: Tr.tr("Resolution")
-            header: Tr.tr("Display mode")
-            acceptLabel: Tr.tr("Select")
-            model: root.sel ? root.sel.availableModes.map(mode => ({
-                        id: String(mode).replace(/Hz$/, ""),
-                        label: String(mode)
-                    })) : []
-            selectedItem: root.sel ? root.sel.mode : ""
+        SelectRow {
             visible: root.sel !== null
-            onAccepted: {
-                if (root.sel && modeSelect.selectedItem)
-                    HyprDisplay.setMode(root.sel.name, modeSelect.selectedItem);
+            label: Tr.tr("Resolution")
+            subtext: Tr.tr("Size and refresh rate")
+            menuItems: root.modeItems
+            active: root.modeItems.find(item => item.value === (root.sel?.mode ?? "")) ?? root.modeItems[0] ?? null
+            onSelected: item => {
+                if (root.sel)
+                    HyprDisplay.setMode(root.sel.name, item.value);
             }
         }
 

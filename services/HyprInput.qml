@@ -138,6 +138,8 @@ Singleton {
         root.applySoon();
     }
 
+    Component.onCompleted: root.useCurrent()
+
     FileView {
         path: root.statePath
         onLoaded: root.loadState(text())

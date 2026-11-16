@@ -90,7 +90,7 @@ ConnectedRect {
                     stepSize: root.stepSize
                     value: root.value
                     enabled: root.enabled
-                    onInteraction: v => root.moved(v)
+                    onInteraction: v => root.moved(root.from + v * (root.to - root.from))
                 }
             }
         }
