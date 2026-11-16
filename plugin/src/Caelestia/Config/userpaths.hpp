@@ -15,6 +15,7 @@ class UserPaths : public settings::ObjectNode {
 
     CONFIG_GLOBAL_PROPERTY(
         QString, wallpaperDir, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + u"/Wallpapers"_s)
+    CONFIG_GLOBAL_PROPERTY(QString, desktopDir, QStandardPaths::writableLocation(QStandardPaths::DesktopLocation))
     CONFIG_PROPERTY(QString, noNotifsPic, u"root:/assets/dino.png"_s)
     CONFIG_PROPERTY(QString, lockNoNotifsPic, u"root:/assets/dino.png"_s)
 };

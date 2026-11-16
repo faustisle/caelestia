@@ -140,6 +140,9 @@ QtObject {
                 Component {
                     BarStatusIcons {}
                 }
+                Component {
+                    DesktopPanel {}
+                }
             }
         },
         Component {

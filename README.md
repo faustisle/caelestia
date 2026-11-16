@@ -483,6 +483,12 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
                 "opacity": 0.7,
                 "blur": 0.4
             }
+        },
+        "desktopIcons": {
+            "enabled": true,
+            "showLabels": true,
+            "iconSize": 48,
+            "position": "top-right"
         }
     },
     "bar": {
@@ -914,6 +920,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
     },
     "paths": {
         "wallpaperDir": "~/Pictures/Wallpapers",
+        "desktopDir": "~/Desktop",
         "noNotifsPic": "root:/assets/dino.png",
         "lockNoNotifsPic": "root:/assets/dino.png"
     }

@@ -3,6 +3,8 @@ qml_module(caelestia-models
     SOURCES
         filesystemmodel.cpp
         appdb.cpp
+        desktopfilemodel.cpp
+        desktopfilemodel.hpp
     LIBRARIES
         Qt::Gui
         Qt::Multimedia
