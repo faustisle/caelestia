@@ -64,14 +64,18 @@ Singleton {
             cleanProc.command = ["gio", "trash", "--empty"];
         } else if (item.kind === "cache") {
             cleanProc.command = ["sh", "-c", `find "$1" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +`, "sh", item.path];
-        } else if (item.kind === "package") {
-            cleanProc.command = ["pkexec", "pacman", "-Sc", "--noconfirm"];
-        } else if (item.kind === "orphans") {
-            cleanProc.command = ["sh", "-c", `names=$(pacman -Qdtq); [ -n "$names" ] && exec pkexec pacman -Rns --noconfirm $names`];
-        } else if (item.kind === "journal") {
-            cleanProc.command = ["pkexec", "journalctl", "--vacuum-size=200M"];
-        } else if (item.kind === "coredumps") {
-            cleanProc.command = ["pkexec", "find", "/var/lib/systemd/coredump", "-mindepth", "1", "-type", "f", "-delete"];
+        } else if (["package", "orphans", "journal", "coredumps"].includes(item.kind)) {
+            const terminal = GlobalConfig.general.apps.terminal;
+            if (terminal.length === 0) {
+                root.cleaning = "";
+                root.lastError = Tr.tr("No terminal is configured");
+                Toaster.toast(Tr.tr("Storage cleanup failed"), Tr.tr("No terminal is configured"), "error", Toast.Error);
+                return;
+            }
+
+            // Run in the terminal so sudo can prompt. pkexec has no usable
+            // authentication agent here and waits forever for a text prompt.
+            cleanProc.command = [...terminal, "sh", Quickshell.shellPath("assets/storage_clean.sh"), item.kind];
         } else {
             root.cleaning = "";
             return;

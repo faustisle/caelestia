@@ -105,7 +105,7 @@ PageBase {
 
         SectionHeader {
             text: Tr.tr("Free up space")
-            visible: Storage.systemItems.length > 0
+            visible: !Storage.measuring
         }
 
         Repeater {
@@ -116,9 +116,27 @@ PageBase {
             }
         }
 
+        ConnectedRect {
+            Layout.fillWidth: true
+            first: true
+            last: true
+            visible: !Storage.measuring && Storage.systemItems.length === 0
+            implicitHeight: emptySystem.implicitHeight + Tokens.padding.large * 2
+
+            StyledText {
+                id: emptySystem
+
+                anchors.fill: parent
+                anchors.margins: Tokens.padding.large
+                text: Tr.tr("Nothing to clean right now.")
+                color: Colours.palette.m3outline
+                font: Tokens.font.label.small
+            }
+        }
+
         SectionHeader {
             text: Tr.tr("Caches and trash")
-            visible: Storage.cacheItems.length > 0
+            visible: !Storage.measuring
         }
 
         Repeater {
@@ -126,6 +144,24 @@ PageBase {
 
             StorageCleanRow {
                 count: Storage.cacheItems.length
+            }
+        }
+
+        ConnectedRect {
+            Layout.fillWidth: true
+            first: true
+            last: true
+            visible: !Storage.measuring && Storage.cacheItems.length === 0
+            implicitHeight: emptyCaches.implicitHeight + Tokens.padding.large * 2
+
+            StyledText {
+                id: emptyCaches
+
+                anchors.fill: parent
+                anchors.margins: Tokens.padding.large
+                text: Tr.tr("The trash and caches above 8 MB are empty.")
+                color: Colours.palette.m3outline
+                font: Tokens.font.label.small
             }
         }
 
