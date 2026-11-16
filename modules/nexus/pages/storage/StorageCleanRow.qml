@@ -13,10 +13,13 @@ ConnectedRect {
     required property var modelData
     required property int index
 
+    property int count
     property bool confirming: false
 
+    readonly property bool review: root.modelData.kind === "review"
+
     first: root.index === 0
-    last: root.index === Storage.cleanups.length - 1
+    last: root.index === root.count - 1
     Layout.fillWidth: true
     implicitHeight: cleanLayout.implicitHeight + Tokens.padding.medium * 2
 
@@ -63,6 +66,15 @@ ConnectedRect {
                 font: Tokens.font.label.small
                 elide: Text.ElideRight
             }
+
+            StyledText {
+                Layout.fillWidth: true
+                visible: root.confirming && root.modelData.details !== undefined && root.modelData.details !== ""
+                text: root.modelData.details ?? ""
+                color: Colours.palette.m3outline
+                font: Tokens.font.label.small
+                wrapMode: Text.Wrap
+            }
         }
 
         StyledText {
@@ -71,18 +83,28 @@ ConnectedRect {
         }
 
         RowLayout {
-            visible: !root.confirming && Storage.cleaning !== root.modelData.id
+            visible: root.review
             spacing: Tokens.spacing.small
 
             TextButton {
                 text: root.modelData.action
-                enabled: Storage.cleaning === "" && root.modelData.size > 0
+                onClicked: Storage.openFolder(root.modelData.path)
+            }
+        }
+
+        RowLayout {
+            visible: !root.review && !root.confirming && Storage.cleaning !== root.modelData.id
+            spacing: Tokens.spacing.small
+
+            TextButton {
+                text: root.modelData.action
+                enabled: Storage.cleaning === "" && (root.modelData.size > 0 || root.modelData.removable === true)
                 onClicked: root.confirming = true
             }
         }
 
         RowLayout {
-            visible: root.confirming
+            visible: !root.review && root.confirming
             spacing: Tokens.spacing.small
 
             TextButton {
@@ -96,7 +118,7 @@ ConnectedRect {
                 enabled: Storage.cleaning === ""
                 onClicked: {
                     root.confirming = false;
-                    Storage.clean(root.modelData.id);
+                    Storage.clean(root.modelData);
                 }
             }
         }

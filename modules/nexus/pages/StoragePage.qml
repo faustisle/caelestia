@@ -105,13 +105,41 @@ PageBase {
 
         SectionHeader {
             text: Tr.tr("Free up space")
-            visible: Storage.cleanups.length > 0
+            visible: Storage.systemItems.length > 0
         }
 
         Repeater {
-            model: Storage.cleanups
+            model: Storage.systemItems
 
-            StorageCleanRow {}
+            StorageCleanRow {
+                count: Storage.systemItems.length
+            }
+        }
+
+        SectionHeader {
+            text: Tr.tr("Caches and trash")
+            visible: Storage.cacheItems.length > 0
+        }
+
+        Repeater {
+            model: Storage.cacheItems
+
+            StorageCleanRow {
+                count: Storage.cacheItems.length
+            }
+        }
+
+        SectionHeader {
+            text: Tr.tr("Worth a look")
+            visible: Storage.reviewItems.length > 0
+        }
+
+        Repeater {
+            model: Storage.reviewItems
+
+            StorageCleanRow {
+                count: Storage.reviewItems.length
+            }
         }
 
         RowLayout {
