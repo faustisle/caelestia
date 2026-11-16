@@ -16,6 +16,8 @@ import qs.utils
 Item {
     id: root
 
+    required property ShellScreen screen
+
     readonly property var iconsConfig: Config.background.desktopIcons
 
     // Height of the desktop clock, used to keep the icons off it when both sit
@@ -31,8 +33,10 @@ Item {
 
     // The bar floats over the wallpaper, so leave room for it on whichever edge
     // it occupies. These mirror BarWrapper's content thickness.
+    readonly property var barRef: ShellState.componentsFor(root.screen)?.bar
     readonly property bool barHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
-    readonly property real barThickness: root.barHorizontal ? Tokens.sizes.bar.horizontalInnerWidth + Tokens.padding.extraSmall * 2 : Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness) * 2
+    // Prefer the bar's real size; the fallback mirrors BarWrapper's formula.
+    readonly property real barThickness: root.barRef?.contentThickness ?? (root.barHorizontal ? Tokens.sizes.bar.horizontalInnerWidth + Tokens.padding.extraSmall * 2 : Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness) * 2)
     readonly property real edgeMargin: Tokens.padding.large
     readonly property bool clockOnSameSide: {
         const icons = root.position;
@@ -44,12 +48,16 @@ Item {
     readonly property real bottomReserve: root.clockReserve > 0 && Config.background.desktopClock.position.startsWith("bottom") ? root.clockReserve : 0
     readonly property real marginLeft: root.edgeMargin + (Config.bar.position === "left" ? root.barThickness : 0)
     readonly property real marginRight: root.edgeMargin + (Config.bar.position === "right" ? root.barThickness : 0)
-    readonly property real marginTop: root.edgeMargin + root.topReserve + (Config.bar.position === "top" ? root.barThickness : 0)
-    readonly property real marginBottom: root.edgeMargin + root.bottomReserve + (Config.bar.position === "bottom" ? root.barThickness : 0)
+    readonly property real topInset: root.edgeMargin + (Config.bar.position === "top" ? root.barThickness : 0)
+    readonly property real bottomInset: root.edgeMargin + (Config.bar.position === "bottom" ? root.barThickness : 0)
+    // The clock reserve already contains the screen-edge gap; take whichever
+    // inset is larger instead of stacking the bar and clock padding.
+    readonly property real marginTop: Math.max(root.topInset, root.topReserve)
+    readonly property real marginBottom: Math.max(root.bottomInset, root.bottomReserve)
 
     readonly property real spacing: Tokens.spacing.small
     readonly property int tilePadding: Tokens.padding.small
-    readonly property real labelHeight: root.showLabels ? Math.ceil(labelMetrics.height * 2) : 0
+    readonly property real labelHeight: root.showLabels ? Math.ceil(labelMetrics.height) : 0
     readonly property real tileWidth: Math.max(root.iconSize + root.tilePadding * 2, 112)
     readonly property real tileHeight: root.iconSize + (root.showLabels ? root.spacing + root.labelHeight : 0) + root.tilePadding * 2
     readonly property real cellWidth: root.tileWidth + root.spacing
@@ -63,10 +71,6 @@ Item {
     readonly property real gridHeight: root.count === 0 ? 0 : Math.min(root.count, root.rows) * root.cellHeight - root.spacing
     readonly property real gridX: root.alignRight ? root.width - root.marginRight - root.gridWidth : root.marginLeft
     readonly property real gridY: root.alignBottom ? root.height - root.marginBottom - root.gridHeight : root.marginTop
-
-    // Used by the window's input mask, so the rest of the desktop keeps its
-    // normal click behaviour instead of being swallowed by the background.
-    readonly property rect bounds: Qt.rect(root.gridX, root.gridY, root.gridWidth, root.gridHeight)
 
     // Paths in display order. A drag overrides the saved order until it is dropped.
     readonly property var orderPaths: {
@@ -117,9 +121,6 @@ Item {
     property real dragX: 0
     property real dragY: 0
     property bool dragMoved: false
-    // Expanding the input mask while a drag is over the icons lets an external
-    // file be dropped anywhere on the desktop, without swallowing clicks at rest.
-    property bool dropActive: false
 
     // Emitted for a right click on an icon. The desktop context menu can connect
     // to this without the icon grid needing to know about it.
@@ -239,15 +240,8 @@ Item {
         anchors.fill: parent
         keys: ["text/uri-list"]
 
-        onEntered: drag => {
-            root.dropActive = true;
-            drag.accept(Qt.CopyAction);
-        }
-        onExited: root.dropActive = false
-        onDropped: drop => {
-            root.dropActive = false;
-            root.acceptDrop(drop);
-        }
+        onEntered: drag => drag.accept(Qt.CopyAction)
+        onDropped: drop => root.acceptDrop(drop)
     }
 
     Repeater {
@@ -315,20 +309,39 @@ Item {
                     source: Quickshell.iconPath(tile.modelData.icon, tile.modelData.kind === "folder" ? "folder" : "text-x-generic")
                 }
 
-                StyledText {
-                    visible: root.showLabels
+                Item {
                     width: root.tileWidth - root.tilePadding * 2
-                    height: root.labelHeight
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignTop
-                    elide: Text.ElideRight
-                    maximumLineCount: 2
-                    wrapMode: Text.WordWrap
-                    text: tile.modelData.name
-                    color: Colours.palette.m3onSurface
-                    font: Tokens.font.label.medium
-                    style: Text.Outline
-                    styleColor: Qt.alpha(Colours.palette.m3shadow, 0.7)
+                    height: root.showLabels ? root.labelHeight : 0
+                    visible: root.showLabels
+
+                    StyledText {
+                        anchors.centerIn: parent
+                        anchors.verticalCenterOffset: 1
+                        width: parent.width
+                        height: parent.height
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                        maximumLineCount: 1
+                        wrapMode: Text.NoWrap
+                        text: tile.modelData.name
+                        renderType: Text.QtRendering
+                        color: Qt.alpha(Colours.palette.m3shadow, 0.75)
+                        font: Tokens.font.label.medium
+                    }
+
+                    StyledText {
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                        maximumLineCount: 1
+                        wrapMode: Text.NoWrap
+                        text: tile.modelData.name
+                        renderType: Text.QtRendering
+                        color: Colours.palette.m3onSurface
+                        font: Tokens.font.label.medium
+                    }
                 }
             }
 

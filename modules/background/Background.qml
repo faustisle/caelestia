@@ -26,17 +26,9 @@ Variants {
         color: contentItem.Config.background.wallpaperEnabled ? "black" : "transparent"
         surfaceFormat.opaque: false
 
-        // Only the icon grid is clickable. The rest of the wallpaper stays
-        // click-through so the background never swallows desktop input. While a
-        // file is dragged over the icons, cover the screen so it can be dropped
-        // anywhere on the desktop.
-        mask: Region {
-            x: iconsLoader.item?.dropActive ? 0 : (iconsLoader.item?.bounds.x ?? 0) // qmllint disable missing-property
-            y: iconsLoader.item?.dropActive ? 0 : (iconsLoader.item?.bounds.y ?? 0) // qmllint disable missing-property
-            width: iconsLoader.item?.dropActive ? win.width : (iconsLoader.item?.bounds.width ?? 0) // qmllint disable missing-property
-            height: iconsLoader.item?.dropActive ? win.height : (iconsLoader.item?.bounds.height ?? 0) // qmllint disable missing-property
-        }
-
+        // The desktop surface accepts pointer input across the whole screen so
+        // icons and file drops work anywhere. Keyboard focus stays None above,
+        // so this never takes keys from the active window.
         anchors.top: true
         anchors.bottom: true
         anchors.left: true
@@ -177,6 +169,7 @@ Variants {
             active: Config.background.desktopIcons.enabled
 
             sourceComponent: DesktopIcons {
+                screen: win.modelData
                 clockHeight: clockLoader.height
             }
         }
