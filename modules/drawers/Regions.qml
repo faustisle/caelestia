@@ -69,10 +69,21 @@ Region {
         width: panel.width * (1 - root.panels.utilities.offsetScale) + root.borderThickness
     }
 
+    // The popout sits flush against the bar edge. Derive its mask from the final
+    // size and the bar edge rather than from the animated geometry: while the
+    // popout reveals, its position and height update on separate bindings and
+    // can momentarily leave a one-pixel hole between the bar and the popout,
+    // which makes the cursor leave the input region and closes the popout.
+    // Detached popouts float in the center, so keep their animated geometry.
     R {
+        readonly property bool detached: panel.content.isDetached // qmllint disable missing-property
+
         panel: root.panels.popoutsWrapper
-        width: root.geometry.horizontal ? panel.width : panel.width * (1 - root.panels.popoutsWrapper.offsetScale)
-        height: root.geometry.horizontal ? panel.height * (1 - root.panels.popoutsWrapper.offsetScale) : panel.height
+
+        x: root.geometry.horizontal || detached ? panel.x + root.geometry.insetLeft(root.borderThickness) : root.x
+        y: detached ? panel.y + root.geometry.insetTop(root.borderThickness) : root.geometry.horizontal ? (root.geometry.barOnTop ? root.y : root.y + root.height - height) : panel.y + root.geometry.insetTop(root.borderThickness)
+        width: detached ? panel.width : panel.content.nonAnimWidth // qmllint disable missing-property
+        height: detached ? panel.height : panel.content.nonAnimHeight // qmllint disable missing-property
     }
 
     component R: Region {
