@@ -27,12 +27,14 @@ Variants {
         surfaceFormat.opaque: false
 
         // Only the icon grid is clickable. The rest of the wallpaper stays
-        // click-through so the background never swallows desktop input.
+        // click-through so the background never swallows desktop input. While a
+        // file is dragged over the icons, cover the screen so it can be dropped
+        // anywhere on the desktop.
         mask: Region {
-            x: iconsLoader.item?.bounds.x ?? 0 // qmllint disable missing-property
-            y: iconsLoader.item?.bounds.y ?? 0 // qmllint disable missing-property
-            width: iconsLoader.item?.bounds.width ?? 0 // qmllint disable missing-property
-            height: iconsLoader.item?.bounds.height ?? 0 // qmllint disable missing-property
+            x: iconsLoader.item?.dropActive ? 0 : (iconsLoader.item?.bounds.x ?? 0) // qmllint disable missing-property
+            y: iconsLoader.item?.dropActive ? 0 : (iconsLoader.item?.bounds.y ?? 0) // qmllint disable missing-property
+            width: iconsLoader.item?.dropActive ? win.width : (iconsLoader.item?.bounds.width ?? 0) // qmllint disable missing-property
+            height: iconsLoader.item?.dropActive ? win.height : (iconsLoader.item?.bounds.height ?? 0) // qmllint disable missing-property
         }
 
         anchors.top: true
@@ -174,7 +176,9 @@ Variants {
             anchors.fill: parent
             active: Config.background.desktopIcons.enabled
 
-            sourceComponent: DesktopIcons {}
+            sourceComponent: DesktopIcons {
+                clockHeight: clockLoader.height
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qstring.h>
+#include <qstringlist.h>
 
 #include "settings/objectnode.hpp"
 #include "common.hpp"
@@ -45,6 +46,8 @@ class DesktopIcons : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, showFiles, true)
     CONFIG_PROPERTY(int, iconSize, 48)
     CONFIG_PROPERTY(QString, position, u"top-right"_s)
+    // Absolute paths in display order, updated by dragging icons.
+    CONFIG_PROPERTY(QStringList, order, {})
 };
 
 class BackgroundConfig : public settings::ObjectNode {

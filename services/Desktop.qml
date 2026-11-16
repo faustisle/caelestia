@@ -10,6 +10,17 @@ Singleton {
         if (!file)
             return;
 
+        if (file.kind === "folder") {
+            const explorer = GlobalConfig.general.apps.explorer;
+            if (explorer.length > 0)
+                Quickshell.execDetached({
+                    command: [...explorer, file.path]
+                });
+            else
+                Quickshell.execDetached(["xdg-open", file.path]);
+            return;
+        }
+
         if (file.kind !== "application") {
             Quickshell.execDetached(["xdg-open", file.path]);
             return;
