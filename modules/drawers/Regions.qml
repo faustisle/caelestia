@@ -77,13 +77,16 @@ Region {
     // Detached popouts float in the center, so keep their animated geometry.
     R {
         readonly property bool detached: panel.content.isDetached // qmllint disable missing-property
+        // A deactivated loader can keep its last implicit size, so gate the mask
+        // on the popout actually being open or detached instead of the size alone.
+        readonly property bool shown: detached || root.panels.popouts.hasCurrent
 
         panel: root.panels.popoutsWrapper
 
         x: root.geometry.horizontal || detached ? panel.x + root.geometry.insetLeft(root.borderThickness) : root.x
         y: detached ? panel.y + root.geometry.insetTop(root.borderThickness) : root.geometry.horizontal ? (root.geometry.barOnTop ? root.y : root.y + root.height - height) : panel.y + root.geometry.insetTop(root.borderThickness)
-        width: detached ? panel.width : panel.content.nonAnimWidth // qmllint disable missing-property
-        height: detached ? panel.height : panel.content.nonAnimHeight // qmllint disable missing-property
+        width: shown ? (detached ? panel.width : panel.content.nonAnimWidth) : 0 // qmllint disable missing-property
+        height: shown ? (detached ? panel.height : panel.content.nonAnimHeight) : 0 // qmllint disable missing-property
     }
 
     component R: Region {
