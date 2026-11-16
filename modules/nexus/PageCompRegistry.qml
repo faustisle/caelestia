@@ -111,6 +111,22 @@ QtObject {
                 }
             }
         },
+        Component {
+            // Input
+            StackPage {
+                Component {
+                    InputPage {}
+                }
+            }
+        },
+        Component {
+            // Displays
+            StackPage {
+                Component {
+                    DisplayPage {}
+                }
+            }
+        },
 
         // Shell
         Component {

@@ -62,6 +62,18 @@ QtObject {
             description: Tr.tr("Disk usage, caches and trash"),
             category: "system"
         },
+        {
+            label: Tr.tr("Input"),
+            icon: "mouse",
+            description: Tr.tr("Mouse and touchpad"),
+            category: "system"
+        },
+        {
+            label: Tr.tr("Displays"),
+            icon: "monitor",
+            description: Tr.tr("Monitor layout and modes"),
+            category: "system"
+        },
 
         // Shell
         {
