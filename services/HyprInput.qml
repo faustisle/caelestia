@@ -22,11 +22,19 @@ Singleton {
     property bool tapAndDrag: true
     property bool disableWhileTyping: true
 
+    property var currentValues: null
+    property bool stateExists: false
     property bool initialized: false
+    property bool dirty: false
+    property bool pendingReset: false
     property bool applying: false
 
     function option(key: string, fallback: var): var {
-        const value = Hypr.options[key];
+        const values = root.currentValues;
+        if (!values)
+            return fallback;
+
+        const value = values[key];
         if (value === undefined || value === null || value === "" || value === "[[EMPTY]]")
             return fallback;
 
@@ -39,7 +47,7 @@ Singleton {
     }
 
     function useCurrent(): void {
-        if (root.initialized || Object.keys(Hypr.options).length === 0)
+        if (!root.currentValues)
             return;
 
         root.sensitivity = Number(root.option("input:sensitivity", 0));
@@ -50,11 +58,34 @@ Singleton {
         root.tapAndDrag = root.booleanOption("input:touchpad:tap-and-drag", true);
         root.disableWhileTyping = root.booleanOption("input:touchpad:disable_while_typing", true);
         root.initialized = true;
+        root.dirty = false;
+    }
+
+    function parseDescriptions(text: string): void {
+        try {
+            const descriptions = JSON.parse(text);
+            const values = {};
+            for (const entry of descriptions) {
+                if (entry.name)
+                    values[entry.name] = entry.current;
+            }
+            root.currentValues = values;
+        } catch (e) {
+            root.currentValues = {};
+        }
+
+        if (root.pendingReset) {
+            root.pendingReset = false;
+            root.useCurrent();
+        } else if (!root.stateExists && !root.initialized) {
+            root.useCurrent();
+        }
     }
 
     function loadState(text: string): void {
         try {
             const data = JSON.parse(text);
+            root.stateExists = true;
             root.sensitivity = Number(data.sensitivity ?? 0);
             root.accelProfile = String(data.accelProfile ?? "adaptive");
             root.tapToClick = data.tapToClick !== false;
@@ -65,6 +96,7 @@ Singleton {
             root.initialized = true;
             root.apply();
         } catch (e) {
+            root.stateExists = false;
             root.useCurrent();
         }
     }
@@ -84,80 +116,82 @@ Singleton {
     }
 
     function apply(): void {
-        if (!root.initialized || root.applying)
+        if (root.applying)
             return;
 
+        root.initialized = true;
         root.applying = true;
 
-        if (Hypr.usingLua) {
-            Hypr.extras.batchMessage([`eval hl.config({ input = { sensitivity = ${root.sensitivity}, accel_profile = "${root.accelProfile}", scroll_method = "${root.scrollMethod}", touchpad = { tap_to_click = ${root.tapToClick}, natural_scroll = ${root.naturalScroll}, tap_and_drag = ${root.tapAndDrag}, disable_while_typing = ${root.disableWhileTyping} } } })`]);
-        } else {
-            Hypr.extras.batchMessage([`keyword input:sensitivity ${root.sensitivity}`, `keyword input:accel_profile ${root.accelProfile}`, `keyword input:scroll_method ${root.scrollMethod}`, `keyword input:touchpad:tap-to-click ${root.tapToClick}`, `keyword input:touchpad:natural_scroll ${root.naturalScroll}`, `keyword input:touchpad:tap-and-drag ${root.tapAndDrag}`, `keyword input:touchpad:disable_while_typing ${root.disableWhileTyping}`]);
-        }
+        const luaRequest = `eval hl.config({ input = { sensitivity = ${root.sensitivity}, accel_profile = "${root.accelProfile}", scroll_method = "${root.scrollMethod}", touchpad = { tap_to_click = ${root.tapToClick}, natural_scroll = ${root.naturalScroll}, tap_and_drag = ${root.tapAndDrag}, disable_while_typing = ${root.disableWhileTyping} } } })`;
+        const keywordRequest = `keyword input:sensitivity ${root.sensitivity}; keyword input:accel_profile ${root.accelProfile}; keyword input:scroll_method ${root.scrollMethod}; keyword input:touchpad:tap-to-click ${root.tapToClick}; keyword input:touchpad:natural_scroll ${root.naturalScroll}; keyword input:touchpad:tap-and-drag ${root.tapAndDrag}; keyword input:touchpad:disable_while_typing ${root.disableWhileTyping}`;
+
+        Hypr.applyConfig(luaRequest, keywordRequest);
 
         root.save();
+        root.dirty = false;
         root.applying = false;
     }
 
-    function applySoon(): void {
-        applyTimer.restart();
+    function reset(): void {
+        root.dirty = false;
+        root.pendingReset = true;
+        if (!descriptionsProc.running)
+            descriptionsProc.running = true;
     }
 
     function setSensitivity(value: real): void {
         root.sensitivity = value;
-        root.applySoon();
+        root.dirty = true;
     }
 
     function setAccelProfile(value: string): void {
         root.accelProfile = value;
-        root.applySoon();
+        root.dirty = true;
     }
 
     function setTapToClick(value: bool): void {
         root.tapToClick = value;
-        root.applySoon();
+        root.dirty = true;
     }
 
     function setNaturalScroll(value: bool): void {
         root.naturalScroll = value;
-        root.applySoon();
+        root.dirty = true;
     }
 
     function setScrollMethod(value: string): void {
         root.scrollMethod = value;
-        root.applySoon();
+        root.dirty = true;
     }
 
     function setTapAndDrag(value: bool): void {
         root.tapAndDrag = value;
-        root.applySoon();
+        root.dirty = true;
     }
 
     function setDisableWhileTyping(value: bool): void {
         root.disableWhileTyping = value;
-        root.applySoon();
+        root.dirty = true;
     }
 
-    Component.onCompleted: root.useCurrent()
+    Component.onCompleted: descriptionsProc.running = true
 
     FileView {
         path: root.statePath
         onLoaded: root.loadState(text())
-        onLoadFailed: root.useCurrent()
-    }
-
-    Connections {
-        function onOptionsChanged() {
-            root.useCurrent();
+        onLoadFailed: {
+            root.stateExists = false;
+            if (root.currentValues)
+                root.useCurrent();
         }
-
-        target: Hypr.extras
     }
 
-    Timer {
-        id: applyTimer
+    Process {
+        id: descriptionsProc
 
-        interval: 150
-        onTriggered: root.apply()
+        command: ["hyprctl", "-j", "descriptions"]
+        stdout: StdioCollector {
+            onStreamFinished: root.parseDescriptions(text)
+        }
     }
 }

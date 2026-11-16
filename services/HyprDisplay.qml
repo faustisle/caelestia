@@ -110,19 +110,18 @@ Singleton {
         if (root.applied || !root.stateLoaded || root.current.length === 0)
             return;
 
-        const commands = [];
+        const targets = [];
         const next = root.current.map(monitor => {
             const stored = root.saved[monitor.name];
             if (!stored)
                 return monitor;
 
             const merged = Object.assign({}, monitor, stored);
-            commands.push(root.commandFor(merged));
+            targets.push(merged);
             return merged;
         });
 
-        if (commands.length > 0)
-            Hypr.extras.batchMessage(commands);
+        root.applyMonitors(targets);
 
         root.applied = true;
         root.dirty = false;
@@ -152,7 +151,7 @@ Singleton {
         if (root.monitors.length === 0)
             return;
 
-        Hypr.extras.batchMessage(root.monitors.map(monitor => root.commandFor(monitor)));
+        root.applyMonitors(root.monitors);
         root.save();
         root.dirty = false;
         root.applied = true;
@@ -213,14 +212,33 @@ Singleton {
         });
     }
 
-    function commandFor(monitor: var): string {
+    function luaCommandFor(monitor: var): string {
         const quote = value => JSON.stringify(String(value));
+
+        if (monitor.disabled)
+            return `eval hl.monitor({ output = ${quote(monitor.name)}, disabled = true })`;
+
+        const mode = monitor.mode || "preferred";
+        const position = `${Math.round(monitor.x)}x${Math.round(monitor.y)}`;
+        return `eval hl.monitor({ output = ${quote(monitor.name)}, mode = ${quote(mode)}, position = ${quote(position)}, scale = ${monitor.scale}, transform = ${monitor.transform} })`;
+    }
+
+    function keywordCommandFor(monitor: var): string {
+        const quote = value => JSON.stringify(String(value));
+
         if (monitor.disabled)
             return `keyword monitor ${quote(`${monitor.name},disable`)}`;
 
         const mode = monitor.mode || "preferred";
         const position = `${Math.round(monitor.x)}x${Math.round(monitor.y)}`;
         return `keyword monitor ${quote(`${monitor.name},${mode},${position},${monitor.scale},${monitor.transform}`)}`;
+    }
+
+    function applyMonitors(monitors: var): void {
+        if (monitors.length === 0)
+            return;
+
+        Hypr.applyConfig(monitors.map(monitor => root.luaCommandFor(monitor)).join(";"), monitors.map(monitor => root.keywordCommandFor(monitor)).join(";"));
     }
 
     onCurrentChanged: {

@@ -16,6 +16,12 @@ Singleton {
     readonly property var monitors: Hyprland.monitors
     readonly property bool usingLua: Hyprland.usingLua
 
+    // Quickshell's usingLua can lag behind Hyprland releases, so probe whether
+    // this Hyprland instance accepts Lua eval requests before applying config.
+    property bool evalProbed: false
+    property bool evalSupported: false
+    property var configQueue: []
+
     readonly property HyprlandWorkspace focusedWorkspace: Hyprland.focusedWorkspace
     readonly property HyprlandMonitor focusedMonitor: Hyprland.focusedMonitor
     readonly property int activeWsId: focusedWorkspace?.id ?? 1
@@ -38,6 +44,25 @@ Singleton {
 
     function dispatch(request: string): void {
         Hyprland.dispatch(request);
+    }
+
+    function applyConfig(luaRequest: string, keywordRequest: string): void {
+        if (!root.evalProbed) {
+            root.configQueue.push({
+                luaRequest,
+                keywordRequest
+            });
+            return;
+        }
+
+        Quickshell.execDetached(["hyprctl", "--batch", root.evalSupported ? luaRequest : keywordRequest]);
+    }
+
+    function flushConfigQueue(): void {
+        const queued = root.configQueue;
+        root.configQueue = [];
+        for (const request of queued)
+            root.applyConfig(request.luaRequest, request.keywordRequest);
     }
 
     function focusWorkspace(ws: var): void {
@@ -215,6 +240,22 @@ Singleton {
         description: "Reload devices"
         onPressed: extras.refreshDevices()
         onReleased: extras.refreshDevices()
+    }
+
+    Process {
+        id: evalProbe
+
+        running: true
+        command: ["hyprctl", "--batch", "eval return 1"]
+        stdout: StdioCollector {
+            id: evalProbeOut
+        }
+        onExited: {
+            const output = evalProbeOut.text;
+            root.evalSupported = output.length > 0 && !output.includes("unknown request") && !output.includes("error");
+            root.evalProbed = true;
+            root.flushConfigQueue();
+        }
     }
 
     HyprExtras {

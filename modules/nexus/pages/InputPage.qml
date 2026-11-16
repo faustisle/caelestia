@@ -119,13 +119,29 @@ PageBase {
             onSelected: item => HyprInput.setScrollMethod(item.value)
         }
 
-        StyledText {
+        RowLayout {
             Layout.fillWidth: true
             Layout.topMargin: Tokens.spacing.large
-            text: Tr.tr("Saved by Caelestia and reapplied when the shell starts.")
-            color: Colours.palette.m3outline
-            font: Tokens.font.label.small
-            wrapMode: Text.WordWrap
+
+            StyledText {
+                Layout.fillWidth: true
+                text: Tr.tr("Saved by Caelestia and reapplied when the shell starts.")
+                color: Colours.palette.m3outline
+                font: Tokens.font.label.small
+                wrapMode: Text.WordWrap
+            }
+
+            TextButton {
+                text: Tr.tr("Reset")
+                onClicked: HyprInput.reset()
+            }
+
+            TextButton {
+                text: Tr.tr("Apply")
+                type: TextButton.Filled
+                enabled: HyprInput.dirty
+                onClicked: HyprInput.apply()
+            }
         }
     }
 }
