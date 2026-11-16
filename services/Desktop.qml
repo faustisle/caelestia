@@ -7,7 +7,15 @@ import Caelestia.Models
 
 Singleton {
     function launch(file: DesktopFile): void {
-        if (!file || file.command.length === 0)
+        if (!file)
+            return;
+
+        if (file.kind !== "application") {
+            Quickshell.execDetached(["xdg-open", file.path]);
+            return;
+        }
+
+        if (file.command.length === 0)
             return;
 
         const workingDirectory = file.workingDirectory;

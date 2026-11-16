@@ -64,6 +64,13 @@ PageBase {
             onToggled: GlobalConfig.background.desktopIcons.showLabels = checked
         }
 
+        ToggleRow {
+            text: Tr.tr("Show files and folders")
+            subtext: Tr.tr("Show everything from the desktop folder, not just app shortcuts")
+            checked: root.iconsConfig.showFiles
+            onToggled: GlobalConfig.background.desktopIcons.showFiles = checked
+        }
+
         StepperRow {
             label: Tr.tr("Icon size")
             subtext: Tr.tr("Size of the icons (px)")

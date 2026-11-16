@@ -487,6 +487,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "desktopIcons": {
             "enabled": true,
             "showLabels": true,
+            "showFiles": true,
             "iconSize": 48,
             "position": "top-right"
         }

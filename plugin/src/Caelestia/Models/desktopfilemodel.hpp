@@ -19,19 +19,22 @@ class DesktopFile : public QObject {
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString comment READ comment CONSTANT)
     Q_PROPERTY(QString icon READ icon CONSTANT)
+    // "application", "folder" or "file"
+    Q_PROPERTY(QString kind READ kind CONSTANT)
     Q_PROPERTY(QStringList command READ command CONSTANT)
     Q_PROPERTY(QString workingDirectory READ workingDirectory CONSTANT)
     Q_PROPERTY(bool terminal READ terminal CONSTANT)
 
 public:
-    explicit DesktopFile(QString path, QString id, QString name, QString comment, QString icon, QStringList command,
-        QString workingDirectory, bool terminal, QObject* parent = nullptr);
+    explicit DesktopFile(QString path, QString id, QString name, QString comment, QString icon, QString kind,
+        QStringList command, QString workingDirectory, bool terminal, QObject* parent = nullptr);
 
     [[nodiscard]] QString path() const;
     [[nodiscard]] QString id() const;
     [[nodiscard]] QString name() const;
     [[nodiscard]] QString comment() const;
     [[nodiscard]] QString icon() const;
+    [[nodiscard]] QString kind() const;
     [[nodiscard]] QStringList command() const;
     [[nodiscard]] QString workingDirectory() const;
     [[nodiscard]] bool terminal() const;
@@ -42,6 +45,7 @@ private:
     const QString m_name;
     const QString m_comment;
     const QString m_icon;
+    const QString m_kind;
     const QStringList m_command;
     const QString m_workingDirectory;
     const bool m_terminal;
@@ -53,6 +57,8 @@ class DesktopFileModel : public QAbstractListModel {
 
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
     Q_PROPERTY(bool watchChanges READ watchChanges WRITE setWatchChanges NOTIFY watchChangesChanged)
+    // When false, only application shortcuts (.desktop files) are listed.
+    Q_PROPERTY(bool showFiles READ showFiles WRITE setShowFiles NOTIFY showFilesChanged)
     Q_PROPERTY(QQmlListProperty<caelestia::shell::models::DesktopFile> entries READ entries NOTIFY entriesChanged)
 
 public:
@@ -68,16 +74,21 @@ public:
     [[nodiscard]] bool watchChanges() const;
     void setWatchChanges(bool watchChanges);
 
+    [[nodiscard]] bool showFiles() const;
+    void setShowFiles(bool showFiles);
+
     [[nodiscard]] QQmlListProperty<DesktopFile> entries();
 
 signals:
     void pathChanged();
     void watchChangesChanged();
+    void showFilesChanged();
     void entriesChanged();
 
 private:
     QString m_path;
     bool m_watchChanges;
+    bool m_showFiles;
     QFileSystemWatcher m_watcher;
     QTimer* m_reloadTimer;
     QList<DesktopFile*> m_entries;

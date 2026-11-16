@@ -3,6 +3,9 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qmimedatabase.h>
+#include <qmimetype.h>
+#include <qstandardpaths.h>
 #include <qstring.h>
 
 #include <algorithm>
@@ -106,16 +109,130 @@ QStringList parseCommand(const QString& exec) {
     return args;
 }
 
+struct DesktopEntryData {
+    bool valid = false;
+    bool hidden = false;
+    bool terminal = false;
+    QString name;
+    QString comment;
+    QString icon;
+    QString exec;
+    QString workingDirectory;
+    QString type;
+};
+
+DesktopEntryData parseDesktopEntry(const QString& path) {
+    DesktopEntryData data;
+
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return data;
+    }
+
+    data.valid = true;
+
+    const auto lines = QString::fromUtf8(file.readAll()).split(u'\n');
+    bool inEntry = false;
+    for (const auto& rawLine : lines) {
+        const auto line = rawLine.trimmed();
+        if (line.isEmpty() || line.startsWith(u'#')) {
+            continue;
+        }
+
+        if (line.startsWith(u'[') && line.endsWith(u']')) {
+            inEntry = line == u"[Desktop Entry]"_s;
+            continue;
+        }
+
+        if (!inEntry) {
+            continue;
+        }
+
+        const auto separator = line.indexOf(u'=');
+        if (separator <= 0) {
+            continue;
+        }
+
+        const auto key = line.left(separator);
+        if (key.contains(u'[')) {
+            // A localised value; the plain key is the fallback.
+            continue;
+        }
+
+        const auto value = unescapeValue(line.mid(separator + 1).trimmed());
+        if (key == u"Name"_s) {
+            data.name = value;
+        } else if (key == u"Comment"_s) {
+            data.comment = value;
+        } else if (key == u"Icon"_s) {
+            data.icon = value;
+        } else if (key == u"Exec"_s) {
+            data.exec = value;
+        } else if (key == u"Path"_s) {
+            data.workingDirectory = value;
+        } else if (key == u"Type"_s) {
+            data.type = value;
+        } else if (key == u"Terminal"_s) {
+            data.terminal = value.compare(u"true"_s, Qt::CaseInsensitive) == 0;
+        } else if (key == u"Hidden"_s || key == u"NoDisplay"_s) {
+            data.hidden = data.hidden || value.compare(u"true"_s, Qt::CaseInsensitive) == 0;
+        }
+    }
+
+    return data;
+}
+
+bool matchesLocation(const QString& canonicalPath, QStandardPaths::StandardLocation location) {
+    const auto path = QStandardPaths::writableLocation(location);
+    return !path.isEmpty() && canonicalPath == QFileInfo(path).canonicalFilePath();
+}
+
+QString folderIcon(const QFileInfo& info) {
+    const auto path = info.canonicalFilePath();
+
+    if (matchesLocation(path, QStandardPaths::MusicLocation)) {
+        return u"folder-music"_s;
+    }
+    if (matchesLocation(path, QStandardPaths::PicturesLocation)) {
+        return u"folder-pictures"_s;
+    }
+    if (matchesLocation(path, QStandardPaths::MoviesLocation)) {
+        return u"folder-videos"_s;
+    }
+    if (matchesLocation(path, QStandardPaths::DownloadLocation)) {
+        return u"folder-download"_s;
+    }
+    if (matchesLocation(path, QStandardPaths::DocumentsLocation)) {
+        return u"folder-documents"_s;
+    }
+    if (matchesLocation(path, QStandardPaths::DesktopLocation)) {
+        return u"folder-desktop"_s;
+    }
+    if (matchesLocation(path, QStandardPaths::HomeLocation)) {
+        return u"user-home"_s;
+    }
+
+    return u"folder"_s;
+}
+
+QString fileIcon(const QFileInfo& info) {
+    static const QMimeDatabase kMimeDb;
+
+    const auto icon = kMimeDb.mimeTypeForFile(info).iconName();
+    return icon.isEmpty() ? u"text-x-generic"_s : icon;
+}
+
 } // namespace
 
-DesktopFile::DesktopFile(QString path, QString id, QString name, QString comment, QString icon, QStringList command,
-    QString workingDirectory, bool terminal, QObject* parent)
+DesktopFile::DesktopFile(QString path, QString id, QString name, QString comment, QString icon, QString kind,
+    QStringList command, QString workingDirectory, bool terminal, QObject* parent)
     : QObject(parent)
     , m_path(std::move(path))
     , m_id(std::move(id))
     , m_name(std::move(name))
     , m_comment(std::move(comment))
     , m_icon(std::move(icon))
+    , m_kind(std::move(kind))
     , m_command(std::move(command))
     , m_workingDirectory(std::move(workingDirectory))
     , m_terminal(terminal) {}
@@ -140,6 +257,10 @@ QString DesktopFile::icon() const {
     return m_icon;
 }
 
+QString DesktopFile::kind() const {
+    return m_kind;
+}
+
 QStringList DesktopFile::command() const {
     return m_command;
 }
@@ -155,6 +276,7 @@ bool DesktopFile::terminal() const {
 DesktopFileModel::DesktopFileModel(QObject* parent)
     : QAbstractListModel(parent)
     , m_watchChanges(true)
+    , m_showFiles(true)
     , m_reloadTimer(new QTimer(this)) {
     m_reloadTimer->setSingleShot(true);
     m_reloadTimer->setInterval(150);
@@ -214,6 +336,20 @@ void DesktopFileModel::setWatchChanges(bool watchChanges) {
     updateWatcher();
 }
 
+bool DesktopFileModel::showFiles() const {
+    return m_showFiles;
+}
+
+void DesktopFileModel::setShowFiles(bool showFiles) {
+    if (m_showFiles == showFiles) {
+        return;
+    }
+
+    m_showFiles = showFiles;
+    emit showFilesChanged();
+    reload();
+}
+
 QQmlListProperty<DesktopFile> DesktopFileModel::entries() {
     return { this, &m_entries };
 }
@@ -223,90 +359,49 @@ void DesktopFileModel::reload() {
 
     if (!m_path.isEmpty()) {
         const QDir dir(m_path);
-        const auto files = dir.entryInfoList({ u"*.desktop"_s }, QDir::Files | QDir::Readable, QDir::NoSort);
+        const auto entries =
+            dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable, QDir::NoSort);
 
-        for (const auto& info : files) {
-            QFile file(info.filePath());
-            if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        for (const auto& info : entries) {
+            const bool desktopFile = info.isFile() && info.fileName().endsWith(u".desktop"_s, Qt::CaseInsensitive);
+            if (desktopFile) {
+                const auto entry = parseDesktopEntry(info.filePath());
+                if (entry.hidden) {
+                    continue;
+                }
+
+                const bool isApplication = entry.valid && (entry.type.isEmpty() || entry.type == u"Application"_s);
+                auto command = parseCommand(entry.exec);
+
+                if (isApplication && !command.isEmpty()) {
+                    found << new DesktopFile(info.filePath(), info.completeBaseName(),
+                        entry.name.isEmpty() ? info.completeBaseName() : entry.name, entry.comment, entry.icon,
+                        u"application"_s, std::move(command), entry.workingDirectory, entry.terminal, this);
+                    continue;
+                }
+            }
+
+            if (!m_showFiles) {
                 continue;
             }
 
-            QString name;
-            QString comment;
-            QString icon;
-            QString exec;
-            QString workingDirectory;
-            QString type;
-            bool terminal = false;
-            bool hidden = false;
-
-            const auto lines = QString::fromUtf8(file.readAll()).split(u'\n');
-            bool inEntry = false;
-            for (const auto& rawLine : lines) {
-                const auto line = rawLine.trimmed();
-                if (line.isEmpty() || line.startsWith(u'#')) {
-                    continue;
-                }
-
-                if (line.startsWith(u'[') && line.endsWith(u']')) {
-                    inEntry = line == u"[Desktop Entry]"_s;
-                    continue;
-                }
-
-                if (!inEntry) {
-                    continue;
-                }
-
-                const auto separator = line.indexOf(u'=');
-                if (separator <= 0) {
-                    continue;
-                }
-
-                const auto key = line.left(separator);
-                if (key.contains(u'[')) {
-                    // A localised value; the plain key is the fallback.
-                    continue;
-                }
-
-                const auto value = unescapeValue(line.mid(separator + 1).trimmed());
-                if (key == u"Name"_s) {
-                    name = value;
-                } else if (key == u"Comment"_s) {
-                    comment = value;
-                } else if (key == u"Icon"_s) {
-                    icon = value;
-                } else if (key == u"Exec"_s) {
-                    exec = value;
-                } else if (key == u"Path"_s) {
-                    workingDirectory = value;
-                } else if (key == u"Type"_s) {
-                    type = value;
-                } else if (key == u"Terminal"_s) {
-                    terminal = value.compare(u"true"_s, Qt::CaseInsensitive) == 0;
-                } else if (key == u"Hidden"_s || key == u"NoDisplay"_s) {
-                    hidden = hidden || value.compare(u"true"_s, Qt::CaseInsensitive) == 0;
-                }
+            if (info.isDir()) {
+                found << new DesktopFile(info.filePath(), info.fileName(), info.fileName(), {}, folderIcon(info),
+                    u"folder"_s, {}, {}, false, this);
+            } else {
+                found << new DesktopFile(info.filePath(), info.fileName(), info.fileName(), {}, fileIcon(info),
+                    u"file"_s, {}, {}, false, this);
             }
-
-            if (hidden || (!type.isEmpty() && type != u"Application"_s)) {
-                continue;
-            }
-
-            auto command = parseCommand(exec);
-            if (command.isEmpty()) {
-                continue;
-            }
-
-            if (name.isEmpty()) {
-                name = info.completeBaseName();
-            }
-
-            found << new DesktopFile(info.filePath(), info.completeBaseName(), name, comment, icon, std::move(command),
-                workingDirectory, terminal, this);
         }
     }
 
     std::sort(found.begin(), found.end(), [](const DesktopFile* a, const DesktopFile* b) {
+        const bool aFolder = a->kind() == u"folder"_s;
+        const bool bFolder = b->kind() == u"folder"_s;
+        if (aFolder != bFolder) {
+            return aFolder;
+        }
+
         const auto byName = QString::compare(a->name(), b->name(), Qt::CaseInsensitive);
         if (byName != 0) {
             return byName < 0;

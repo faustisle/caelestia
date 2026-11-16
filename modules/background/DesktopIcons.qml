@@ -70,6 +70,7 @@ Item {
         id: icons
 
         path: Paths.desktop
+        showFiles: root.iconsConfig.showFiles
         watchChanges: true
     }
 
@@ -100,7 +101,7 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     asynchronous: true
                     implicitSize: root.iconSize
-                    source: Quickshell.iconPath(tile.modelData.icon, "application-x-executable")
+                    source: Quickshell.iconPath(tile.modelData.icon, tile.modelData.kind === "folder" ? "folder" : "text-x-generic")
                 }
 
                 StyledText {
