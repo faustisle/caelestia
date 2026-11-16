@@ -89,6 +89,11 @@ MouseArea {
         // scroll when it has more items than fit on screen.
         readonly property real availableHeight: Math.max(0, root.thisSideY === Menu.Top ? root.parent.height - y : root.attachTo.mapToItem(root.parent, 0, 0).y + root.marginY)
 
+        // A collapsed menu is fully transparent but still part of the item tree;
+        // hiding it once the close animation finishes keeps its invisible content
+        // from intercepting clicks aimed at other menus.
+        visible: root.opacity > 0
+
         x: {
             CUtils.dependency(watcher.transform); // mapToItem is not reactive so this forces updates
             const item = root.attachTo;
@@ -123,6 +128,10 @@ MouseArea {
 
         MouseArea {
             anchors.fill: parent
+            // A collapsed menu is invisible but still sits above menus created
+            // before it. Without this, its wheel catcher swallows clicks aimed
+            // at the open menu underneath.
+            enabled: root.expanded
             hoverEnabled: true
             onWheel: e => e.accepted = true
         }
