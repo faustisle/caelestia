@@ -21,13 +21,15 @@ Region {
     intersection: Intersection.Xor
 
     // Keep a small input hotspot at the top-right corner for the sidebar hover
-    // trigger, even when the base region starts below the screen border.
+    // trigger, even when the base region starts below the screen border. The
+    // root region is XORed against the window, so subtracting the hotspot from
+    // the base is what adds it to the final input mask.
     Region {
         x: root.win.width - 25
         y: 0
         width: 25
         height: 25
-        intersection: Intersection.Combine
+        intersection: Intersection.Subtract
     }
 
     R {
