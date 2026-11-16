@@ -37,7 +37,7 @@ Item {
     readonly property bool barHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
     // Prefer the bar's real size; the fallback mirrors BarWrapper's formula.
     readonly property real barThickness: root.barRef?.contentThickness ?? (root.barHorizontal ? Tokens.sizes.bar.horizontalInnerWidth + Tokens.padding.extraSmall * 2 : Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness) * 2)
-    readonly property real edgeMargin: Tokens.padding.large
+    readonly property real edgeMargin: Tokens.padding.largeIncreased
     readonly property bool clockOnSameSide: {
         const icons = root.position;
         const clock = Config.background.desktopClock.position;
@@ -48,7 +48,10 @@ Item {
     readonly property real bottomReserve: root.clockReserve > 0 && Config.background.desktopClock.position.startsWith("bottom") ? root.clockReserve : 0
     readonly property real marginLeft: root.edgeMargin + (Config.bar.position === "left" ? root.barThickness : 0)
     readonly property real marginRight: root.edgeMargin + (Config.bar.position === "right" ? root.barThickness : 0)
-    readonly property real topInset: root.edgeMargin + (Config.bar.position === "top" ? root.barThickness : 0)
+    // The icon glyph carries a little transparent padding above it, which makes
+    // the optical gap under a top bar look larger than the side gaps.
+    readonly property real topOpticalInset: 4
+    readonly property real topInset: root.edgeMargin + (Config.bar.position === "top" ? Math.max(0, root.barThickness - root.topOpticalInset) : 0)
     readonly property real bottomInset: root.edgeMargin + (Config.bar.position === "bottom" ? root.barThickness : 0)
     // The clock reserve already contains the screen-edge gap; take whichever
     // inset is larger instead of stacking the bar and clock padding.
@@ -214,9 +217,25 @@ Item {
         if (paths.length === 0)
             return;
 
-        // Copy rather than move: dropping onto the desktop should never remove
-        // the original. Existing names are left alone instead of overwritten.
-        Quickshell.execDetached(["cp", "-a", "--no-clobber", "--", ...paths, Paths.desktop]);
+        // Symlink instead of copying, so dropping a large file or directory is
+        // instant and the original is never touched. Existing names get a
+        // numbered link rather than replacing anything.
+        Quickshell.execDetached(["sh", "-c", `dir=$1
+shift
+for src in "$@"; do
+    [ -e "$src" ] || [ -L "$src" ] || continue
+    [ "$(dirname -- "$src")" = "$dir" ] && continue
+    base=$(basename -- "$src")
+    dest="$dir/$base"
+    if [ -e "$dest" ] || [ -L "$dest" ]; then
+        n=2
+        while [ -e "$dir/$base ($n)" ] || [ -L "$dir/$base ($n)" ]; do
+            n=$((n + 1))
+        done
+        dest="$dir/$base ($n)"
+    fi
+    ln -s -- "$src" "$dest"
+done`, "sh", Paths.desktop, ...paths]);
     }
 
     anchors.fill: parent
@@ -316,6 +335,22 @@ Item {
 
                     StyledText {
                         anchors.centerIn: parent
+                        anchors.verticalCenterOffset: 2
+                        width: parent.width
+                        height: parent.height
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                        maximumLineCount: 1
+                        wrapMode: Text.NoWrap
+                        text: tile.modelData.name
+                        renderType: Text.QtRendering
+                        color: Qt.alpha(Colours.palette.m3shadow, 0.45)
+                        font: Tokens.font.label.medium
+                    }
+
+                    StyledText {
+                        anchors.centerIn: parent
                         anchors.verticalCenterOffset: 1
                         width: parent.width
                         height: parent.height
@@ -326,7 +361,7 @@ Item {
                         wrapMode: Text.NoWrap
                         text: tile.modelData.name
                         renderType: Text.QtRendering
-                        color: Qt.alpha(Colours.palette.m3shadow, 0.75)
+                        color: Qt.alpha(Colours.palette.m3shadow, 0.9)
                         font: Tokens.font.label.medium
                     }
 
