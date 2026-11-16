@@ -3,7 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
+import Caelestia.I18n
 import qs.components
+import qs.components.controls
 import qs.services
 
 StyledRect {
@@ -16,12 +18,15 @@ StyledRect {
     required property color tertiary
     required property color surface
     required property bool active
+    property bool manageable: false
     property bool interactive: true
 
     readonly property color contentColour: active ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
     readonly property color subtextColour: active ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurfaceVariant
 
     signal clicked
+    signal editRequested
+    signal deleteRequested
 
     Layout.fillWidth: true
     implicitHeight: content.implicitHeight + Tokens.padding.largeIncreased * 2
@@ -76,6 +81,19 @@ StyledRect {
                 color: Colours.palette.m3primary
                 fontStyle: Tokens.font.icon.small
             }
+
+            IconButton {
+                id: moreButton
+
+                Layout.alignment: Qt.AlignVCenter
+                visible: root.manageable
+                type: IconButton.Text
+                isRound: true
+                icon: "more_vert"
+                font: Tokens.font.icon.small
+                label.fill: 0
+                onClicked: actionsMenu.expanded = !actionsMenu.expanded
+            }
         }
 
         StyledRect {
@@ -103,6 +121,30 @@ StyledRect {
                     }
                 }
             }
+        }
+
+        Menu {
+            id: actionsMenu
+
+            attachTo: moreButton
+            onItemSelected: item => {
+                if (item.value === "edit")
+                    root.editRequested();
+                else
+                    root.deleteRequested();
+            }
+            items: [
+                MenuItem {
+                    text: Tr.tr("Edit")
+                    icon: "edit"
+                    value: "edit"
+                },
+                MenuItem {
+                    text: Tr.tr("Delete")
+                    icon: "delete"
+                    value: "delete"
+                }
+            ]
         }
     }
 }

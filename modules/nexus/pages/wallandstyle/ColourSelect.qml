@@ -118,6 +118,10 @@ PageBase {
             const presets = JSON.parse(data);
             root.customSchemes = presets.map(preset => ({
                         id: preset.id,
+                        name: preset.name,
+                        seed: preset.seed,
+                        mode: preset.mode,
+                        variant: preset.variant,
                         label: preset.name,
                         flavourLabel: `${pretty(preset.variant)} · ${pretty(preset.mode)}`,
                         primary: colour(preset.colours.primary),
@@ -138,6 +142,17 @@ PageBase {
     function applyCustom(scheme: var): void {
         root.customActiveId = scheme.id;
         Quickshell.execDetached(["python3", root.helper, "apply", "--id", scheme.id]);
+    }
+
+    function editCustom(scheme: var): void {
+        root.nState.editingScheme = scheme;
+        root.nState.openSubPage(4);
+    }
+
+    function deleteCustom(scheme: var): void {
+        root.customSchemes = root.customSchemes.filter(item => item.id !== scheme.id);
+        deleteProc.command = ["python3", root.helper, "delete", "--id", scheme.id];
+        deleteProc.running = true;
     }
 
     title: Tr.tr("Colours")
@@ -166,7 +181,10 @@ PageBase {
             shapeMorph: true
             horizontalPadding: Tokens.padding.extraLarge
             verticalPadding: Tokens.padding.medium
-            onClicked: root.nState.openSubPage(4)
+            onClicked: {
+                root.nState.editingScheme = null;
+                root.nState.openSubPage(4);
+            }
         }
 
         SectionHeader {
@@ -233,7 +251,10 @@ PageBase {
                     tertiary: modelData.tertiary
                     surface: modelData.surface
                     active: root.customActiveId === modelData.id
+                    manageable: true
                     onClicked: root.applyCustom(modelData)
+                    onEditRequested: root.editCustom(modelData)
+                    onDeleteRequested: root.deleteCustom(modelData)
                 }
             }
         }
@@ -256,6 +277,20 @@ PageBase {
             color: Colours.palette.m3error
             font: Tokens.font.body.medium
             horizontalAlignment: Text.AlignHCenter
+        }
+
+        Process {
+            id: deleteProc
+
+            onExited: code => {
+                root.presetsFile.reload();
+                root.schemeFile.reload();
+                if (code !== 0)
+                    console.warn("Failed to delete colour scheme:", deleteErr.text.trim());
+            }
+            stderr: StdioCollector {
+                id: deleteErr
+            }
         }
 
         Connections {

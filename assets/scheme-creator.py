@@ -109,6 +109,7 @@ def main() -> int:
 
     create = sub.add_parser("create", help="save a custom scheme")
     create.add_argument("--name", required=True)
+    create.add_argument("--id")
     create.add_argument("--seed", required=True)
     create.add_argument("--mode", required=True, choices=("dark", "light"))
     create.add_argument("--variant", required=True, choices=VARIANTS)
@@ -116,6 +117,9 @@ def main() -> int:
 
     apply_parser = sub.add_parser("apply", help="apply a saved custom scheme")
     apply_parser.add_argument("--id", required=True)
+
+    delete_parser = sub.add_parser("delete", help="delete a saved custom scheme")
+    delete_parser.add_argument("--id", required=True)
 
     args = parser.parse_args()
 
@@ -129,7 +133,12 @@ def main() -> int:
             raise ValueError("Name cannot be empty")
 
         presets = load_presets()
-        preset = next((p for p in presets if p.get("name", "").lower() == name.lower()), None)
+        if args.id:
+            preset = next((p for p in presets if p.get("id") == args.id), None)
+            if preset is None:
+                raise ValueError(f"Unknown scheme id: {args.id}")
+        else:
+            preset = next((p for p in presets if p.get("name", "").lower() == name.lower()), None)
         if preset is None:
             preset = {"id": uuid.uuid4().hex, "name": name}
             presets.append(preset)
@@ -148,6 +157,40 @@ def main() -> int:
             apply_preset(preset)
 
         print(json.dumps({"id": preset["id"], "applied": args.apply}))
+        return 0
+
+    if args.command == "delete":
+        presets = load_presets()
+        find_preset(presets, args.id)
+        save_presets([p for p in presets if p.get("id") != args.id])
+
+        # If the active scheme was deleted, fall back to the built-in Caelestia
+        # palette so the CLI state and the visible scheme stay consistent.
+        try:
+            current = json.loads(SCHEME.read_text())
+        except (OSError, json.JSONDecodeError):
+            current = None
+
+        if current and current.get("customId") == args.id:
+            from caelestia.utils.paths import atomic_dump, scheme_data_dir
+            from caelestia.utils.scheme import read_colours_from_file
+            from caelestia.utils.theme import apply_colours
+
+            mode = current.get("mode", "dark")
+            colours = read_colours_from_file(scheme_data_dir / "caelestia" / "default" / f"{mode}.txt")
+            atomic_dump(
+                SCHEME,
+                {
+                    "name": "caelestia",
+                    "flavour": "default",
+                    "mode": mode,
+                    "variant": current.get("variant", "tonalspot"),
+                    "colours": colours,
+                },
+            )
+            apply_colours(colours, mode)
+
+        print(json.dumps({"id": args.id, "deleted": True}))
         return 0
 
     presets = load_presets()

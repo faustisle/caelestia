@@ -19,6 +19,7 @@ PageBase {
     property string seed: ""
     property string mode: "dark"
     property string variant: "tonalspot"
+    property string editingId: ""
     property var previewColours
     property bool applyAfter: true
     property bool creating: false
@@ -30,6 +31,7 @@ PageBase {
     readonly property bool nameValid: name.trim().length > 0
     readonly property bool valid: seedValid && nameValid
     readonly property string normalisedSeed: seed.trim().replace("#", "").toLowerCase()
+    readonly property bool editing: editingId.length > 0
 
     readonly property list<MenuItem> modeItems: [
         MenuItem {
@@ -135,13 +137,15 @@ PageBase {
         root.creating = true;
         root.error = "";
         const command = ["python3", root.helper, "create", "--name", root.name.trim(), "--seed", root.normalisedSeed, "--mode", root.mode, "--variant", root.variant];
+        if (root.editing)
+            command.push("--id", root.editingId);
         if (root.applyAfter)
             command.push("--apply");
         createProc.command = command;
         createProc.running = true;
     }
 
-    title: Tr.tr("Create scheme")
+    title: root.editing ? Tr.tr("Edit scheme") : Tr.tr("Create scheme")
     isSubPage: true
 
     onSeedChanged: {
@@ -161,10 +165,22 @@ PageBase {
             Colours.showPreview = false;
     }
     Component.onCompleted: {
-        root.seed = "#" + Colours.palette.m3primary.toString().slice(-6);
+        const scheme = root.nState.editingScheme;
+        if (scheme) {
+            root.editingId = scheme.id;
+            root.name = scheme.name;
+            root.seed = scheme.seed;
+            root.mode = scheme.mode;
+            root.variant = scheme.variant;
+        } else {
+            root.seed = "#" + Colours.palette.m3primary.toString().slice(-6);
+        }
         root.schedulePreview();
     }
-    Component.onDestruction: Colours.showPreview = false
+    Component.onDestruction: {
+        Colours.showPreview = false;
+        root.nState.editingScheme = null;
+    }
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -257,7 +273,7 @@ PageBase {
 
             IconTextButton {
                 icon: "add"
-                text: root.creating ? Tr.tr("Creating…") : Tr.tr("Create scheme")
+                text: root.creating ? (root.editing ? Tr.tr("Saving…") : Tr.tr("Creating…")) : root.editing ? Tr.tr("Save changes") : Tr.tr("Create scheme")
                 type: IconTextButton.Filled
                 isRound: true
                 shapeMorph: true
