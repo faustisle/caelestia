@@ -823,7 +823,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
     },
     "session": {
         "enabled": true,
-        "dragThreshold": 30,
         "vimKeybinds": false,
         "icons": {
             "logout": "logout",

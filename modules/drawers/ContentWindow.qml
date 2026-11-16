@@ -55,11 +55,7 @@ StyledWindow {
         if (monitor?.lastIpcObject.specialWorkspace?.name || monitor?.activeWorkspace?.toplevels.values.length > 0)
             return 0;
 
-        const thresholds = [];
-        for (const panel of ["launcher", "session"])
-            if (contentItem.Config[panel].enabled)
-                thresholds.push(contentItem.Config[panel].dragThreshold);
-        return Math.max(...thresholds);
+        return contentItem.Config.launcher.enabled ? contentItem.Config.launcher.dragThreshold : 0;
     }
 
     onHasFullscreenChanged: {

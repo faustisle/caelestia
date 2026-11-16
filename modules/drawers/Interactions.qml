@@ -55,14 +55,9 @@ CustomMouseArea {
         return inRightPanel(panels.osdWrapper, x, y);
     }
 
-    function inTopPanel(panel: Item, x: real, y: real): bool {
+    function inBottomPanel(panel: Item, x: real, y: real): bool {
         const panelHeight = panel.height * (1 - (panel.offsetScale ?? 0)); // qmllint disable missing-property
-        return y < Math.max(Config.border.minThickness, geometry.insetTop(Config.border.thickness) + panelHeight) && withinPanelWidth(panel, x, y);
-    }
-
-    function inBottomPanel(panel: Item, x: real, y: real, isCorner = false): bool {
-        const panelHeight = panel.height * (1 - (panel.offsetScale ?? 0)); // qmllint disable missing-property
-        return y > height - Math.max(Config.border.minThickness, geometry.insetBottom(Config.border.thickness) + panelHeight) - (isCorner ? Config.border.rounding : 0) && withinPanelWidth(panel, x, y);
+        return y > height - Math.max(Config.border.minThickness, geometry.insetBottom(Config.border.thickness) + panelHeight) && withinPanelWidth(panel, x, y);
     }
 
     function inSidebarHoverTrigger(x: real, y: real): bool {
