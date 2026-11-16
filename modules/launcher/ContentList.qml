@@ -159,11 +159,14 @@ Item {
         }
     }
 
+    // Layout changes use a short ease-out rather than an expressive spatial
+    // curve. The spatial curve overshoots by ~67%, which makes the launcher
+    // bounce over the selected item when filtering leaves a single result.
     Behavior on implicitWidth {
         enabled: root.screenState.launcher
 
         Anim {
-            type: Anim.FastSpatial
+            type: Anim.FastEffects
         }
     }
 
@@ -171,7 +174,7 @@ Item {
         enabled: root.screenState.launcher
 
         Anim {
-            type: Anim.FastSpatial
+            type: Anim.FastEffects
         }
     }
 }

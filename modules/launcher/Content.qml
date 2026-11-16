@@ -57,10 +57,14 @@ Item {
         anchors.top: search.bottom
         anchors.topMargin: root.padding
 
+        // Avoid the default spatial overshoot so the results do not bounce
+        // past their final height when they first appear.
         Behavior on reveal {
             enabled: root.spotlight
 
-            Anim {}
+            Anim {
+                type: Anim.FastEffects
+            }
         }
 
         ContentList {

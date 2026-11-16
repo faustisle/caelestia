@@ -73,13 +73,12 @@ StyledListView {
         color: Colours.palette.m3onSurface
         opacity: 0.08
 
+        // Keep the selection highlight in place instead of animating its y.
+        // The expressive spatial curve overshoots badly when filtering leaves a
+        // single result, making the highlight bounce off the list.
         y: root.currentItem?.y ?? 0
         implicitWidth: root.width
         implicitHeight: root.currentItem?.implicitHeight ?? 0
-
-        Behavior on y {
-            Anim {}
-        }
     }
 
     state: screenState.launcher ? requestedState : displayState
