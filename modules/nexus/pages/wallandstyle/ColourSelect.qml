@@ -16,12 +16,24 @@ PageBase {
     id: root
 
     property var schemes: []
+    property var bundledSchemes: []
     property var customSchemes: []
     property string customActiveId: ""
+    property string bundledActiveId: ""
     property bool loading: true
     property bool failed: false
 
     readonly property string helper: Quickshell.shellPath("assets/scheme-creator.py")
+    readonly property var availableSchemes: {
+        const cli = root.schemes.map(scheme => Object.assign({}, scheme, {
+                bundled: false
+            }));
+        const installed = new Set(cli.map(scheme => `${scheme.name}/${scheme.flavour}`.toLowerCase()));
+        const bundled = root.bundledSchemes.filter(scheme => !installed.has(`${scheme.name}/${scheme.flavour}`.toLowerCase()));
+        const all = cli.concat(bundled);
+        all.sort((a, b) => (a.label ?? "").localeCompare(b.label ?? "") || (a.flavourLabel ?? "").localeCompare(b.flavourLabel ?? ""));
+        return all;
+    }
 
     property Process listProc: Process {
         running: true
@@ -40,6 +52,14 @@ PageBase {
         }
     }
 
+    property FileView bundledFile: FileView {
+        path: Quickshell.shellPath("assets/schemes/index.json")
+        watchChanges: true
+        printErrors: false
+        onLoaded: root.loadBundledSchemes(text())
+        onLoadFailed: root.bundledSchemes = []
+    }
+
     property FileView presetsFile: FileView {
         path: `${Paths.state}/custom-schemes.json`
         watchChanges: true
@@ -56,12 +76,18 @@ PageBase {
         onFileChanged: reload()
         onLoaded: {
             try {
-                root.customActiveId = JSON.parse(text()).customId ?? "";
+                const data = JSON.parse(text());
+                root.customActiveId = data.customId ?? "";
+                root.bundledActiveId = data.bundledId ?? "";
             } catch (e) {
                 root.customActiveId = "";
+                root.bundledActiveId = "";
             }
         }
-        onLoadFailed: root.customActiveId = ""
+        onLoadFailed: {
+            root.customActiveId = "";
+            root.bundledActiveId = "";
+        }
     }
 
     function pretty(s: string): string {
@@ -134,14 +160,41 @@ PageBase {
         }
     }
 
+    function loadBundledSchemes(data: string): void {
+        try {
+            root.bundledSchemes = JSON.parse(data).map(entry => ({
+                        id: entry.id,
+                        bundled: true,
+                        name: entry.name,
+                        flavour: entry.flavour,
+                        label: entry.name,
+                        flavourLabel: pretty(entry.flavour),
+                        primary: colour(entry.primary),
+                        secondary: colour(entry.secondary),
+                        tertiary: colour(entry.tertiary),
+                        surface: colour(entry.surface)
+                    }));
+        } catch (e) {
+            root.bundledSchemes = [];
+        }
+    }
+
     function applyScheme(scheme: var): void {
         root.customActiveId = "";
+        root.bundledActiveId = "";
         Quickshell.execDetached(["caelestia", "scheme", "set", "--notify", "-n", scheme.name, "-f", scheme.flavour]);
     }
 
     function applyCustom(scheme: var): void {
         root.customActiveId = scheme.id;
+        root.bundledActiveId = "";
         Quickshell.execDetached(["python3", root.helper, "apply", "--id", scheme.id]);
+    }
+
+    function applyBundled(scheme: var): void {
+        root.customActiveId = "";
+        root.bundledActiveId = scheme.id;
+        Quickshell.execDetached(["python3", root.helper, "apply-bundled", "--id", scheme.id]);
     }
 
     function editCustom(scheme: var): void {
@@ -162,6 +215,7 @@ PageBase {
         if (visible) {
             presetsFile.reload();
             schemeFile.reload();
+            bundledFile.reload();
         }
     }
 
@@ -203,13 +257,13 @@ PageBase {
 
         GridLayout {
             Layout.fillWidth: true
-            visible: root.schemes.length > 0
+            visible: root.availableSchemes.length > 0
             columns: 2
             rowSpacing: Tokens.spacing.medium
             columnSpacing: Tokens.spacing.medium
 
             Repeater {
-                model: root.schemes
+                model: root.availableSchemes
 
                 SchemeItem {
                     required property var modelData
@@ -220,8 +274,8 @@ PageBase {
                     secondary: modelData.secondary
                     tertiary: modelData.tertiary
                     surface: modelData.surface
-                    active: !root.customActiveId && Colours.scheme === modelData.name && Colours.flavour === modelData.flavour
-                    onClicked: root.applyScheme(modelData)
+                    active: modelData.bundled ? root.bundledActiveId === modelData.id : !root.customActiveId && !root.bundledActiveId && Colours.scheme === modelData.name && Colours.flavour === modelData.flavour
+                    onClicked: modelData.bundled ? root.applyBundled(modelData) : root.applyScheme(modelData)
                 }
             }
         }
@@ -297,6 +351,7 @@ PageBase {
             function onSubPageClosed(): void {
                 root.presetsFile.reload();
                 root.schemeFile.reload();
+                root.bundledFile.reload();
             }
 
             target: root.nState

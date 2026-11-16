@@ -34,6 +34,7 @@ def caelestia_state(*parts: str) -> Path:
 
 PRESETS = caelestia_state("custom-schemes.json")
 SCHEME = caelestia_state("scheme.json")
+BUNDLED = Path(__file__).parent / "schemes"
 
 
 def load_presets() -> list[dict]:
@@ -91,6 +92,10 @@ def apply_preset(preset: dict) -> None:
     apply_colours(preset["colours"], preset["mode"])
 
 
+def read_colours_file(path: Path) -> dict[str, str]:
+    return {key: value.lstrip("#") for key, value in (line.split() for line in path.read_text().splitlines() if line.strip())}
+
+
 def find_preset(presets: list[dict], preset_id: str) -> dict:
     for preset in presets:
         if preset.get("id") == preset_id:
@@ -121,7 +126,36 @@ def main() -> int:
     delete_parser = sub.add_parser("delete", help="delete a saved custom scheme")
     delete_parser.add_argument("--id", required=True)
 
+    bundled_parser = sub.add_parser("apply-bundled", help="apply a scheme bundled with the shell")
+    bundled_parser.add_argument("--id", required=True)
+
     args = parser.parse_args()
+
+    if args.command == "apply-bundled":
+        entries = json.loads((BUNDLED / "index.json").read_text())
+        entry = next((e for e in entries if e.get("id") == args.id), None)
+        if entry is None:
+            raise ValueError(f"Unknown bundled scheme id: {args.id}")
+
+        colours = read_colours_file(BUNDLED / entry["path"])
+        from caelestia.utils.paths import atomic_dump
+        from caelestia.utils.theme import apply_colours
+
+        atomic_dump(
+            SCHEME,
+            {
+                "name": "caelestia",
+                "flavour": "default",
+                "mode": entry["mode"],
+                "variant": "tonalspot",
+                "colours": colours,
+                "bundledId": entry["id"],
+                "bundledName": entry["name"],
+            },
+        )
+        apply_colours(colours, entry["mode"])
+        print(json.dumps({"id": entry["id"], "applied": True}))
+        return 0
 
     if args.command == "preview":
         print(json.dumps({"colours": generate(normalise_seed(args.seed), args.mode, args.variant)}))
