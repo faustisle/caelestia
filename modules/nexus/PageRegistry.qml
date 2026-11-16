@@ -56,6 +56,12 @@ QtObject {
             description: Tr.tr("Manage plugins"),
             category: "system"
         },
+        {
+            label: Tr.tr("Storage"),
+            icon: "hard_drive",
+            description: Tr.tr("Disk usage, caches and trash"),
+            category: "system"
+        },
 
         // Shell
         {

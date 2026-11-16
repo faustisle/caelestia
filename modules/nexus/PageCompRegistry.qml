@@ -103,6 +103,14 @@ QtObject {
         Component {
             PlaceholderComp {}
         },
+        Component {
+            // Storage
+            StackPage {
+                Component {
+                    StoragePage {}
+                }
+            }
+        },
 
         // Shell
         Component {
