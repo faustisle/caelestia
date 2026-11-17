@@ -173,6 +173,12 @@ def hex_to_rgb(value: str) -> tuple[int, int, int]:
     return tuple(int(value[index : index + 2], 16) for index in (0, 2, 4))
 
 
+def blend_hex(first: str, second: str, amount: float) -> str:
+    first_rgb = hex_to_rgb(first)
+    second_rgb = hex_to_rgb(second)
+    return "".join(f"{round(a * (1 - amount) + b * amount):02x}" for a, b in zip(first_rgb, second_rgb))
+
+
 def replace_colours(text: str, mapping: dict[str, str], roles: dict[str, str]) -> str:
     def substitute_hex(match: re.Match) -> str:
         colour = match.group(1).lower()
@@ -209,6 +215,11 @@ def style_folder_48(text: str, roles: dict[str, str], mode: str) -> str:
     front = roles.get("primaryContainer", "000000")
     paper = roles.get("surfaceContainerLowest", "ffffff") if mode == "light" else roles.get("primaryFixedDim", "ffffff")
     glyph = roles.get("onPrimaryContainer", "ffffff")
+
+    if mode != "light":
+        accent = roles.get("primary", "ffffff")
+        back = blend_hex(back, accent, 0.25)
+        front = blend_hex(front, accent, 0.30)
 
     text = set_element_style(text, "path2", f"fill:#{back};fill-opacity:1;stroke:none")
     text = set_element_style(text, "path4", f"fill:#{paper};fill-opacity:1;stroke:none")
@@ -296,7 +307,7 @@ def generate_theme(
     return written
 
 
-def render_preview(theme: Path, scheme: dict, roles: dict[str, str], destination: Path) -> None:
+def render_preview(theme: Path, scheme: dict, roles: dict[str, str], destination: Path, name: str) -> None:
     try:
         from PIL import Image, ImageDraw, ImageFont
     except ImportError:
@@ -335,7 +346,7 @@ def render_preview(theme: Path, scheme: dict, roles: dict[str, str], destination
     subtitle_font = ImageFont.truetype(font_path, 14 * scale)
     label_font = ImageFont.truetype(font_path, 13 * scale)
 
-    draw.text((margin * scale, 26 * scale), "Caelestia-Nordic", font=title_font, fill=title_colour)
+    draw.text((margin * scale, 26 * scale), name, font=title_font, fill=title_colour)
     subtitle = f"{scheme.get('mode', 'dark')} · {scheme.get('variant', 'tonalspot')} · {scheme.get('name', 'scheme')}"
     draw.text((margin * scale, 64 * scale), subtitle, font=subtitle_font, fill=label_colour)
 
@@ -395,7 +406,7 @@ def main() -> int:
 
     print(f"Generated {args.output} from {source} ({written} SVGs).")
     if args.preview:
-        render_preview(args.output.expanduser(), scheme, roles, args.preview)
+        render_preview(args.output.expanduser(), scheme, roles, args.preview, args.name)
 
     return 0
 
