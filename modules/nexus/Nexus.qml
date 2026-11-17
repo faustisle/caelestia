@@ -11,8 +11,18 @@ import qs.modules.nexus
 Item {
     id: root
 
+    property int initialPage: 0
+    property var initialSubPages: []
+
     readonly property NexusState nState: NexusState {
         id: nState
+
+        currentPageIdx: root.initialPage
+
+        Component.onCompleted: {
+            for (const idx of root.initialSubPages)
+                nState.subPageIdxStack.push(idx);
+        }
 
         onClose: root.close()
     }

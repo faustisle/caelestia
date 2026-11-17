@@ -235,7 +235,9 @@ DesktopFile::DesktopFile(QString path, QString id, QString name, QString comment
     , m_kind(std::move(kind))
     , m_command(std::move(command))
     , m_workingDirectory(std::move(workingDirectory))
-    , m_terminal(terminal) {}
+    , m_terminal(terminal)
+    , m_size(QFileInfo(m_path).size())
+    , m_modified(QFileInfo(m_path).lastModified().toMSecsSinceEpoch()) {}
 
 QString DesktopFile::path() const {
     return m_path;
@@ -271,6 +273,14 @@ QString DesktopFile::workingDirectory() const {
 
 bool DesktopFile::terminal() const {
     return m_terminal;
+}
+
+qint64 DesktopFile::size() const {
+    return m_size;
+}
+
+qint64 DesktopFile::modified() const {
+    return m_modified;
 }
 
 DesktopFileModel::DesktopFileModel(QObject* parent)

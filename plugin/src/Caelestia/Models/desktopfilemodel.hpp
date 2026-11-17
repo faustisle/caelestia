@@ -24,6 +24,8 @@ class DesktopFile : public QObject {
     Q_PROPERTY(QStringList command READ command CONSTANT)
     Q_PROPERTY(QString workingDirectory READ workingDirectory CONSTANT)
     Q_PROPERTY(bool terminal READ terminal CONSTANT)
+    Q_PROPERTY(qint64 size READ size CONSTANT)
+    Q_PROPERTY(qint64 modified READ modified CONSTANT)
 
 public:
     explicit DesktopFile(QString path, QString id, QString name, QString comment, QString icon, QString kind,
@@ -38,6 +40,8 @@ public:
     [[nodiscard]] QStringList command() const;
     [[nodiscard]] QString workingDirectory() const;
     [[nodiscard]] bool terminal() const;
+    [[nodiscard]] qint64 size() const;
+    [[nodiscard]] qint64 modified() const;
 
 private:
     const QString m_path;
@@ -49,6 +53,8 @@ private:
     const QStringList m_command;
     const QString m_workingDirectory;
     const bool m_terminal;
+    const qint64 m_size;
+    const qint64 m_modified;
 };
 
 class DesktopFileModel : public QAbstractListModel {

@@ -47,6 +47,8 @@ class DesktopIcons : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, doubleClick, true)
     CONFIG_PROPERTY(int, iconSize, 48)
     CONFIG_PROPERTY(QString, position, u"top-right"_s)
+    // "custom", "name", "size", "type" or "modified".
+    CONFIG_PROPERTY(QString, sortBy, u"custom"_s)
     // Absolute paths in display order, updated by dragging icons.
     CONFIG_PROPERTY(QStringList, order, {})
 };

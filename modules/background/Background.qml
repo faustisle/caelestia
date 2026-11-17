@@ -57,6 +57,14 @@ Variants {
             }
         }
 
+        MouseArea {
+            id: desktopContextArea
+
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+            onClicked: mouse => desktopContextMenu.openAt(mouse.x, mouse.y)
+        }
+
         Loader {
             id: clockLoader
 
@@ -172,6 +180,13 @@ Variants {
                 screen: win.modelData
                 clockHeight: clockLoader.height
             }
+        }
+
+        DesktopContextMenu {
+            id: desktopContextMenu
+
+            anchors.fill: parent
+            z: 1000
         }
     }
 }

@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Caelestia.Config
 import Caelestia.Models
+import qs.utils
 
 Singleton {
     function launch(file: DesktopFile): void {
@@ -42,5 +43,33 @@ Singleton {
                 workingDirectory
             });
         }
+    }
+
+    function createFolder(): void {
+        Quickshell.execDetached(["sh", "-c", `dir=$1
+base=$2
+mkdir -p -- "$dir"
+dest="$dir/$base"
+n=2
+while [ -e "$dest" ] || [ -L "$dest" ]; do
+    dest="$dir/$base $n"
+    n=$((n + 1))
+done
+mkdir -- "$dest"`, "sh", Paths.desktop, "New Folder"]);
+    }
+
+    function createFile(): void {
+        Quickshell.execDetached(["sh", "-c", `dir=$1
+base=$2
+mkdir -p -- "$dir"
+name=\${base%.*}
+ext=\${base##*.}
+dest="$dir/$base"
+n=2
+while [ -e "$dest" ] || [ -L "$dest" ]; do
+    dest="$dir/$name $n.$ext"
+    n=$((n + 1))
+done
+: > "$dest"`, "sh", Paths.desktop, "New File.txt"]);
     }
 }

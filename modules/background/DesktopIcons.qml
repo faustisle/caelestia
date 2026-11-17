@@ -76,6 +76,7 @@ Item {
     readonly property real gridY: root.alignBottom ? root.height - root.marginBottom - root.gridHeight : root.marginTop
 
     // Paths in display order. A drag overrides the saved order until it is dropped.
+    readonly property string sortBy: root.iconsConfig.sortBy || "custom"
     readonly property var orderPaths: {
         if (root.dragging && root.dragOrder.length > 0)
             return root.dragOrder;
@@ -86,23 +87,54 @@ Item {
         for (let i = 0; i < entries.length; ++i)
             list.push(entries[i]);
 
-        list.sort((a, b) => {
-            const ai = configured.indexOf(a.path);
-            const bi = configured.indexOf(b.path);
-            const ar = ai < 0 ? Number.MAX_SAFE_INTEGER : ai;
-            const br = bi < 0 ? Number.MAX_SAFE_INTEGER : bi;
-            if (ar !== br)
-                return ar - br;
-
-            const af = a.kind === "folder" ? 0 : 1;
-            const bf = b.kind === "folder" ? 0 : 1;
-            if (af !== bf)
-                return af - bf;
-
+        const compareName = (a, b) => {
             const an = a.name.toLowerCase();
             const bn = b.name.toLowerCase();
             return an < bn ? -1 : an > bn ? 1 : 0;
-        });
+        };
+
+        if (root.sortBy === "custom") {
+            list.sort((a, b) => {
+                const ai = configured.indexOf(a.path);
+                const bi = configured.indexOf(b.path);
+                const ar = ai < 0 ? Number.MAX_SAFE_INTEGER : ai;
+                const br = bi < 0 ? Number.MAX_SAFE_INTEGER : bi;
+                if (ar !== br)
+                    return ar - br;
+
+                const af = a.kind === "folder" ? 0 : 1;
+                const bf = b.kind === "folder" ? 0 : 1;
+                if (af !== bf)
+                    return af - bf;
+
+                return compareName(a, b);
+            });
+        } else {
+            list.sort((a, b) => {
+                const af = a.kind === "folder" ? 0 : 1;
+                const bf = b.kind === "folder" ? 0 : 1;
+                if (af !== bf)
+                    return af - bf;
+
+                if (root.sortBy === "size")
+                    return a.size - b.size || compareName(a, b);
+
+                if (root.sortBy === "type") {
+                    const kind = a.kind.localeCompare(b.kind);
+                    if (kind !== 0)
+                        return kind;
+
+                    const at = root.extension(a);
+                    const bt = root.extension(b);
+                    if (at !== bt)
+                        return at < bt ? -1 : 1;
+                } else if (root.sortBy === "modified") {
+                    return b.modified - a.modified || compareName(a, b);
+                }
+
+                return compareName(a, b);
+            });
+        }
 
         return list.map(entry => entry.path);
     }
@@ -128,6 +160,12 @@ Item {
     // Emitted for a right click on an icon. The desktop context menu can connect
     // to this without the icon grid needing to know about it.
     signal contextMenuRequested(entry: var, x: real, y: real)
+
+    function extension(entry: var): string {
+        const dot = entry.path.lastIndexOf(".");
+        const slash = entry.path.lastIndexOf("/");
+        return dot > slash ? entry.path.slice(dot + 1).toLowerCase() : "";
+    }
 
     function displayIndex(path: string): int {
         const index = root.orderMap[path];
@@ -187,8 +225,10 @@ Item {
 
     function finishDrag(): void {
         const wasDragging = root.dragging;
-        if (wasDragging && root.dragPath !== "")
+        if (wasDragging && root.dragPath !== "") {
+            GlobalConfig.background.desktopIcons.sortBy = "custom";
             GlobalConfig.background.desktopIcons.order = root.dragOrder.slice();
+        }
 
         root.dragMoved = wasDragging;
         root.dragging = false;
@@ -412,6 +452,7 @@ done`, "sh", Paths.desktop, ...paths]);
                 }
                 onClicked: mouse => {
                     if (mouse.button === Qt.RightButton) {
+                        mouse.accepted = true;
                         root.contextMenuRequested(tile.modelData, mouse.x + tile.x, mouse.y + tile.y);
                         return;
                     }

@@ -18,6 +18,8 @@ full set.
 - **Desktop icons** — show files and folders on the desktop, reorder them by
   dragging, drop files and folders onto the desktop, and choose single-click or
   double-click opening. Configure it under `background.desktopIcons`.
+- **Desktop context menu** — new folder/file, sort by name, size, type, or
+  modified, toggle desktop icons, and open Nexus settings pages directly.
 - **Caelestia Material icon theme** — generate a scheme-coloured folder icon
   theme from Nordic folder art, inheriting Papirus-Dark for app icons. It can
   regenerate automatically after scheme changes.
@@ -284,7 +286,7 @@ For example, to hide the bar on `DP-1`:
 
 - `bar.position` — `top`, `bottom`, or `left`.
 - `background.desktopIcons` — `enabled`, `showLabels`, `showFiles`,
-  `doubleClick`, `iconSize`, `position`, and `order`.
+  `doubleClick`, `iconSize`, `position`, `sortBy`, and `order`.
 - `launcher.spotlight` and `launcher.dim` — centred launcher mode and screen
   dimming.
 - `bar.sysMonitor.performance` — choose the metrics shown in the performance
@@ -546,6 +548,7 @@ For example, to hide the bar on `DP-1`:
             "doubleClick": true,
             "iconSize": 48,
             "position": "top-right",
+            "sortBy": "custom",
             "order": []
         }
     },

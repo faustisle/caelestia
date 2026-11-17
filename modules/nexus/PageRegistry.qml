@@ -6,6 +6,11 @@ import Caelestia.I18n
 QtObject {
     id: root
 
+    readonly property int wallpaperAndStylePage: 0
+    readonly property int displaysPage: 8
+    readonly property int wallpaperSubPage: 1
+    readonly property int coloursSubPage: 3
+
     readonly property list<var> pages: [
         // Appearance
         {
