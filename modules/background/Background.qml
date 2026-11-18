@@ -16,6 +16,10 @@ Variants {
 
         required property ShellScreen modelData
 
+        function openDesktopMenu(x: real, y: real): void {
+            desktopContextMenu.openAt(x, y);
+        }
+
         screen: modelData
         name: "background"
         WlrLayershell.exclusionMode: ExclusionMode.Ignore

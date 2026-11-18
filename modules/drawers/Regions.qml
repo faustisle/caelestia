@@ -13,11 +13,13 @@ Region {
 
     readonly property real borderThickness: win.contentItem.Config.border.thickness
     readonly property real clampedThickness: win.contentItem.Config.border.clampedThickness
+    readonly property real dragTop: root.geometry.barOnBottom ? 0 : win.dragMaskPadding
+    readonly property real dragBottom: root.geometry.barOnBottom ? win.dragMaskPadding : 0
 
-    x: geometry.insetLeft(clampedThickness, true) + win.dragMaskPadding
-    y: geometry.insetTop(clampedThickness, true) + win.dragMaskPadding
-    width: win.width - geometry.insetLeft(clampedThickness, true) - geometry.insetRight(clampedThickness, true) - win.dragMaskPadding * 2
-    height: win.height - geometry.insetTop(clampedThickness, true) - geometry.insetBottom(clampedThickness, true) - win.dragMaskPadding * 2
+    x: geometry.insetLeft(clampedThickness, true)
+    y: geometry.insetTop(clampedThickness, true) + root.dragTop
+    width: win.width - geometry.insetLeft(clampedThickness, true) - geometry.insetRight(clampedThickness, true)
+    height: win.height - geometry.insetTop(clampedThickness, true) - geometry.insetBottom(clampedThickness, true) - root.dragTop - root.dragBottom
     intersection: Intersection.Xor
 
     // Keep a small input hotspot at the top-right corner for the sidebar hover
@@ -30,6 +32,10 @@ Region {
         width: 25
         height: 25
         intersection: Intersection.Subtract
+    }
+
+    R {
+        panel: root.win.bar
     }
 
     R {

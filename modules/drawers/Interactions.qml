@@ -4,6 +4,7 @@ import Quickshell
 import Caelestia.Config
 import qs.components
 import qs.components.controls
+import qs.services
 import qs.modules.bar as Bar
 import qs.modules.bar.popouts as BarPopouts
 
@@ -79,8 +80,16 @@ CustomMouseArea {
 
     onPressed: event => dragStart = Qt.point(event.x, event.y)
     onClicked: event => {
-        if (geometry.barContains(event.x, event.y))
+        if (geometry.barContains(event.x, event.y)) {
             bar.togglePopout(geometry.axisPos(event.x, event.y));
+            return;
+        }
+
+        if (event.button === Qt.RightButton) {
+            const background = ShellState.componentsFor(root.screen)?.background;
+            if (background)
+                background.openDesktopMenu(event.x, event.y);
+        }
     }
     onContainsMouseChanged: {
         if (!containsMouse) {
