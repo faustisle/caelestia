@@ -194,6 +194,7 @@ Variants {
             id: desktopContextMenu
 
             anchors.fill: parent
+            screen: win.modelData
             z: 1000
         }
 

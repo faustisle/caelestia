@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Caelestia.Config
 import Caelestia.I18n
 import qs.components
@@ -12,6 +13,8 @@ import qs.modules.nexus
 Item {
     id: root
 
+    required property ShellScreen screen
+
     property bool opened
     property real clickX
     property real clickY
@@ -19,10 +22,17 @@ Item {
     property bool confirmingDelete
     property bool sortMenuVisible
 
-    readonly property real edgeMargin: Tokens.padding.small
+    readonly property real baseMargin: Math.max(16, Tokens.padding.large)
     readonly property real menuWidth: 232
     readonly property real menuPadding: Tokens.padding.extraSmall
     readonly property real submenuWidth: 164
+    readonly property var barRef: ShellState.componentsFor(root.screen)?.bar
+    readonly property bool barHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
+    readonly property real barThickness: root.barRef?.contentThickness ?? (root.barHorizontal ? Tokens.sizes.bar.horizontalInnerWidth + Tokens.padding.extraSmall * 2 : Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness) * 2)
+    readonly property real marginLeft: root.baseMargin + (Config.bar.position === "left" ? root.barThickness + root.baseMargin : 0)
+    readonly property real marginRight: root.baseMargin + (Config.bar.position === "right" ? root.barThickness + root.baseMargin : 0)
+    readonly property real marginTop: root.baseMargin + (Config.bar.position === "top" ? root.barThickness + root.baseMargin : 0)
+    readonly property real marginBottom: root.baseMargin + (Config.bar.position === "bottom" ? root.barThickness + root.baseMargin : 0)
     readonly property string sortBy: GlobalConfig.background.desktopIcons.sortBy || "custom"
 
     signal renameRequested(entry: var)
@@ -97,8 +107,8 @@ Item {
         height: mainColumn.implicitHeight + root.menuPadding * 2
         implicitWidth: width
         implicitHeight: height
-        x: Math.max(root.edgeMargin, Math.min(root.clickX, root.width - width - root.edgeMargin))
-        y: Math.max(root.edgeMargin, Math.min(root.clickY, root.height - height - root.edgeMargin))
+        x: Math.max(root.marginLeft, Math.min(root.clickX, root.width - width - root.marginRight))
+        y: Math.max(root.marginTop, Math.min(root.clickY, root.height - height - root.marginBottom))
 
         StyledRect {
             anchors.fill: parent
@@ -254,8 +264,8 @@ Item {
         height: confirmColumn.implicitHeight + root.menuPadding * 2
         implicitWidth: width
         implicitHeight: height
-        x: Math.max(root.edgeMargin, Math.min(root.clickX, root.width - width - root.edgeMargin))
-        y: Math.max(root.edgeMargin, Math.min(root.clickY, root.height - height - root.edgeMargin))
+        x: Math.max(root.marginLeft, Math.min(root.clickX, root.width - width - root.marginRight))
+        y: Math.max(root.marginTop, Math.min(root.clickY, root.height - height - root.marginBottom))
 
         StyledRect {
             anchors.fill: parent
@@ -313,9 +323,11 @@ Item {
         implicitHeight: height
         x: {
             const right = panel.x + panel.width + Tokens.spacing.small;
-            return right + width <= root.width - root.edgeMargin ? right : panel.x - width - Tokens.spacing.small;
+            if (right + width <= root.width - root.marginRight)
+                return right;
+            return Math.max(root.marginLeft, panel.x - width - Tokens.spacing.small);
         }
-        y: Math.max(root.edgeMargin, Math.min(panel.y + root.menuPadding + sortRow.y, root.height - height - root.edgeMargin))
+        y: Math.max(root.marginTop, Math.min(panel.y + root.menuPadding + sortRow.y, root.height - height - root.marginBottom))
 
         StyledRect {
             anchors.fill: parent
