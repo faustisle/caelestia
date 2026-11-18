@@ -94,7 +94,12 @@ Item {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: root.close()
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton)
+                root.openAt(mouse.x, mouse.y);
+            else
+                root.close();
+        }
     }
 
     Elevation {
