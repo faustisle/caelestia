@@ -15,28 +15,32 @@ Item {
     property bool opened
     property real clickX
     property real clickY
+    property var entry: null
+    property bool confirmingDelete
     property bool sortMenuVisible
-    property bool sortRowHovered
-    property bool sortPanelHovered
 
     readonly property real edgeMargin: Tokens.padding.small
-    readonly property real menuWidth: 252
+    readonly property real menuWidth: 232
     readonly property real menuPadding: Tokens.padding.extraSmall
-    readonly property real submenuWidth: 176
+    readonly property real submenuWidth: 164
     readonly property string sortBy: GlobalConfig.background.desktopIcons.sortBy || "custom"
 
-    function openAt(x: real, y: real): void {
+    signal renameRequested(entry: var)
+
+    function openAt(x: real, y: real, item = null): void {
         root.clickX = x;
         root.clickY = y;
+        root.entry = item;
         root.opened = true;
+        root.confirmingDelete = false;
         root.sortMenuVisible = false;
-        root.sortRowHovered = false;
-        root.sortPanelHovered = false;
     }
 
     function close(): void {
         root.opened = false;
+        root.confirmingDelete = false;
         root.sortMenuVisible = false;
+        root.entry = null;
         sortCloseTimer.stop();
     }
 
@@ -60,6 +64,20 @@ Item {
         WindowFactory.openPage(page, subPages);
     }
 
+    function requestRename(): void {
+        const target = root.entry;
+        root.close();
+        if (target)
+            root.renameRequested(target);
+    }
+
+    function confirmDelete(): void {
+        const target = root.entry;
+        root.close();
+        if (target)
+            Desktop.deleteEntry(target);
+    }
+
     visible: root.opened
     z: 1000
 
@@ -72,6 +90,7 @@ Item {
     Elevation {
         id: panel
 
+        visible: !root.confirmingDelete
         level: 2
         radius: Tokens.rounding.large
         width: root.menuWidth
@@ -99,6 +118,50 @@ Item {
             spacing: 0
 
             MenuRow {
+                visible: root.entry !== null
+                icon: "open_in_new"
+                label: Tr.tr("Open")
+                onClicked: {
+                    const target = root.entry;
+                    root.close();
+                    if (target)
+                        Desktop.launch(target);
+                }
+            }
+
+            MenuRow {
+                visible: root.entry !== null && root.entry.kind !== "application"
+                icon: "drive_file_rename_outline"
+                label: Tr.tr("Rename")
+                onClicked: root.requestRename()
+            }
+
+            MenuRow {
+                visible: root.entry !== null
+                icon: "folder_open"
+                label: Tr.tr("Open file location")
+                onClicked: {
+                    const target = root.entry;
+                    root.close();
+                    if (target)
+                        Desktop.openLocation(target.path);
+                }
+            }
+
+            MenuSeparator {
+                visible: root.entry !== null
+            }
+
+            MenuRow {
+                visible: root.entry !== null
+                icon: "delete"
+                label: Tr.tr("Delete")
+                destructive: true
+                onClicked: root.confirmingDelete = true
+            }
+
+            MenuRow {
+                visible: root.entry === null
                 icon: "create_new_folder"
                 label: Tr.tr("New folder")
                 onClicked: {
@@ -108,6 +171,7 @@ Item {
             }
 
             MenuRow {
+                visible: root.entry === null
                 icon: "note_add"
                 label: Tr.tr("New file")
                 onClicked: {
@@ -116,26 +180,25 @@ Item {
                 }
             }
 
-            MenuSeparator {}
+            MenuSeparator {
+                visible: root.entry === null
+            }
 
             MenuRow {
                 id: sortRow
 
+                visible: root.entry === null
                 icon: "sort"
                 label: Tr.tr("Sort by")
                 trailingIcon: "chevron_right"
                 onClicked: root.openSortMenu()
                 onHovered: {
-                    root.sortRowHovered = true;
                     root.openSortMenu();
-                }
-                onUnhovered: {
-                    root.sortRowHovered = false;
-                    root.scheduleSortMenuClose();
                 }
             }
 
             MenuRow {
+                visible: root.entry === null
                 icon: GlobalConfig.background.desktopIcons.enabled ? "visibility_off" : "visibility"
                 label: GlobalConfig.background.desktopIcons.enabled ? Tr.tr("Hide desktop icons") : Tr.tr("Show desktop icons")
                 onClicked: {
@@ -144,9 +207,12 @@ Item {
                 }
             }
 
-            MenuSeparator {}
+            MenuSeparator {
+                visible: root.entry === null
+            }
 
             MenuRow {
+                visible: root.entry === null
                 icon: "settings"
                 label: Tr.tr("Open settings")
                 onClicked: {
@@ -156,18 +222,21 @@ Item {
             }
 
             MenuRow {
+                visible: root.entry === null
                 icon: "wallpaper"
                 label: Tr.tr("Wallpaper settings")
                 onClicked: root.openNexus(PageRegistry.wallpaperAndStylePage, [PageRegistry.wallpaperSubPage])
             }
 
             MenuRow {
+                visible: root.entry === null
                 icon: "palette"
-                label: Tr.tr("Colour scheme settings")
+                label: Tr.tr("Colour scheme")
                 onClicked: root.openNexus(PageRegistry.wallpaperAndStylePage, [PageRegistry.coloursSubPage])
             }
 
             MenuRow {
+                visible: root.entry === null
                 icon: "monitor"
                 label: Tr.tr("Display settings")
                 onClicked: root.openNexus(PageRegistry.displaysPage, [])
@@ -176,9 +245,66 @@ Item {
     }
 
     Elevation {
+        id: confirmPanel
+
+        visible: root.confirmingDelete
+        level: 2
+        radius: Tokens.rounding.large
+        width: root.menuWidth
+        height: confirmColumn.implicitHeight + root.menuPadding * 2
+        implicitWidth: width
+        implicitHeight: height
+        x: Math.max(root.edgeMargin, Math.min(root.clickX, root.width - width - root.edgeMargin))
+        y: Math.max(root.edgeMargin, Math.min(root.clickY, root.height - height - root.edgeMargin))
+
+        StyledRect {
+            anchors.fill: parent
+            radius: parent.radius
+            color: Colours.palette.m3surfaceContainerLow
+            border.width: 1
+            border.color: Colours.palette.m3primary
+        }
+
+        ColumnLayout {
+            id: confirmColumn
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: root.menuPadding
+            spacing: 0
+
+            StyledText {
+                Layout.fillWidth: true
+                Layout.leftMargin: Tokens.padding.medium
+                Layout.rightMargin: Tokens.padding.medium
+                Layout.topMargin: Tokens.padding.medium
+                Layout.bottomMargin: Tokens.padding.small
+                text: Tr.tr("Move \"%1\" to the trash?").arg(root.entry?.name ?? "")
+                color: Colours.palette.m3onSurface
+                font: Tokens.font.body.small
+                wrapMode: Text.WordWrap
+            }
+
+            MenuRow {
+                icon: "cancel"
+                label: Tr.tr("Cancel")
+                onClicked: root.confirmingDelete = false
+            }
+
+            MenuRow {
+                icon: "delete"
+                label: Tr.tr("Delete")
+                destructive: true
+                onClicked: root.confirmDelete()
+            }
+        }
+    }
+
+    Elevation {
         id: sortPanel
 
-        visible: root.sortMenuVisible
+        visible: root.sortMenuVisible && !root.confirmingDelete && root.entry === null
         level: 2
         radius: Tokens.rounding.large
         width: root.submenuWidth
@@ -239,7 +365,6 @@ Item {
 
         HoverHandler {
             onHoveredChanged: {
-                root.sortPanelHovered = hovered;
                 if (hovered)
                     sortCloseTimer.stop();
                 else
@@ -252,10 +377,7 @@ Item {
         id: sortCloseTimer
 
         interval: 180
-        onTriggered: {
-            if (!root.sortRowHovered && !root.sortPanelHovered)
-                root.sortMenuVisible = false;
-        }
+        onTriggered: root.sortMenuVisible = false
     }
 
     component MenuRow: StyledRect {
@@ -264,13 +386,14 @@ Item {
         required property string icon
         required property string label
         property string trailingIcon
+        property bool destructive
 
         signal clicked
         signal hovered
         signal unhovered
 
         Layout.fillWidth: true
-        implicitHeight: Math.max(40, rowLayout.implicitHeight + Tokens.padding.small * 2)
+        implicitHeight: Math.max(36, rowLayout.implicitHeight + Tokens.padding.small * 2)
         radius: Tokens.rounding.medium
         color: "transparent"
 
@@ -278,24 +401,24 @@ Item {
             id: rowLayout
 
             anchors.fill: parent
-            anchors.leftMargin: Tokens.padding.medium
-            anchors.rightMargin: Tokens.padding.medium
+            anchors.leftMargin: Tokens.padding.small
+            anchors.rightMargin: Tokens.padding.small
             spacing: Tokens.spacing.small
 
             MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
                 visible: row.icon !== ""
                 text: row.icon
-                color: Colours.palette.m3onSurfaceVariant
-                fontStyle: Tokens.font.icon.medium
+                color: row.destructive ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
+                fontStyle: Tokens.font.icon.small
             }
 
             StyledText {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
                 text: row.label
-                color: Colours.palette.m3onSurface
-                font: Tokens.font.body.medium
+                color: row.destructive ? Colours.palette.m3error : Colours.palette.m3onSurface
+                font: Tokens.font.body.small
                 elide: Text.ElideRight
             }
 

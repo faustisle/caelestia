@@ -20,6 +20,7 @@ full set.
   double-click opening. Configure it under `background.desktopIcons`.
 - **Desktop context menu** — new folder/file, sort by name, size, type, or
   modified, toggle desktop icons, and open Nexus settings pages directly.
+  Files and folders also get open, rename, reveal, and confirmed-delete actions.
 - **Caelestia Material icon theme** — generate a scheme-coloured folder icon
   theme from Nordic folder art, inheriting Papirus-Dark for app icons. It can
   regenerate automatically after scheme changes.

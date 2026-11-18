@@ -72,4 +72,34 @@ while [ -e "$dest" ] || [ -L "$dest" ]; do
 done
 : > "$dest"`, "sh", Paths.desktop, "New File.txt"]);
     }
+
+    function openLocation(path: string): void {
+        const slash = path.lastIndexOf("/");
+        const directory = slash > 0 ? path.slice(0, slash) : "/";
+        const explorer = GlobalConfig.general.apps.explorer;
+        if (explorer.length > 0)
+            Quickshell.execDetached({
+                command: [...explorer, directory]
+            });
+        else
+            Quickshell.execDetached(["xdg-open", directory]);
+    }
+
+    function renameEntry(entry: DesktopFile, name: string): void {
+        if (!entry)
+            return;
+
+        const slash = entry.path.lastIndexOf("/");
+        if (slash <= 0)
+            return;
+
+        const destination = `${entry.path.slice(0, slash)}/${name}`;
+        Quickshell.execDetached(["sh", "-c", `if [ -e "$2" ] || [ -L "$2" ]; then exit 1; fi
+mv -- "$1" "$2"`, "sh", entry.path, destination]);
+    }
+
+    function deleteEntry(entry: DesktopFile): void {
+        if (entry)
+            Quickshell.execDetached(["gio", "trash", "--", entry.path]);
+    }
 }

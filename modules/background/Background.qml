@@ -182,11 +182,31 @@ Variants {
             }
         }
 
+        Connections {
+            function onContextMenuRequested(entry, x, y): void {
+                desktopContextMenu.openAt(x, y, entry);
+            }
+
+            target: iconsLoader.item
+        }
+
         DesktopContextMenu {
             id: desktopContextMenu
 
             anchors.fill: parent
             z: 1000
+        }
+
+        DesktopRenameDialog {
+            id: desktopRenameDialog
+        }
+
+        Connections {
+            function onRenameRequested(entry): void {
+                desktopRenameDialog.open(entry);
+            }
+
+            target: desktopContextMenu
         }
     }
 }
