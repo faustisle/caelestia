@@ -105,10 +105,7 @@ Item {
                     Wallpapers.setWallpaper(currentItem.modelData.path);
                     root.screenState.launcher = false;
                 } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
-                    if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}calc `))
-                        currentItem.onClicked();
-                    else
-                        currentItem.modelData.onClicked(list.currentList);
+                    currentItem.modelData.onClicked(list.currentList);
                 } else {
                     Apps.launch(currentItem.modelData);
                     root.screenState.launcher = false;

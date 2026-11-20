@@ -80,7 +80,6 @@ Runtime dependencies:
 - [`networkmanager`](https://gitlab.freedesktop.org/NetworkManager/NetworkManager)
 - [`lm_sensors`](https://github.com/lm-sensors/lm-sensors)
 - [`libpipewire`](https://github.com/PipeWire/pipewire)
-- [`libqalculate`](https://github.com/Qalculate/libqalculate)
 - [`power-profiles-daemon`](https://gitlab.freedesktop.org/upower/power-profiles-daemon)
 - [`ttf-material-symbols-variable`](https://github.com/google/material-design-icons)
 - [`ttf-rubik-vf`](https://github.com/googlefonts/rubik)
@@ -91,7 +90,6 @@ Runtime dependencies:
 - `qt6-multimedia`
 - [`qt6-m3shapes-git`](https://github.com/soramanew/m3shapes)
 - [`swappy`](https://github.com/jtheoof/swappy)
-- [`fish`](https://github.com/fish-shell/fish-shell)
 - [`bash`](https://www.gnu.org/software/bash)
 - `python` (used by the CLI and the icon theme generator)
 
@@ -762,14 +760,6 @@ For example, to hide the bar on `DP-1`:
             "wallpapers": false
         },
         "actions": [
-            {
-                "name": "Calculator",
-                "icon": "calculate",
-                "description": "Do simple math equations (powered by Qalc)",
-                "command": ["autocomplete", "calc"],
-                "enabled": true,
-                "dangerous": false
-            },
             {
                 "name": "Scheme",
                 "icon": "palette",

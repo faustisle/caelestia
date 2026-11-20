@@ -4,14 +4,12 @@
   stdenv,
   makeWrapper,
   makeFontsConf,
-  fish,
   ddcutil,
   brightnessctl,
   networkmanager,
   lm_sensors,
   swappy,
   wl-clipboard,
-  libqalculate,
   bash,
   hyprland,
   material-symbols,
@@ -36,14 +34,12 @@
 
   runtimeDeps =
     [
-      fish
       ddcutil
       brightnessctl
       networkmanager
       lm_sensors
       swappy
       wl-clipboard
-      libqalculate
       bash
       hyprland
     ]
@@ -92,7 +88,7 @@
     };
 
     nativeBuildInputs = [cmake ninja pkg-config];
-    buildInputs = [qt6.qtbase qt6.qtdeclarative qt6.qtmultimedia qt6.qtshadertools libqalculate pipewire lm_sensors];
+    buildInputs = [qt6.qtbase qt6.qtdeclarative qt6.qtmultimedia qt6.qtshadertools pipewire lm_sensors];
 
     dontWrapQtApps = true;
     cmakeFlags =

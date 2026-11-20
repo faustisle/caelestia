@@ -32,7 +32,7 @@ jobs:
           cmake --build build
 
       - name: Lint QML
-        shell: fish {0}
+        shell: bash
         run: |
           /usr/lib/qt6/bin/qmllint --version
 
@@ -41,25 +41,33 @@ jobs:
           QT_QPA_PLATFORM=offscreen QML2_IMPORT_PATH="$PWD/build/qml:$QML2_IMPORT_PATH" timeout 2 qs -p .
 
           # Construct linter args
-          set -l build_dir (grep -oP "(?<=buildDir=\")(.*)(?=\")" .qmlls.ini)
-          set -l import_paths (grep -oP "(?<=importPaths=\")(.*)(?=\")" .qmlls.ini | string split :)
-          set -l args -I $build_dir
-          for path in $import_paths
-            set -a args -I $path
-          end
-          set -l qml_files (string match -vr 'build/.*' **.qml)
+          build_dir=$(grep -oP '(?<=buildDir=")(.*)(?=")' .qmlls.ini || true)
+          import_paths_raw=$(grep -oP '(?<=importPaths=")(.*)(?=")' .qmlls.ini || true)
+          IFS=: read -ra import_paths <<< "$import_paths_raw"
+          args=(-I "$build_dir")
+          for path in "${import_paths[@]}"; do
+            args+=(-I "$path")
+          done
+
+          shopt -s globstar nullglob
+          qml_files=()
+          for file in **/*.qml; do
+            if [[ "$file" != build/* ]]; then
+              qml_files+=("$file")
+            fi
+          done
 
           # Lint
-          set -l lint_out (mktemp)
-          /usr/lib/qt6/bin/qmllint $args $qml_files 2> $lint_out
+          lint_out=$(mktemp)
+          /usr/lib/qt6/bin/qmllint "${args[@]}" "${qml_files[@]}" 2> "$lint_out"
 
-          set -l singleton_pattern 'Type [A-Z][a-zA-Z0-9]* not declared as singleton in qmldir but using pragma Singleton'
-          set -l post_reload_hook_pattern 'PostReloadHook was not found\. Did you add all imports and dependencies\?'
-          sed -i -E "/(($singleton_pattern)|($post_reload_hook_pattern)) \[import\]/d" $lint_out
+          singleton_pattern='Type [A-Z][a-zA-Z0-9]* not declared as singleton in qmldir but using pragma Singleton'
+          post_reload_hook_pattern='PostReloadHook was not found\. Did you add all imports and dependencies\?'
+          sed -i -E "/(($singleton_pattern)|($post_reload_hook_pattern)) \[import\]/d" "$lint_out"
 
-          cat $lint_out
+          cat "$lint_out"
 
-          ! test -s $lint_out
+          ! test -s "$lint_out"
 
   lint-cpp:
     needs: changes

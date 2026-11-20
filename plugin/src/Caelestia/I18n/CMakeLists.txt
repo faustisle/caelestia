@@ -2,7 +2,7 @@ set(po_files
     # All .po files should go here
 )
 
-set(trs_script "${CMAKE_SOURCE_DIR}/scripts/trs.fish")
+set(trs_script "${CMAKE_SOURCE_DIR}/scripts/trs.py")
 
 # Compile .po -> .mo and alias each one to <lang>.mo in the module's resources
 set(mo_files)

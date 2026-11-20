@@ -26,12 +26,16 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Check QML format
-        shell: fish {0}
+        shell: bash
         run: |
+          shopt -s globstar nullglob
           /usr/lib/qt6/bin/qmlformat --version
-          for file in (string match -v 'build/*' **.qml)
-            /usr/lib/qt6/bin/qmlformat $file | diff -u $file - || exit 1
-          end
+          for file in **/*.qml; do
+            if [[ "$file" == build/* ]]; then
+              continue
+            fi
+            /usr/lib/qt6/bin/qmlformat "$file" | diff -u "$file" - || exit 1
+          done
           python3 scripts/qml-lint-conventions.py
 
   check-cpp:
@@ -46,7 +50,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Check C++ format
-        shell: fish {0}
+        shell: bash
         run: |
           clang-format --version
           find plugin extras -name '*.cpp' -o -name '*.hpp' \
