@@ -36,6 +36,14 @@ Item {
             implicitHeight = implicitHeight; // Break binding during close anim
     }
 
+    // The panel button opens the regular launcher for one session only. Clear
+    // the flag once the close animation is done so the next shortcut opens the
+    // configured spotlight mode again.
+    onVisibleChanged: {
+        if (!visible && !screenState.launcher)
+            screenState.launcherRegular = false;
+    }
+
     visible: offsetScale < 1
     anchors.top: spotlight || !barOnBottom ? parent.top : undefined
     anchors.bottom: !spotlight && barOnBottom ? parent.bottom : undefined
