@@ -212,10 +212,9 @@ StyledWindow {
                 deformAmount: 0.25
                 x: panels.osdWrapper.x + panels.osd.x + geometry.insetLeft(root.borderThickness)
                 implicitWidth: panels.osd.width + 1
-                // Keep the OSD capsule independent from the screen frame. Merging
-                // lets the blob smoothing bulge a section of the panel past the
-                // frame while the OSD is moving.
-                mergeWithInverted: false
+                // Keep the OSD's blob merge with the frame for its spring, but
+                // the clipped parent keeps the sliding capsule from spilling
+                // past the frame.
             }
         }
 
