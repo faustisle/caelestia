@@ -141,6 +141,6 @@ Item {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.bottomMargin: Tokens.padding.medium
-        anchors.rightMargin: Tokens.padding.medium + (utilities.visible ? utilities.width : 0)
+        anchors.rightMargin: Tokens.padding.medium
     }
 }
