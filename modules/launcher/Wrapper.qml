@@ -30,18 +30,12 @@ Item {
     property real offsetScale: shouldBeActive ? 0 : 1
 
     onShouldBeActiveChanged: {
-        if (shouldBeActive)
+        if (shouldBeActive) {
             implicitHeight = Qt.binding(() => content.implicitHeight);
-        else
+        } else {
             implicitHeight = implicitHeight; // Break binding during close anim
-    }
-
-    // The panel button opens the regular launcher for one session only. Clear
-    // the flag once the close animation is done so the next shortcut opens the
-    // configured spotlight mode again.
-    onVisibleChanged: {
-        if (!visible && !screenState.launcher)
-            screenState.launcherRegular = false;
+            resetRegularTimer.restart();
+        }
     }
 
     visible: offsetScale < 1
@@ -89,6 +83,19 @@ Item {
 
     Behavior on offsetScale {
         Anim {}
+    }
+
+    Timer {
+        id: resetRegularTimer
+
+        // Wait for the closing animation to settle. The spatial easing can
+        // overshoot, so reacting to `visible` directly flips the mode and
+        // anchors mid-close.
+        interval: Tokens.anim.durations.expressiveDefaultSpatial + 50
+        onTriggered: {
+            if (!screenState.launcher)
+                screenState.launcherRegular = false;
+        }
     }
 
     // Keep the spotlight background inside the wrapper so it fades together

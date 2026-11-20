@@ -146,10 +146,12 @@ Item {
 
         Connections {
             function onLauncherChanged(): void {
-                if (!root.screenState.launcher)
+                if (!root.screenState.launcher) {
                     search.text = "";
-                else
+                    root.spotlightResults = false;
+                } else {
                     root.syncSpotlightResults();
+                }
             }
 
             function onSessionChanged(): void {
