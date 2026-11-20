@@ -39,13 +39,11 @@ Item {
     }
 
     visible: offsetScale < 1
-    anchors.top: spotlight || !barOnBottom ? parent.top : undefined
-    anchors.bottom: !spotlight && barOnBottom ? parent.bottom : undefined
-    anchors.left: parent.left
-    // Regular mode pops out of the bar it is attached to, like the other
-    // drawers. Spotlight keeps its small offset while centred.
-    anchors.topMargin: spotlight ? spotlightTopMargin + Tokens.spacing.small * offsetScale : barOnBottom ? 0 : (-implicitHeight - 5) * offsetScale
-    anchors.bottomMargin: !spotlight && barOnBottom ? (-implicitHeight - 5) * offsetScale : 0
+    // Position explicitly instead of using anchors: switching modes with
+    // conditional anchors leaves the previous anchor attached, which stretches
+    // the wrapper to the panel height and creates the huge blank spotlight.
+    x: root.spotlight ? (parent?.width ?? screen.width) / 2 - width / 2 : 0
+    y: root.spotlight ? root.spotlightTopMargin + Tokens.spacing.small * offsetScale : root.barOnBottom ? (parent?.height ?? screen.height) - height + (implicitHeight + 5) * offsetScale : -(implicitHeight + 5) * offsetScale
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth || 630 // Hard coded fallback for first open
     opacity: 1 - offsetScale
@@ -55,29 +53,6 @@ Item {
     // animation is actually running: leaving it enabled at rest can leave a
     // one-pixel seam along the top edge of the composited texture.
     layer.enabled: root.spotlight && offsetScale > 0
-
-    states: [
-        State {
-            name: "regular"
-            when: !root.spotlight
-
-            AnchorChanges {
-                target: root
-                anchors.left: parent.left
-                anchors.horizontalCenter: undefined
-            }
-        },
-        State {
-            name: "spotlight"
-            when: root.spotlight
-
-            AnchorChanges {
-                target: root
-                anchors.left: undefined
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-        }
-    ]
 
     Component.onCompleted: Qt.callLater(() => Apps) // Load apps on init
 
