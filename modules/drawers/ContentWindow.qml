@@ -280,7 +280,12 @@ StyledWindow {
             utilities.horizontalStretch: (sidebarBg.rawDeformMatrix.m11 - 1) / 2 + 1
 
             launcher.transform: Matrix4x4 {
-                matrix: launcherBg.deformMatrix
+                // The hidden launcher blob still tracks the wrapper and feeds
+                // its velocity deformation matrix back into the transform,
+                // which makes the spotlight visibly shear/rotate. The spotlight
+                // draws its own background, so only apply the blob transform in
+                // regular panel mode.
+                matrix: panels.launcher.spotlight ? Qt.matrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) : launcherBg.deformMatrix
             }
             sidebar.transform: Matrix4x4 {
                 matrix: sidebarBg.deformMatrix
