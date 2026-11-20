@@ -99,7 +99,6 @@ Icon theme dependencies (optional):
 - `gtk-update-icon-cache` (usually provided by GTK)
 - a [Nordic](https://github.com/EliverLara/Nordic) folder theme installed under `~/.icons` (for example,
   `Nordic-bluish`, `Nordic-darker`, or `Nordic-green`)
-- `python-pillow` and `librsvg` (only needed for preview images)
 
 Build dependencies:
 
@@ -237,15 +236,6 @@ If your GTK apps read `~/.config/gtk-3.0/settings.ini` or
 `~/.config/gtk-4.0/settings.ini` directly, set
 `gtk-icon-theme-name=caelestia-material` there too. For Qt6CT, set
 `icon_theme=caelestia-material` in `~/.config/qt6ct/qt6ct.conf`.
-
-### Previewing the icon theme
-
-`--preview <path.png>` writes a contact sheet of folder icons. This requires
-Pillow and `rsvg-convert`.
-
-```sh
-python3 assets/generate-icon-theme.py --preview /tmp/icons.png
-```
 
 ## Configuring
 
