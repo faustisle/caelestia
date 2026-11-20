@@ -1,11 +1,11 @@
 #include <fcntl.h>
 #include <poll.h>
-#include <sys/mman.h>
 #include <sys/prctl.h>
 #include <unistd.h>
 #include <wayland-client.h>
 
 #include <algorithm>
+#include <array>
 #include <cerrno>
 #include <cmath>
 #include <csignal>
@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-#include "wlr-gamma-control-unstable-v1-client-protocol.h"
+#include "hyprland-ctm-control-v1-client-protocol.h"
 
 namespace {
 
@@ -27,17 +27,17 @@ constexpr int kNeutralTemperature = 6500;
 struct Output {
     uint32_t globalName = 0;
     wl_output* output = nullptr;
-    zwlr_gamma_control_v1* control = nullptr;
-    uint32_t gammaSize = 0;
 };
 
 struct State {
     wl_display* display = nullptr;
     wl_registry* registry = nullptr;
-    zwlr_gamma_control_manager_v1* manager = nullptr;
+    hyprland_ctm_control_manager_v1* manager = nullptr;
     std::vector<Output*> outputs;
+    std::array<double, 9> matrix = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
     int temperature = kNeutralTemperature;
     bool identity = true;
+    bool blocked = false;
     bool running = true;
 };
 
@@ -53,8 +53,6 @@ double channelFactor(int channel, int temperature) {
         return 1.0;
 
     // Tanner Helland's blackbody approximation, normalised so red stays at 1.
-    // This is intentionally simple; the output is a colour tint, not a
-    // colorimetric transform.
     const double t = std::clamp(temperature, kMinTemperature, kMaxTemperature) / 100.0;
     double value = 0.0;
 
@@ -75,78 +73,48 @@ double channelFactor(int channel, int temperature) {
     return std::clamp(value / 255.0, 0.0, 1.0);
 }
 
-void setGamma(Output* output) {
-    if (!output || !output->control || output->gammaSize < 2)
-        return;
+std::array<double, 9> matrixForTemperature(int temperature) {
+    if (g_state->identity)
+        return { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
-    const uint32_t size = output->gammaSize;
-    const size_t bytes = static_cast<size_t>(size) * 3 * sizeof(uint16_t);
-    const int fd = memfd_create("caelestia-nightlight", MFD_CLOEXEC);
-    if (fd < 0)
-        return;
-
-    if (ftruncate(fd, static_cast<off_t>(bytes)) != 0) {
-        close(fd);
-        return;
-    }
-
-    void* data = mmap(nullptr, bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (data == MAP_FAILED) {
-        close(fd);
-        return;
-    }
-
-    auto* ramp = static_cast<uint16_t*>(data);
-    const double r = g_state->identity ? 1.0 : channelFactor(0, g_state->temperature);
-    const double g = g_state->identity ? 1.0 : channelFactor(1, g_state->temperature);
-    const double b = g_state->identity ? 1.0 : channelFactor(2, g_state->temperature);
-    const double denom = static_cast<double>(size - 1);
-
-    for (uint32_t i = 0; i < size; ++i) {
-        const double value = static_cast<double>(i) / denom * 65535.0;
-        ramp[i] = static_cast<uint16_t>(std::clamp(value * r, 0.0, 65535.0));
-        ramp[size + i] = static_cast<uint16_t>(std::clamp(value * g, 0.0, 65535.0));
-        ramp[size * 2 + i] = static_cast<uint16_t>(std::clamp(value * b, 0.0, 65535.0));
-    }
-
-    munmap(data, bytes);
-    zwlr_gamma_control_v1_set_gamma(output->control, fd);
-    close(fd);
+    return {
+        channelFactor(0, temperature),
+        0,
+        0,
+        0,
+        channelFactor(1, temperature),
+        0,
+        0,
+        0,
+        channelFactor(2, temperature),
+    };
 }
 
 void applyAll() {
-    for (Output* output : g_state->outputs)
-        setGamma(output);
-    wl_display_flush(g_state->display);
-}
-
-void onGammaSize(void* data, zwlr_gamma_control_v1*, uint32_t size) {
-    auto* output = static_cast<Output*>(data);
-    output->gammaSize = size;
-    setGamma(output);
-    wl_display_flush(g_state->display);
-}
-
-void onGammaFailed(void* data, zwlr_gamma_control_v1* control) {
-    auto* output = static_cast<Output*>(data);
-    output->gammaSize = 0;
-    if (output->control == control)
-        output->control = nullptr;
-    zwlr_gamma_control_v1_destroy(control);
-}
-
-const zwlr_gamma_control_v1_listener gammaListener = {
-    .gamma_size = onGammaSize,
-    .failed = onGammaFailed,
-};
-
-void createControl(Output* output) {
-    if (!g_state->manager || !output || output->control)
+    if (!g_state->manager || g_state->blocked)
         return;
 
-    output->control = zwlr_gamma_control_manager_v1_get_gamma_control(g_state->manager, output->output);
-    zwlr_gamma_control_v1_add_listener(output->control, &gammaListener, output);
+    const auto matrix = matrixForTemperature(g_state->temperature);
+    for (Output* output : g_state->outputs) {
+        hyprland_ctm_control_manager_v1_set_ctm_for_output(g_state->manager, output->output,
+            wl_fixed_from_double(matrix[0]), wl_fixed_from_double(matrix[1]), wl_fixed_from_double(matrix[2]),
+            wl_fixed_from_double(matrix[3]), wl_fixed_from_double(matrix[4]), wl_fixed_from_double(matrix[5]),
+            wl_fixed_from_double(matrix[6]), wl_fixed_from_double(matrix[7]), wl_fixed_from_double(matrix[8]));
+    }
+    hyprland_ctm_control_manager_v1_commit(g_state->manager);
+    wl_display_flush(g_state->display);
 }
+
+void onBlocked(void* data, hyprland_ctm_control_manager_v1*) {
+    auto* state = static_cast<State*>(data);
+    std::fprintf(stderr, "caelestia-nightlight: another CTM manager is already running\n");
+    state->blocked = true;
+    state->running = false;
+}
+
+const hyprland_ctm_control_manager_v1_listener ctmListener = {
+    .blocked = onBlocked,
+};
 
 void onGlobal(void* data, wl_registry* registry, uint32_t name, const char* interface, uint32_t version) {
     (void)data;
@@ -155,17 +123,17 @@ void onGlobal(void* data, wl_registry* registry, uint32_t name, const char* inte
         auto* output = new Output;
         output->globalName = name;
         output->output =
-            static_cast<wl_output*>(wl_registry_bind(registry, name, &wl_output_interface, std::min(version, 1u)));
+            static_cast<wl_output*>(wl_registry_bind(registry, name, &wl_output_interface, std::min(version, 3u)));
         g_state->outputs.push_back(output);
-        createControl(output);
+        applyAll();
         return;
     }
 
-    if (std::strcmp(interface, zwlr_gamma_control_manager_v1_interface.name) == 0) {
-        g_state->manager = static_cast<zwlr_gamma_control_manager_v1*>(
-            wl_registry_bind(registry, name, &zwlr_gamma_control_manager_v1_interface, std::min(version, 1u)));
-        for (Output* output : g_state->outputs)
-            createControl(output);
+    if (std::strcmp(interface, hyprland_ctm_control_manager_v1_interface.name) == 0) {
+        g_state->manager = static_cast<hyprland_ctm_control_manager_v1*>(
+            wl_registry_bind(registry, name, &hyprland_ctm_control_manager_v1_interface, std::min(version, 2u)));
+        hyprland_ctm_control_manager_v1_add_listener(g_state->manager, &ctmListener, g_state);
+        applyAll();
     }
 }
 
@@ -177,8 +145,6 @@ void onGlobalRemove(void* data, wl_registry*, uint32_t name) {
         if (output->globalName != name)
             continue;
 
-        if (output->control)
-            zwlr_gamma_control_v1_destroy(output->control);
         if (output->output)
             wl_output_destroy(output->output);
         delete output;
@@ -195,6 +161,7 @@ const wl_registry_listener registryListener = {
 void handleLine(std::string line) {
     while (!line.empty() && (line.back() == '\r' || line.back() == ' ' || line.back() == '\t'))
         line.pop_back();
+
     size_t start = 0;
     while (start < line.size() && (line[start] == ' ' || line[start] == '\t'))
         ++start;
@@ -218,8 +185,7 @@ void handleLine(std::string line) {
         if (!end || *end != '\0')
             return;
 
-        const int temperature = static_cast<int>(std::clamp<long>(value, kMinTemperature, kMaxTemperature));
-        g_state->temperature = temperature;
+        g_state->temperature = static_cast<int>(std::clamp<long>(value, kMinTemperature, kMaxTemperature));
         g_state->identity = false;
         applyAll();
     }
@@ -292,10 +258,11 @@ int main(int argc, char** argv) {
     wl_registry_add_listener(state.registry, &registryListener, nullptr);
     wl_display_roundtrip(state.display);
 
-    if (!state.manager)
-        std::fprintf(stderr, "caelestia-nightlight: compositor does not expose zwlr_gamma_control_v1\n");
-    else
-        wl_display_roundtrip(state.display);
+    if (!state.manager) {
+        std::fprintf(stderr, "caelestia-nightlight: compositor does not expose hyprland-ctm-control-v1\n");
+        wl_display_disconnect(state.display);
+        return 1;
+    }
 
     int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
     if (flags >= 0)
@@ -337,23 +304,17 @@ int main(int argc, char** argv) {
         }
     }
 
-    // Best-effort restore. The compositor also restores the ramp when the
-    // gamma control object is destroyed.
-    state.identity = true;
-    applyAll();
-    wl_display_roundtrip(state.display);
+    // Destroying the manager restores identity CTMs for every output.
+    if (state.manager)
+        hyprland_ctm_control_manager_v1_destroy(state.manager);
 
     for (Output* output : state.outputs) {
-        if (output->control)
-            zwlr_gamma_control_v1_destroy(output->control);
         if (output->output)
             wl_output_destroy(output->output);
         delete output;
     }
     state.outputs.clear();
 
-    if (state.manager)
-        zwlr_gamma_control_manager_v1_destroy(state.manager);
     if (state.registry)
         wl_registry_destroy(state.registry);
     if (state.display)

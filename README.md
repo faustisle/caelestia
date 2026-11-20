@@ -176,7 +176,7 @@ Night light is configured under **Nexus → Night light**. It fades in over the
 end time; both the schedule and transition length are configurable. There is
 also a quick toggle in the utilities sidebar.
 
-The gamma work is handled by the bundled `caelestia-nightlight` helper, so no
+The colour transform is handled by the bundled `caelestia-nightlight` helper, so no
 external `hyprsunset`/`gammastep` daemon is needed. IPC controls are available
 under the `nightLight` target:
 

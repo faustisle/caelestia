@@ -1,8 +1,8 @@
 # caelestia-nightlight
 
-Small Wayland helper that applies gamma ramps through
-`zwlr_gamma_control_unstable_v1`. It is spawned by `NightLight.qml` and takes
-commands on stdin:
+Small Wayland helper that applies the Hyprland CTM
+(`hyprland-ctm-control-v1`) used by the night-light feature. It is spawned by
+`NightLight.qml` and takes commands on stdin:
 
 ```text
 temperature 4000
@@ -10,8 +10,8 @@ identity
 quit
 ```
 
-`identity` restores the neutral ramp. The helper also restores the neutral ramp
-on SIGTERM/SIGINT and when the parent process exits.
+`identity` restores the neutral matrix. The helper also restores it on
+SIGTERM/SIGINT and when the parent process exits.
 
 ## Build
 
@@ -27,6 +27,6 @@ automatically. Set `CAELESTIA_NIGHTLIGHT_BIN` to override the path.
 
 ## Protocol
 
-The bundled `protocols/wlr-gamma-control-unstable-v1.xml` is generated with
-`wayland-scanner`; it is only needed at build time. Hyprland exposes the
-standard gamma manager, so no `hyprsunset`-style daemon is required.
+The bundled `protocols/hyprland-ctm-control-v1.xml` is generated with
+`wayland-scanner`; it is only needed at build time. Hyprland exposes the same
+CTM manager used by `hyprsunset`, so no separate daemon is required.

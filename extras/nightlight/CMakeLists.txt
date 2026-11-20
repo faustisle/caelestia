@@ -6,9 +6,9 @@ enable_language(C)
 
 set(NIGHTLIGHT_PROTO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/protocols")
 set(NIGHTLIGHT_GEN_DIR "${CMAKE_CURRENT_BINARY_DIR}/protocols")
-set(NIGHTLIGHT_PROTO "${NIGHTLIGHT_PROTO_DIR}/wlr-gamma-control-unstable-v1.xml")
-set(NIGHTLIGHT_HEADER "${NIGHTLIGHT_GEN_DIR}/wlr-gamma-control-unstable-v1-client-protocol.h")
-set(NIGHTLIGHT_CODE "${NIGHTLIGHT_GEN_DIR}/wlr-gamma-control-unstable-v1-protocol.c")
+set(NIGHTLIGHT_PROTO "${NIGHTLIGHT_PROTO_DIR}/hyprland-ctm-control-v1.xml")
+set(NIGHTLIGHT_HEADER "${NIGHTLIGHT_GEN_DIR}/hyprland-ctm-control-v1-client-protocol.h")
+set(NIGHTLIGHT_CODE "${NIGHTLIGHT_GEN_DIR}/hyprland-ctm-control-v1-protocol.c")
 
 file(MAKE_DIRECTORY "${NIGHTLIGHT_GEN_DIR}")
 

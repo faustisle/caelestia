@@ -8,7 +8,7 @@ import Caelestia.I18n
 import qs.components.misc
 import qs.utils
 
-// Night light state and schedule. The gamma work is done by the bundled
+// Night light state and schedule. The colour transform is done by the bundled
 // caelestia-nightlight Wayland helper; this singleton only decides which
 // temperature should currently be applied.
 Singleton {
@@ -36,6 +36,7 @@ Singleton {
     property bool resolved: false
     property bool helperAvailable: false
     property bool helperReady: false
+    property bool blocked: false
     property string lastSent: ""
 
     readonly property real scheduleAmount: {
@@ -67,7 +68,8 @@ Singleton {
     }
 
     function clampTemperature(value: real): int {
-        return Math.round(Math.max(root.minTemperature, Math.min(root.maxTemperature, value)));
+        const clamped = Math.max(root.minTemperature, Math.min(root.maxTemperature, value));
+        return Math.round(clamped / 100) * 100;
     }
 
     function clampMinutes(value: real): int {
@@ -185,6 +187,7 @@ Singleton {
     }
 
     onEnabledChanged: {
+        root.blocked = false;
         root.refresh();
         root.queueSave();
     }
@@ -298,7 +301,7 @@ Singleton {
     Process {
         id: helper
 
-        running: root.resolved && root.helperAvailable && root.supported
+        running: root.resolved && root.helperAvailable && root.supported && !root.blocked
         command: [root.binary]
         stdinEnabled: true
         stdout: SplitParser {
@@ -308,12 +311,16 @@ Singleton {
             }
         }
         stderr: SplitParser {
-            onRead: line => console.warn("nightlight:", line)
+            onRead: line => {
+                if (line.includes("another CTM manager"))
+                    root.blocked = true;
+                console.warn("nightlight:", line);
+            }
         }
         onExited: {
             root.helperReady = false;
             root.lastSent = "";
-            if (root.helperAvailable && root.supported)
+            if (root.helperAvailable && root.supported && !root.blocked)
                 restartTimer.start();
         }
     }
@@ -323,7 +330,7 @@ Singleton {
 
         interval: 2000
         onTriggered: {
-            if (root.helperAvailable && root.supported)
+            if (root.helperAvailable && root.supported && !root.blocked)
                 helper.running = true;
         }
     }
