@@ -13,6 +13,8 @@ full set.
 
 ### Added
 
+- **Night light** — schedule-based screen warming with a 15-minute fade,
+  configurable temperature, a Nexus page, and a quick toggle.
 - **Panel positioning** — the bar can sit on the top, bottom, or left edge via
   `bar.position`.
 - **Desktop icons** — show files and folders on the desktop, reorder them by
@@ -103,6 +105,7 @@ Build dependencies:
 - [`cmake`](https://gitlab.kitware.com/cmake/cmake)
 - [`ninja`](https://github.com/ninja-build/ninja)
 - `qt6-shadertools`
+- `wayland` (provides `wayland-scanner` for the night-light helper)
 - `git`
 
 > [!IMPORTANT]
@@ -164,6 +167,22 @@ Hyprland config, or call them through IPC:
 ```sh
 caelestia shell -s          # list available IPC commands
 caelestia shell wallpaper list
+```
+
+### Night light
+
+Night light is configured under **Nexus → Night light**. It fades in over the
+15 minutes before the start time and fades out over the 15 minutes after the
+end time; both the schedule and transition length are configurable. There is
+also a quick toggle in the utilities sidebar.
+
+The gamma work is handled by the bundled `caelestia-nightlight` helper, so no
+external `hyprsunset`/`gammastep` daemon is needed. IPC controls are available
+under the `nightLight` target:
+
+```sh
+caelestia shell ipc call nightLight toggle
+caelestia shell ipc call nightLight setTemperature 4000
 ```
 
 ### Wallpapers

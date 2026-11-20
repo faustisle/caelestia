@@ -23,6 +23,7 @@ ShellRoot {
         // Force certain singletons to load on shell init instead of lazily
         Notifs;
         Brightness;
+        NightLight;
         HyprInput;
         HyprDisplay;
 

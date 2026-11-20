@@ -79,6 +79,12 @@ QtObject {
             description: Tr.tr("Monitor layout and modes"),
             category: "system"
         },
+        {
+            label: Tr.tr("Night light"),
+            icon: "nightlight",
+            description: Tr.tr("Warm screen colours after dark"),
+            category: "system"
+        },
 
         // Shell
         {

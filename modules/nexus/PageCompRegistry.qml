@@ -127,6 +127,14 @@ QtObject {
                 }
             }
         },
+        Component {
+            // Night light
+            StackPage {
+                Component {
+                    NightLightPage {}
+                }
+            }
+        },
 
         // Shell
         Component {
