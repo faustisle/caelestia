@@ -122,7 +122,7 @@ StyledWindow {
         active: {
             const s = root.screenState;
             const conf = root.contentItem.Config;
-            if ((s.launcher && conf.launcher.enabled) || (s.session && conf.session.enabled) || (s.sidebar && conf.sidebar.enabled))
+            if ((s.launcher && conf.launcher.enabled) || (s.session && conf.session.enabled))
                 return true;
             if (panels.popouts.currentName.startsWith("traymenu") && (panels.popouts.current as StackView)?.depth > 1)
                 return true;
@@ -132,7 +132,6 @@ StyledWindow {
         onCleared: {
             root.screenState.launcher = false;
             root.screenState.session = false;
-            root.screenState.sidebar = false;
             panels.popouts.hasCurrent = false;
             bar.closeTray();
         }
@@ -196,17 +195,6 @@ StyledWindow {
         }
 
         PanelBg {
-            id: sidebarBg
-
-            panel: panels.sidebar
-            deformAmount: 0.03
-            implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
-            exclude: [utilsBg]
-            topLeftRadius: junctionRadius
-            topRightRadius: junctionRadius
-        }
-
-        PanelBg {
             id: osdBg
 
             panel: panels.osdWrapper
@@ -225,11 +213,16 @@ StyledWindow {
             id: utilsBg
 
             panel: panels.utilities
-            deformAmount: panels.sidebar.visible ? 0.03 : 0.15
-            implicitHeight: panel.height + (panels.sidebar.visible ? 2 : 0)
-            exclude: [sidebarBg]
-            bottomLeftRadius: junctionRadius
-            bottomRightRadius: junctionRadius
+            deformAmount: 0.15
+            implicitHeight: panel.height
+            // Keep this panel independent from the screen frame. Letting the
+            // blob smooth-merge into the frame deforms its inner edge and
+            // leaves a dent where the panel ends. A standalone rounded card is
+            // the original utilities panel look.
+            mergeWithInverted: false
+            // The background is drawn by this separate blob, not by the
+            // wrapper, so it must follow the wrapper's visibility explicitly.
+            visible: panel.visible
         }
 
         PanelBg {
@@ -277,8 +270,6 @@ StyledWindow {
             geometry: geometry
             borderThickness: root.borderThickness
 
-            utilities.horizontalStretch: (sidebarBg.rawDeformMatrix.m11 - 1) / 2 + 1
-
             launcher.transform: Matrix4x4 {
                 // The hidden launcher blob still tracks the wrapper and feeds
                 // its velocity deformation matrix back into the transform,
@@ -286,9 +277,6 @@ StyledWindow {
                 // draws its own background, so only apply the blob transform in
                 // regular panel mode.
                 matrix: panels.launcher.spotlight ? Qt.matrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) : launcherBg.deformMatrix
-            }
-            sidebar.transform: Matrix4x4 {
-                matrix: sidebarBg.deformMatrix
             }
             osd.transform: Matrix4x4 {
                 matrix: osdBg.deformMatrix
@@ -352,7 +340,6 @@ StyledWindow {
     component PanelBg: BlobRect {
         required property Item panel
         property real deformAmount: 0.15
-        readonly property real junctionRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
 
         group: blobGroup
         x: panel.x + geometry.insetLeft(root.borderThickness)

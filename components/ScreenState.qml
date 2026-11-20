@@ -12,5 +12,4 @@ PersistentProperties {
     // the regular (corner) launcher instead of the configured spotlight mode.
     property bool launcherRegular
     property bool utilities
-    property bool sidebar
 }

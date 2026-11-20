@@ -12,6 +12,7 @@ Item {
     id: root
 
     required property PopoutState popouts
+    required property ScreenState screenState
     readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
     readonly property Item current: currentPopout?.item ?? null
 
@@ -120,6 +121,14 @@ Item {
         Popout {
             name: "lockstatus"
             sourceComponent: LockStatus {}
+        }
+
+        Popout {
+            name: "notifications"
+            sourceComponent: Notifications {
+                screenState: root.screenState
+                popouts: root.popouts
+            }
         }
 
         Popout {

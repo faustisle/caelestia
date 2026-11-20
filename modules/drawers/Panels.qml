@@ -7,7 +7,6 @@ import qs.modules.launcher as Launcher
 import qs.modules.notifications as Notifications
 import qs.modules.osd as Osd
 import qs.modules.session as Session
-import qs.modules.sidebar as Sidebar
 import qs.modules.utilities as Utilities
 import qs.modules.bar.popouts as BarPopouts
 import qs.modules.utilities.toasts as Toasts
@@ -31,7 +30,6 @@ Item {
     readonly property alias popoutsWrapper: popoutsWrapper
     readonly property alias utilities: utilities
     readonly property alias toasts: toasts
-    readonly property alias sidebar: sidebar
 
     anchors.fill: parent
     anchors.leftMargin: geometry.insetLeft(borderThickness)
@@ -44,7 +42,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        clip: sidebar.visible || session.visible
+        clip: utilities.visible || session.visible
 
         implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
         implicitHeight: osd.implicitHeight
@@ -54,7 +52,7 @@ Item {
 
             screen: root.screen
             screenState: root.screenState
-            sidebarOrSessionVisible: sidebar.visible || session.visible
+            panelOrSessionVisible: utilities.visible || session.visible
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
@@ -65,7 +63,7 @@ Item {
         id: notifications
 
         screenState: root.screenState
-        sidebarPanel: sidebar
+        rightPanel: utilities
         osdPanel: osdWrapper
         sessionPanel: sessionWrapper
         popoutsPanel: popoutsWrapper
@@ -79,7 +77,7 @@ Item {
 
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: root.geometry.barOnLeft ? -root.bar.implicitWidth / 2 : 0
-        clip: sidebar.visible
+        clip: utilities.visible
 
         implicitWidth: session.implicitWidth
         implicitHeight: session.implicitHeight
@@ -112,6 +110,7 @@ Item {
         id: popoutsWrapper
 
         screen: root.screen
+        screenState: root.screenState
         position: root.geometry.position
         borderThickness: root.borderThickness
     }
@@ -120,29 +119,17 @@ Item {
         id: utilities
 
         screenState: root.screenState
-        sidebar: sidebar
         popouts: popoutsWrapper.content
 
         anchors.top: notifications.bottom
         anchors.right: parent.right
-        anchors.topMargin: -notifications.anchors.topMargin
     }
 
     Toasts.Toasts {
         id: toasts
 
         anchors.bottom: parent.bottom
-        anchors.right: sidebar.visible ? sidebar.left : parent.right
+        anchors.right: utilities.visible ? utilities.left : parent.right
         anchors.margins: Tokens.padding.medium
-    }
-
-    Sidebar.Wrapper {
-        id: sidebar
-
-        screenState: root.screenState
-
-        anchors.top: utilities.bottom
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
     }
 }

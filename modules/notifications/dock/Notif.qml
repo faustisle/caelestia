@@ -142,7 +142,7 @@ StyledRect {
 
             onLinkActivated: link => {
                 Qt.openUrlExternally(link);
-                root.screenState.sidebar = false;
+                root.screenState.utilities = false;
             }
         }
 

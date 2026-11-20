@@ -12,6 +12,7 @@ Item {
     id: root
 
     required property ShellScreen screen
+    required property ScreenState screenState
     required property real offsetScale
     required property bool horizontal
 
@@ -106,6 +107,7 @@ Item {
 
         sourceComponent: Content {
             popouts: popoutState
+            screenState: root.screenState
         }
     }
 

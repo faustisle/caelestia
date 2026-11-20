@@ -6,7 +6,7 @@ Item {
     id: root
 
     required property ScreenState screenState
-    required property Item sidebarPanel
+    required property Item rightPanel
     required property Item popoutsPanel
     property alias osdPanel: content.osdPanel
     property alias sessionPanel: content.sessionPanel
@@ -38,7 +38,7 @@ Item {
     visible: height > 0
     anchors.topMargin: -5
     anchors.rightMargin: rightMargin
-    implicitWidth: Math.max(sidebarPanel.width, content.implicitWidth)
+    implicitWidth: Math.max(rightPanel.width, content.implicitWidth)
     implicitHeight: content.implicitHeight
 
     Behavior on rightMargin {

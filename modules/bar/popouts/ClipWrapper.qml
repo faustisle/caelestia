@@ -9,6 +9,7 @@ Item {
     id: root
 
     required property ShellScreen screen
+    required property ScreenState screenState
     required property string position
     required property real borderThickness
 
@@ -76,6 +77,7 @@ Item {
         id: content
 
         screen: root.screen
+        screenState: root.screenState
         offsetScale: root.offsetScale
         horizontal: root.horizontal
 

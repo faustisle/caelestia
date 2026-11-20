@@ -31,8 +31,8 @@ PageBase {
 
         NavRow {
             icon: "dock_to_right"
-            text: Tr.tr("Sidebar")
-            subtext: Config.sidebar.enabled ? Tr.trCtx("Enabled", "panel status") : Tr.trCtx("Disabled", "panel status")
+            text: Tr.tr("Hover panel")
+            subtext: Config.utilities.showOnHover ? Tr.tr("Reveal quick settings on hover") : Tr.trCtx("Disabled", "panel status")
             onClicked: root.nState.openSubPage(3)
         }
 

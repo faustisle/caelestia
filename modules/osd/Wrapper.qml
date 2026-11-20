@@ -11,14 +11,14 @@ Item {
 
     required property ShellScreen screen
     required property ScreenState screenState
-    required property bool sidebarOrSessionVisible
+    required property bool panelOrSessionVisible
     property bool onLeft
 
     property bool hovered
     readonly property Brightness.Monitor monitor: Brightness.getMonitorForScreen(root.screen)
     readonly property bool shouldBeActive: screenState.osd && Config.osd.enabled && !(screenState.utilities && Config.utilities.enabled)
     property real offsetScale: shouldBeActive ? 0 : 1
-    property real sidebarOffset: sidebarOrSessionVisible ? 12 : 0
+    property real panelOffset: panelOrSessionVisible ? 12 : 0
 
     property real volume
     property bool muted
@@ -40,8 +40,8 @@ Item {
     }
 
     visible: offsetScale < 1
-    anchors.leftMargin: onLeft ? (-implicitWidth - 5 - sidebarOffset) * offsetScale : 0
-    anchors.rightMargin: onLeft ? 0 : (-implicitWidth - 5 - sidebarOffset) * offsetScale
+    anchors.leftMargin: onLeft ? (-implicitWidth - 5 - panelOffset) * offsetScale : 0
+    anchors.rightMargin: onLeft ? 0 : (-implicitWidth - 5 - panelOffset) * offsetScale
     implicitWidth: content.implicitWidth
     implicitHeight: content.implicitHeight
     opacity: 1 - offsetScale

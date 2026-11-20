@@ -9,7 +9,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: Tr.tr("Sidebar")
+    title: Tr.tr("Quick settings")
     isSubPage: true
 
     ColumnLayout {
@@ -27,8 +27,9 @@ PageBase {
             first: true
             last: true
             text: Tr.trCtx("Enabled", "toggle label")
-            checked: Config.sidebar.enabled
-            onToggled: GlobalConfig.sidebar.enabled = checked
+            subtext: Tr.tr("Reveal quick settings when hovering the top-right corner")
+            checked: Config.utilities.showOnHover
+            onToggled: GlobalConfig.utilities.showOnHover = checked
         }
     }
 }

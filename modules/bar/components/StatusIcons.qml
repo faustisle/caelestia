@@ -18,6 +18,7 @@ StyledRect {
     readonly property alias items: iconColumn
 
     readonly property int spacing: Tokens.spacing.medium / 2
+    readonly property int notifHistoryCount: Notifs.list.length
 
     // Index of the first/last entry that isn't collapsed, for edge margin gating
     readonly property int firstPresent: {
@@ -39,6 +40,8 @@ StyledRect {
     function collapsed(entry: var): bool {
         if (entry.id === "lockStatus")
             return !Hypr.capsLock && !Hypr.numLock;
+        if (entry.id === "notifications")
+            return root.notifHistoryCount === 0;
         return false;
     }
 
@@ -57,7 +60,10 @@ StyledRect {
         anchors.bottom: root.horizontal ? undefined : parent.bottom
         anchors.bottomMargin: root.horizontal ? 0 : Tokens.padding.medium
         anchors.verticalCenter: root.horizontal ? parent.verticalCenter : undefined
-        anchors.leftMargin: root.horizontal ? Tokens.padding.medium : 0
+
+        // In horizontal mode there is no left anchor, so use an explicit inset
+        // instead of a margin that the anchor system would ignore.
+        x: root.horizontal ? Tokens.padding.medium : 0
 
         columns: root.horizontal ? -1 : 1
         rowSpacing: 0
@@ -79,6 +85,17 @@ StyledRect {
                         LockStatus {
                             colour: root.colour
                             parentSpacing: root.spacing
+                        }
+                    }
+                }
+                DelegateChoice {
+                    roleValue: "notifications"
+                    delegate: EntryWrapper {
+                        MaterialIcon {
+                            animate: true
+                            text: Notifs.notClosed.length > 0 ? "notifications_active" : "notifications"
+                            color: root.colour
+                            fill: 1
                         }
                     }
                 }
@@ -184,6 +201,8 @@ StyledRect {
 
         implicitWidth: item?.implicitWidth ?? 0
         implicitHeight: item?.implicitHeight ?? 0
+
+        visible: present
 
         children: item
 

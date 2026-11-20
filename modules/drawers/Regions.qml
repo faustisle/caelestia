@@ -22,10 +22,10 @@ Region {
     height: win.height - geometry.insetTop(clampedThickness, true) - geometry.insetBottom(clampedThickness, true) - root.dragTop - root.dragBottom
     intersection: Intersection.Xor
 
-    // Keep a small input hotspot at the top-right corner for the sidebar hover
-    // trigger, even when the base region starts below the screen border. The
-    // root region is XORed against the window, so subtracting the hotspot from
-    // the base is what adds it to the final input mask.
+    // Keep a small input hotspot at the top-right corner for the quick settings
+    // hover trigger, even when the base region starts below the screen border.
+    // The root region is XORed against the window, so subtracting the hotspot
+    // from the base is what adds it to the final input mask.
     Region {
         x: root.win.width - 25
         y: 0
@@ -52,14 +52,6 @@ Region {
     }
 
     R {
-        id: sidebarRegion
-
-        panel: root.panels.sidebar
-        x: root.win.width - width
-        width: panel.width * (1 - root.panels.sidebar.offsetScale) + root.borderThickness
-    }
-
-    R {
         panel: root.panels.osdWrapper
         x: root.win.width - width
         width: panel.width * (1 - root.panels.osd.offsetScale) + root.borderThickness
@@ -74,7 +66,9 @@ Region {
     R {
         panel: root.panels.utilities
         x: root.win.width - width
-        width: panel.width * (1 - root.panels.utilities.offsetScale) + root.borderThickness
+        y: 0
+        width: panel.width + root.borderThickness
+        height: panel.height * (1 - root.panels.utilities.offsetScale) + root.borderThickness
     }
 
     // The popout sits flush against the bar edge. Derive its mask from the final

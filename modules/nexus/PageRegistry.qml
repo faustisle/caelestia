@@ -90,7 +90,7 @@ QtObject {
         {
             label: Tr.tr("Panels"),
             icon: "dock_to_bottom",
-            description: Tr.tr("Taskbar, launcher, sidebar"),
+            description: Tr.tr("Taskbar, launcher, quick settings"),
             category: "shell"
         },
         {

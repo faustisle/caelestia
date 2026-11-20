@@ -15,6 +15,9 @@ full set.
 
 - **Night light** — schedule-based screen warming with a 15-minute fade,
   configurable temperature, a Nexus page, and a quick toggle.
+- **Notification status icon** — notifications in history appear as a
+  conditional bar icon with a hover popout. The old notifications sidebar was
+  replaced by the quick-settings hover panel.
 - **Panel positioning** — the bar can sit on the top, bottom, or left edge via
   `bar.position`.
 - **Desktop icons** — show files and folders on the desktop, reorder them by

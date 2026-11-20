@@ -77,25 +77,14 @@ Scope {
     // qmllint disable unresolved-type
     CustomShortcut {
         // qmllint enable unresolved-type
-        name: "sidebar"
-        description: "Toggle sidebar"
-        onPressed: {
-            if (root.hasFullscreen || !Config.sidebar.enabled)
-                return;
-            const screenState = ShellState.forActive();
-            screenState.sidebar = !screenState.sidebar;
-        }
-    }
-
-    // qmllint disable unresolved-type
-    CustomShortcut {
-        // qmllint enable unresolved-type
         name: "utilities"
-        description: "Toggle utilities"
+        description: "Toggle quick settings"
         onPressed: {
-            if (root.hasFullscreen)
+            if (root.hasFullscreen || !Config.utilities.enabled)
                 return;
             const screenState = ShellState.forActive();
+            if (!screenState)
+                return;
             screenState.utilities = !screenState.utilities;
         }
     }
@@ -106,6 +95,8 @@ Scope {
                 if (root.hasFullscreen && ["launcher", "session"].includes(drawer))
                     return;
                 const screenState = ShellState.forActive();
+                if (!screenState)
+                    return;
                 if (drawer === "launcher" && !screenState.launcher)
                     screenState.launcherRegular = false;
                 screenState[drawer] = !screenState[drawer];
@@ -116,11 +107,15 @@ Scope {
 
         function list(): string {
             const screenState = ShellState.forActive();
+            if (!screenState)
+                return "";
             return Object.keys(screenState).filter(k => typeof screenState[k] === "boolean").join("\n");
         }
 
         function isOpen(drawer: string): string {
             const screenState = ShellState.forActive();
+            if (!screenState)
+                return "unknown";
             if (typeof screenState[drawer] !== "boolean")
                 return "unknown";
             return screenState[drawer] ? "1" : "0";

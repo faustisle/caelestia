@@ -9,8 +9,8 @@ import qs.services
 Singleton {
     property ShellRoot shellRoot
 
-    function anySidebarOpen(): bool {
-        return states.instances.some(s => s.sidebar);
+    function anyQuickSettingsOpen(): bool {
+        return states.instances.some(s => s.utilities);
     }
 
     function forScreen(screen: ShellScreen): ScreenState {

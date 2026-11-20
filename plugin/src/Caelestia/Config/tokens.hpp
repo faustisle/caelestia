@@ -161,12 +161,6 @@ class SessionTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, button, 80)
 };
 
-class SidebarTokens : public settings::ObjectNode {
-    CONFIG_NODE(SidebarTokens, settings::ObjectNode)
-
-    CONFIG_PROPERTY(int, width, 430)
-};
-
 class UtilitiesTokens : public settings::ObjectNode {
     CONFIG_NODE(UtilitiesTokens, settings::ObjectNode)
 
@@ -212,7 +206,6 @@ class SizeTokens : public settings::ObjectNode {
     CONFIG_SUBOBJECT(NotifsTokens, notifs)
     CONFIG_SUBOBJECT(OsdTokens, osd)
     CONFIG_SUBOBJECT(SessionTokens, session)
-    CONFIG_SUBOBJECT(SidebarTokens, sidebar)
     CONFIG_SUBOBJECT(UtilitiesTokens, utilities)
     CONFIG_SUBOBJECT(LockTokens, lock)
     CONFIG_SUBOBJECT(NexusTokens, nexus)

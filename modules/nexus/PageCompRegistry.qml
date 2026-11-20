@@ -150,7 +150,7 @@ QtObject {
                     LauncherPanel {}
                 }
                 Component {
-                    SidebarPanel {}
+                    HoverPanel {}
                 }
                 Component {
                     UtilitiesPanel {}
