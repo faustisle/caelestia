@@ -49,8 +49,10 @@ Item {
     opacity: 1 - offsetScale
     // Render the whole launcher offscreen while it fades so the blob and the
     // search pill are faded as one composited group instead of two translucent
-    // layers stacking on top of each other.
-    layer.enabled: root.spotlight
+    // layers stacking on top of each other. Only keep the layer while the
+    // animation is actually running: leaving it enabled at rest can leave a
+    // one-pixel seam along the top edge of the composited texture.
+    layer.enabled: root.spotlight && offsetScale > 0
 
     states: [
         State {
