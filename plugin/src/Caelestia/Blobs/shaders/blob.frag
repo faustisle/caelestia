@@ -264,6 +264,9 @@ void main() {
         discard;
 
     float fw = fwidth(mergedSdf);
-    float alpha = 1.0 - smoothstep(-fw, fw, mergedSdf);
+    // Keep the edge crisp but bias the blend into the shape so it does not
+    // leave a lighter one-pixel rim against the wallpaper.
+    float aa = fw * 0.5;
+    float alpha = 1.0 - smoothstep(-aa, aa, mergedSdf);
     fragColor = vec4(color.rgb * alpha, alpha) * qt_Opacity;
 }

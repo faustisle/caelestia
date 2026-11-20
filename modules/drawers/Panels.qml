@@ -115,21 +115,32 @@ Item {
         borderThickness: root.borderThickness
     }
 
-    Utilities.Wrapper {
-        id: utilities
+    Item {
+        id: utilitiesClip
 
-        screenState: root.screenState
-        popouts: popoutsWrapper.content
+        anchors.fill: parent
+        // Keep the quick settings reveal from showing through the bar modules
+        // on top-bar layouts. This mirrors the launcher's spawn clipping.
+        clip: true
 
-        anchors.top: notifications.bottom
-        anchors.right: parent.right
+        Utilities.Wrapper {
+            id: utilities
+
+            screenState: root.screenState
+            popouts: popoutsWrapper.content
+
+            topInset: notifications.height
+            anchors.top: parent.top
+            anchors.right: parent.right
+        }
     }
 
     Toasts.Toasts {
         id: toasts
 
         anchors.bottom: parent.bottom
-        anchors.right: utilities.visible ? utilities.left : parent.right
-        anchors.margins: Tokens.padding.medium
+        anchors.right: parent.right
+        anchors.bottomMargin: Tokens.padding.medium
+        anchors.rightMargin: Tokens.padding.medium + (utilities.visible ? utilities.width : 0)
     }
 }

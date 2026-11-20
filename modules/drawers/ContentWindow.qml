@@ -224,20 +224,32 @@ StyledWindow {
             panel: panels.notifications
         }
 
-        PanelBg {
-            id: utilsBg
+        Item {
+            id: utilsClip
 
-            panel: panels.utilities
-            deformAmount: 0.15
-            implicitHeight: panel.height
-            // Keep this panel independent from the screen frame. Letting the
-            // blob smooth-merge into the frame deforms its inner edge and
-            // leaves a dent where the panel ends. A standalone rounded card is
-            // the original utilities panel look.
-            mergeWithInverted: false
-            // The background is drawn by this separate blob, not by the
-            // wrapper, so it must follow the wrapper's visibility explicitly.
-            visible: panel.visible
+            // Match the Panels clipping line so the quick settings background
+            // cannot show through the bar modules while the panel slides in.
+            x: 0
+            y: geometry.insetTop(root.borderThickness)
+            width: root.width
+            height: root.height - y
+            clip: true
+            visible: panels.utilities.visible
+
+            PanelBg {
+                id: utilsBg
+
+                panel: panels.utilities
+                deformAmount: 0.15
+                // This item is offset by the clip's top edge already.
+                y: panel.y
+                implicitHeight: panel.height
+                // Keep this panel independent from the screen frame. Letting the
+                // blob smooth-merge into the frame deforms its inner edge and
+                // leaves a dent where the panel ends. A standalone rounded card is
+                // the original utilities panel look.
+                mergeWithInverted: false
+            }
         }
 
         PanelBg {

@@ -15,12 +15,13 @@ Item {
     readonly property bool shouldBeActive: screenState.utilities && Config.utilities.enabled && !(screenState.session && Config.session.enabled)
     readonly property real totalPadding: content.anchors.margins * 2
     readonly property real nonAnimHeight: ((content.item as Content)?.nonAnimHeight ?? 0) + totalPadding
+    property real topInset: 0
     property real offsetScale: shouldBeActive ? 0 : 1
 
     visible: offsetScale < 1
     // The original utilities panel slid in from the bottom-right corner. The
     // quick settings hover is at the top-right, so anchor and reveal it there.
-    anchors.topMargin: (-implicitHeight - 5) * offsetScale
+    anchors.topMargin: topInset - (implicitHeight + 5) * offsetScale
     implicitHeight: content.implicitHeight + totalPadding
     implicitWidth: Tokens.sizes.utilities.width
     opacity: 1 - offsetScale
