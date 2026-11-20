@@ -42,7 +42,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        clip: utilities.visible || session.visible
+        clip: session.visible
 
         implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
         implicitHeight: osd.implicitHeight
@@ -52,7 +52,7 @@ Item {
 
             screen: root.screen
             screenState: root.screenState
-            panelOrSessionVisible: utilities.visible || session.visible
+            panelOrSessionVisible: session.visible
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right

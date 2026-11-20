@@ -138,9 +138,9 @@ CustomMouseArea {
                 screenState.bar = false;
         }
 
-        // Hide the OSD while quick settings is open so the two panels do not
-        // overlap. A shortcut-activated OSD stays open until it is dismissed.
-        const showOsd = !panels.utilities.visible && inOsdArea(x, y);
+        // The OSD is independent of quick settings. It stays up for its normal
+        // timeout instead of retracting when the quick settings panel opens.
+        const showOsd = inOsdArea(x, y);
 
         // Always update visibility based on hover if not in shortcut mode
         if (!osdShortcutActive) {
