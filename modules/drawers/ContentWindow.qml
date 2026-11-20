@@ -200,7 +200,7 @@ StyledWindow {
             // The OSD slides off to the right when it closes. Without clipping,
             // the moving capsule shows through the screen frame. Clip it to the
             // inner frame area without changing the widget's animation.
-            width: root.width - geometry.insetRight(root.borderThickness)
+            width: root.width - geometry.insetRight(root.borderThickness) + 1
             height: root.height
             clip: true
             visible: panels.osd.visible
@@ -211,7 +211,7 @@ StyledWindow {
                 panel: panels.osdWrapper
                 deformAmount: 0.25
                 x: panels.osdWrapper.x + panels.osd.x + geometry.insetLeft(root.borderThickness)
-                implicitWidth: panels.osd.width
+                implicitWidth: panels.osd.width + 1
                 // Keep the OSD capsule independent from the screen frame. Merging
                 // lets the blob smoothing bulge a section of the panel past the
                 // frame while the OSD is moving.
