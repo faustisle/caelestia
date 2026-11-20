@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Widgets
 import Caelestia.Config
@@ -366,6 +367,16 @@ done`, "sh", Paths.desktop, ...paths]);
                     asynchronous: true
                     implicitSize: root.iconSize
                     source: Quickshell.iconPath(tile.modelData.icon, tile.modelData.kind === "folder" ? "folder" : "text-x-generic")
+
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        shadowEnabled: true
+                        shadowColor: "black"
+                        shadowOpacity: 0.35
+                        shadowBlur: 0.8
+                        shadowVerticalOffset: 2
+                        blurMax: 6
+                    }
                 }
 
                 Item {
@@ -373,36 +384,20 @@ done`, "sh", Paths.desktop, ...paths]);
                     height: root.showLabels ? root.labelHeight : 0
                     visible: root.showLabels
 
-                    StyledText {
-                        anchors.centerIn: parent
-                        anchors.verticalCenterOffset: 2
-                        width: parent.width
-                        height: parent.height
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                        maximumLineCount: 1
-                        wrapMode: Text.NoWrap
+                    LabelShadow {
                         text: tile.modelData.name
-                        renderType: Text.QtRendering
-                        color: Qt.alpha(Colours.palette.m3shadow, 0.45)
                         font: Tokens.font.label.medium
+                        color: Qt.rgba(0, 0, 0, 0.35)
+                        blurMax: 5
+                        verticalOffset: 2
                     }
 
-                    StyledText {
-                        anchors.centerIn: parent
-                        anchors.verticalCenterOffset: 1
-                        width: parent.width
-                        height: parent.height
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                        maximumLineCount: 1
-                        wrapMode: Text.NoWrap
+                    LabelShadow {
                         text: tile.modelData.name
-                        renderType: Text.QtRendering
-                        color: Qt.alpha(Colours.palette.m3shadow, 0.9)
                         font: Tokens.font.label.medium
+                        color: Qt.rgba(0, 0, 0, 0.75)
+                        blurMax: 2
+                        verticalOffset: 1
                     }
 
                     StyledText {
@@ -478,6 +473,33 @@ done`, "sh", Paths.desktop, ...paths]);
                         Desktop.launch(tile.modelData);
                 }
             }
+        }
+    }
+
+    component LabelShadow: StyledText {
+        id: shadow
+
+        property real blurMax: 2
+        property real verticalOffset: 1
+
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: verticalOffset
+        width: parent.width
+        height: parent.height
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+        maximumLineCount: 1
+        wrapMode: Text.NoWrap
+        renderType: Text.QtRendering
+
+        layer.enabled: true
+        layer.smooth: true
+        layer.effect: MultiEffect {
+            blurEnabled: true
+            blur: 1.0
+            blurMax: shadow.blurMax
+            autoPaddingEnabled: true
         }
     }
 }
