@@ -7,7 +7,7 @@ QtObject {
     id: root
 
     readonly property int wallpaperAndStylePage: 0
-    readonly property int displaysPage: 8
+    readonly property int displaysPage: 6
     readonly property int wallpaperSubPage: 1
     readonly property int coloursSubPage: 3
 
@@ -49,18 +49,6 @@ QtObject {
         },
 
         // System
-        {
-            label: Tr.tr("Updates"),
-            icon: "update",
-            description: Tr.tr("System updates"),
-            category: "system"
-        },
-        {
-            label: Tr.tr("Plugins"),
-            icon: "extension",
-            description: Tr.tr("Manage plugins"),
-            category: "system"
-        },
         {
             label: Tr.tr("Storage"),
             icon: "hard_drive",

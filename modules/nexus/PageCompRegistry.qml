@@ -98,12 +98,6 @@ QtObject {
 
         // System
         Component {
-            PlaceholderComp {}
-        },
-        Component {
-            PlaceholderComp {}
-        },
-        Component {
             // Storage
             StackPage {
                 Component {
