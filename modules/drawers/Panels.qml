@@ -42,7 +42,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        clip: session.visible
+        clip: true
 
         implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
         implicitHeight: osd.implicitHeight
