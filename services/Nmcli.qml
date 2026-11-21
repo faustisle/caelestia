@@ -1708,9 +1708,16 @@ Singleton {
                 LC_ALL: "C.UTF-8"
             })
         stdout: SplitParser {
-            onRead: root.refreshOnConnectionChange()
+            onRead: connectionRefreshTimer.restart()
         }
         onExited: monitorRestartTimer.start()
+    }
+
+    Timer {
+        id: connectionRefreshTimer
+
+        interval: 800
+        onTriggered: root.refreshOnConnectionChange()
     }
 
     Timer {
