@@ -16,6 +16,8 @@ import qs.utils
 Singleton {
     id: root
 
+    readonly property int maxHistory: 100
+
     property list<NotifData> list: []
     readonly property list<NotifData> notClosed: list.filter(n => !n.closed)
     readonly property list<NotifData> popups: list.filter(n => n.popup)
@@ -60,8 +62,8 @@ Singleton {
     Timer {
         id: saveTimer
 
-        interval: 1000
-        onTriggered: storage.setText(JSON.stringify(root.notClosed.map(n => ({
+        interval: 3000
+        onTriggered: storage.setText(JSON.stringify(root.notClosed.slice(0, root.maxHistory).map(n => ({
                     time: n.time,
                     id: n.id,
                     summary: n.summary,
@@ -75,6 +77,18 @@ Singleton {
                     hasActionIcons: n.hasActionIcons,
                     actions: n.actions
                 }))))
+    }
+
+    Timer {
+        id: ageTimer
+
+        interval: 30000
+        running: root.list.length > 0
+        repeat: true
+        onTriggered: {
+            for (const notif of root.list)
+                notif.updateTimeStr();
+        }
     }
 
     NotificationServer {
@@ -96,6 +110,8 @@ Singleton {
                 notification: notif
             });
             root.list = [comp, ...root.list];
+            if (root.list.length > root.maxHistory)
+                root.list[root.list.length - 1].close();
         }
     }
 
@@ -106,7 +122,11 @@ Singleton {
         path: `${Paths.state}/notifs.json`
         onLoaded: {
             const data = JSON.parse(text());
-            for (const notif of data) {
+            const items = (Array.isArray(data) ? data : [])
+                .sort((a, b) => new Date(b.time) - new Date(a.time))
+                .slice(0, root.maxHistory);
+
+            for (const notif of items) {
                 const properties = Object.assign({}, notif);
 
                 // Backwards compatibility for old notifications
@@ -114,9 +134,10 @@ Singleton {
                     properties.notificationId = properties.id;
 
                 delete properties.id;
-                root.list.push(notifComp.createObject(root, properties));
+                const item = notifComp.createObject(root, properties);
+                root.list.push(item);
+                item.updateTimeStr();
             }
-            root.list.sort((a, b) => b.time - a.time);
             root.loaded = true;
         }
         onLoadFailed: err => {
