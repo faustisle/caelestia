@@ -188,6 +188,8 @@ Singleton {
 
     onEnabledChanged: {
         root.blocked = false;
+        if (root.enabled && !root.resolved && !resolveProc.running)
+            resolveProc.running = true;
         root.refresh();
         root.queueSave();
     }
@@ -218,8 +220,6 @@ Singleton {
         }
     }
     onTimeNowChanged: root.apply()
-
-    Component.onCompleted: resolveProc.running = true
 
     IpcHandler {
         function toggle(): void {
@@ -301,7 +301,7 @@ Singleton {
     Process {
         id: helper
 
-        running: root.resolved && root.helperAvailable && root.supported && !root.blocked
+        running: root.resolved && root.helperAvailable && root.supported && !root.blocked && root.enabled
         command: [root.binary]
         stdinEnabled: true
         stdout: SplitParser {
@@ -320,7 +320,7 @@ Singleton {
         onExited: {
             root.helperReady = false;
             root.lastSent = "";
-            if (root.helperAvailable && root.supported && !root.blocked)
+            if (root.helperAvailable && root.supported && !root.blocked && root.enabled)
                 restartTimer.start();
         }
     }
@@ -330,7 +330,7 @@ Singleton {
 
         interval: 2000
         onTriggered: {
-            if (root.helperAvailable && root.supported && !root.blocked)
+            if (root.helperAvailable && root.supported && !root.blocked && root.enabled)
                 helper.running = true;
         }
     }
