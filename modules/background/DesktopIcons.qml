@@ -83,6 +83,10 @@ Item {
             return root.dragOrder;
 
         const configured = root.iconsConfig.order ?? [];
+        const configuredIndex = new Map();
+        for (let i = 0; i < configured.length; ++i)
+            configuredIndex.set(configured[i], i);
+
         const entries = icons.entries;
         const list = [];
         for (let i = 0; i < entries.length; ++i)
@@ -96,8 +100,8 @@ Item {
 
         if (root.sortBy === "custom") {
             list.sort((a, b) => {
-                const ai = configured.indexOf(a.path);
-                const bi = configured.indexOf(b.path);
+                const ai = configuredIndex.get(a.path) ?? -1;
+                const bi = configuredIndex.get(b.path) ?? -1;
                 const ar = ai < 0 ? Number.MAX_SAFE_INTEGER : ai;
                 const br = bi < 0 ? Number.MAX_SAFE_INTEGER : bi;
                 if (ar !== br)
