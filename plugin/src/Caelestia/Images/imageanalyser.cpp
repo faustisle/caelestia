@@ -2,6 +2,7 @@
 
 #include <qfuturewatcher.h>
 #include <qimage.h>
+#include <qimagereader.h>
 #include <qloggingcategory.h>
 #include <qquickitemgrabresult.h>
 #include <qquickwindow.h>
@@ -149,9 +150,19 @@ void ImageAnalyser::update() {
             m_futureWatcher->setFuture(QtConcurrent::run(&ImageAnalyser::analyse, grabResult->image(), m_rescaleSize));
         });
     } else {
-        m_futureWatcher->setFuture(QtConcurrent::run([=, this](QPromise<AnalyseResult>& promise) {
-            const QImage image(m_source);
-            analyse(promise, image, m_rescaleSize);
+        const QString source = m_source;
+        const int rescaleSize = m_rescaleSize;
+        m_futureWatcher->setFuture(QtConcurrent::run([source, rescaleSize, this](QPromise<AnalyseResult>& promise) {
+            QImageReader reader(source);
+            reader.setAutoTransform(true);
+
+            if (rescaleSize > 0) {
+                const QSize imageSize = reader.size();
+                if (imageSize.isValid() && (imageSize.width() > rescaleSize || imageSize.height() > rescaleSize))
+                    reader.setScaledSize(imageSize.scaled(rescaleSize, rescaleSize, Qt::KeepAspectRatio));
+            }
+
+            analyse(promise, reader.read(), rescaleSize);
         }));
     }
 }
