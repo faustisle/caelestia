@@ -18,6 +18,7 @@ Searcher {
     property bool showPreview: false
     readonly property string current: showPreview ? previewPath : actualCurrent
     property string previewPath
+    property string previewRequestPath
     property string actualCurrent
     property bool previewColourLock
     property bool pendingPreviewClear
@@ -43,10 +44,11 @@ Searcher {
         showPreview = true;
 
         if (Colours.scheme === "dynamic")
-            getPreviewColoursProc.running = true;
+            previewTimer.restart();
     }
 
     function stopPreview(): void {
+        previewTimer.stop();
         showPreview = false;
         if (previewColourLock)
             pendingPreviewClear = true;
@@ -111,12 +113,30 @@ Searcher {
         filter: FileSystemModel.Images | FileSystemModel.Videos
     }
 
+    Timer {
+        id: previewTimer
+
+        interval: 250
+        onTriggered: {
+            if (Colours.scheme !== "dynamic" || !root.showPreview)
+                return;
+            root.previewRequestPath = root.previewPath;
+            getPreviewColoursProc.running = true;
+        }
+    }
+
     Process {
         id: getPreviewColoursProc
 
-        command: ["caelestia", "wallpaper", "-p", root.previewPath, ...root.smartArg]
+        command: ["caelestia", "wallpaper", "-p", root.previewRequestPath, ...root.smartArg]
         stdout: StdioCollector {
             onStreamFinished: {
+                if (!root.showPreview)
+                    return;
+                if (root.previewRequestPath !== root.previewPath) {
+                    previewTimer.restart();
+                    return;
+                }
                 Colours.load(text, true);
                 Colours.showPreview = true;
             }
