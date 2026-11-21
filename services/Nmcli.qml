@@ -40,6 +40,8 @@ Singleton {
     // anything other than that as a usable connection.
     readonly property bool hasAvailableEthernet: ethernetDevices.some(d => d.state !== "unavailable")
     property list<var> activeProcesses: []
+    property string lastDeviceState: ""
+    property bool deviceStateInitialized: false
 
     readonly property alias connectionCheckTimer: connectionCheckTimer
     readonly property alias immediateCheckTimer: immediateCheckTimer
@@ -1699,21 +1701,38 @@ Singleton {
     }
 
     Process {
-        id: monitorProc
+        id: deviceStatePoll
 
-        running: true
-        // Keep the monitor tied to this shell. If Quickshell exits without
-        // stopping us, the wrapper notices and reaps nmcli instead of leaving
-        // an orphaned monitor behind.
-        command: ["sh", "-c", "nmcli monitor & child=$!; trap 'kill $child 2>/dev/null' EXIT TERM INT; while kill -0 \"$PPID\" 2>/dev/null && kill -0 \"$child\" 2>/dev/null; do sleep 2; done"]
+        command: ["nmcli", "-t", "-f", "DEVICE,STATE,TYPE", "device"]
         environment: ({
                 LANG: "C.UTF-8",
                 LC_ALL: "C.UTF-8"
             })
-        stdout: SplitParser {
-            onRead: connectionRefreshTimer.restart()
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const state = text.trim();
+                if (state === root.lastDeviceState)
+                    return;
+
+                root.lastDeviceState = state;
+                if (root.deviceStateInitialized)
+                    connectionRefreshTimer.restart();
+                else
+                    root.deviceStateInitialized = true;
+            }
         }
-        onExited: monitorRestartTimer.start()
+    }
+
+    Timer {
+        id: deviceStateTimer
+
+        interval: 5000
+        running: true
+        repeat: true
+        onTriggered: {
+            if (!deviceStatePoll.running)
+                deviceStatePoll.running = true;
+        }
     }
 
     Timer {
@@ -1721,15 +1740,6 @@ Singleton {
 
         interval: 800
         onTriggered: root.refreshOnConnectionChange()
-    }
-
-    Timer {
-        id: monitorRestartTimer
-
-        interval: 2000
-        onTriggered: {
-            monitorProc.running = true;
-        }
     }
 
     LoggingCategory {
