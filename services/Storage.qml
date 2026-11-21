@@ -45,7 +45,7 @@ Singleton {
         if (measureProc.running)
             return;
 
-        if (!force && root.lastMeasured > 0 && Date.now() - root.lastMeasured < 30000)
+        if (!force && root.lastMeasured > 0 && Date.now() - root.lastMeasured < 300000)
             return;
 
         root.measuring = true;
