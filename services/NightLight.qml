@@ -343,7 +343,7 @@ Singleton {
     }
 
     Timer {
-        interval: 15000
+        interval: 60000
         running: root.enabled && root.useSchedule
         repeat: true
         onTriggered: root.refresh()
