@@ -1702,7 +1702,10 @@ Singleton {
         id: monitorProc
 
         running: true
-        command: ["nmcli", "monitor"]
+        // Keep the monitor tied to this shell. If Quickshell exits without
+        // stopping us, the wrapper notices and reaps nmcli instead of leaving
+        // an orphaned monitor behind.
+        command: ["sh", "-c", "nmcli monitor & child=$!; trap 'kill $child 2>/dev/null' EXIT TERM INT; while kill -0 \"$PPID\" 2>/dev/null && kill -0 \"$child\" 2>/dev/null; do sleep 2; done"]
         environment: ({
                 LANG: "C.UTF-8",
                 LC_ALL: "C.UTF-8"
