@@ -82,6 +82,12 @@ QtObject {
             category: "shell"
         },
         {
+            label: Tr.tr("Desktop"),
+            icon: "desktop_windows",
+            description: Tr.tr("Desktop icons and clock"),
+            category: "shell"
+        },
+        {
             label: Tr.tr("Apps"),
             icon: "apps",
             description: Tr.tr("Default apps, favourites, hidden apps"),

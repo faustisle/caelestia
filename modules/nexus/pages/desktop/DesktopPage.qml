@@ -1,0 +1,34 @@
+import QtQuick
+import QtQuick.Layouts
+import Caelestia.Config
+import Caelestia.I18n
+import qs.modules.nexus.common
+
+PageBase {
+    id: root
+
+    title: Tr.tr("Desktop")
+
+    ColumnLayout {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: root.cappedWidth
+        spacing: Tokens.spacing.extraSmall / 2
+
+        NavRow {
+            first: true
+            icon: "desktop_windows"
+            text: Tr.tr("Desktop icons")
+            subtext: Config.background.desktopIcons.enabled ? Tr.trCtx("Enabled", "panel status") : Tr.trCtx("Disabled", "panel status")
+            onClicked: root.nState.openSubPage(1)
+        }
+
+        NavRow {
+            last: true
+            icon: "schedule"
+            text: Tr.tr("Desktop clock")
+            subtext: Config.background.desktopClock.enabled ? Tr.trCtx("Enabled", "panel status") : Tr.trCtx("Disabled", "panel status")
+            onClicked: root.nState.openSubPage(2)
+        }
+    }
+}

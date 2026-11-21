@@ -37,18 +37,11 @@ PageBase {
         }
 
         NavRow {
+            last: true
             icon: "construction"
             text: Tr.tr("Utilities")
             subtext: Config.utilities.enabled ? Tr.trCtx("Enabled", "panel status") : Tr.trCtx("Disabled", "panel status")
             onClicked: root.nState.openSubPage(4)
-        }
-
-        NavRow {
-            last: true
-            icon: "desktop_windows"
-            text: Tr.tr("Desktop icons")
-            subtext: Config.background.desktopIcons.enabled ? Tr.trCtx("Enabled", "panel status") : Tr.trCtx("Disabled", "panel status")
-            onClicked: root.nState.openSubPage(10)
         }
     }
 }
