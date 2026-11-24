@@ -182,7 +182,7 @@ FloatingWindow {
     FocusScope {
         id: contentRoot
 
-        readonly property real topPadding: toolbarRect.implicitHeight + Tokens.padding.medium * 2
+        readonly property real topPadding: toolbarRect.implicitHeight + Tokens.padding.medium
 
         anchors.fill: parent
         focus: true
@@ -296,14 +296,15 @@ FloatingWindow {
         }
 
         StyledRect {
+            id: toolbarRect
+
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.margins: Tokens.padding.medium
 
             implicitHeight: toolbar.implicitHeight + Tokens.padding.small * 2
-            radius: Tokens.rounding.large
-            color: Qt.alpha(Colours.tPalette.m3surfaceContainer, 0.92)
+            radius: 0
+            color: Colours.tPalette.m3surfaceContainer
 
             RowLayout {
                 id: toolbar
