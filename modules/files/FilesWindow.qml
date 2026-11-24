@@ -344,16 +344,13 @@ FloatingWindow {
         context.open(x, y, root.selectedEntries());
     }
 
-    function folderIcon(entry): string {
-        const special = ["Desktop", "Documents", "Downloads", "Music", "Pictures", "Public", "Templates", "Videos"];
-        if (entry.isDir && special.includes(entry.name))
-            return Quickshell.iconPath(`folder-${entry.name.toLowerCase()}`, "inode-directory");
+    function folderIcon(): string {
         return Quickshell.iconPath("inode-directory");
     }
 
     function fileIcon(entry): string {
         if (entry.isDir)
-            return root.folderIcon(entry);
+            return root.folderIcon();
         return Quickshell.iconPath(entry.mimeType.replace("/", "-"), "application-x-zerosize");
     }
 
