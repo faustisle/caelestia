@@ -5,6 +5,7 @@ import Caelestia
 import Caelestia.Config
 import qs.components.misc
 import qs.services
+import qs.utils
 import qs.modules.nexus
 
 Scope {
@@ -19,6 +20,14 @@ Scope {
         name: "nexus"
         description: "Open nexus"
         onPressed: WindowFactory.create()
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "files"
+        description: "Open the file manager"
+        onPressed: Files.open(Paths.home)
     }
 
     // qmllint disable unresolved-type
