@@ -161,6 +161,12 @@ FloatingWindow {
         if (root.fitMode)
             Qt.callLater(root.fitToWindow);
     }
+    onFullscreenChanged: {
+        if (root.fitMode)
+            Qt.callLater(root.fitToWindow);
+        else
+            Qt.callLater(root.clampPan);
+    }
     Component.onCompleted: {
         root.syncImages();
         if (photo.status === Image.Ready)
@@ -182,7 +188,8 @@ FloatingWindow {
     FocusScope {
         id: contentRoot
 
-        readonly property real topPadding: toolbarRect.implicitHeight + Tokens.padding.medium
+        readonly property real topPadding: root.fullscreen ? 0 : toolbarRect.implicitHeight + Tokens.padding.medium
+        readonly property bool barOverImage: root.fullscreen && photo.status === Image.Ready && photo.y < toolbarRect.implicitHeight
 
         anchors.fill: parent
         focus: true
@@ -304,7 +311,7 @@ FloatingWindow {
 
             implicitHeight: toolbar.implicitHeight + Tokens.padding.small * 2
             radius: 0
-            color: Colours.tPalette.m3surfaceContainer
+            color: contentRoot.barOverImage ? Qt.alpha(Colours.tPalette.m3surfaceContainer, 0.35) : Colours.tPalette.m3surfaceContainer
 
             RowLayout {
                 id: toolbar
