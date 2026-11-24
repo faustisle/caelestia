@@ -1032,14 +1032,13 @@ FloatingWindow {
             }
 
             MaterialIcon {
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.margins: root.iconSide * 0.1
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: root.iconSide * 0.12
 
                 visible: root.folderBadge(tile.modelData) !== ""
                 text: root.folderBadge(tile.modelData)
                 color: Colours.palette.m3onPrimaryContainer
-                fontStyle: Tokens.font.icon.builders.small.scale(root.iconSide / 64).build()
+                fontStyle: Tokens.font.icon.builders.medium.scale(root.iconSide / 64).build()
             }
         }
 
