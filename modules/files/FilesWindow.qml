@@ -857,7 +857,7 @@ FloatingWindow {
                             acceptedModifiers: Qt.NoModifier
                             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
                             onWheel: wheel => {
-                                const delta = wheel.pixelDelta.y !== 0 ? wheel.pixelDelta.y : wheel.angleDelta.y / 2;
+                                const delta = wheel.angleDelta.y !== 0 ? wheel.angleDelta.y : wheel.pixelDelta.y * 3;
                                 grid.contentY = Math.max(0, Math.min(grid.contentHeight - grid.height, grid.contentY - delta));
                                 wheel.accepted = true;
                             }
