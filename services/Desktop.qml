@@ -13,13 +13,7 @@ Singleton {
             return;
 
         if (file.kind === "folder") {
-            const explorer = GlobalConfig.general.apps.explorer;
-            if (explorer.length > 0)
-                Quickshell.execDetached({
-                    command: [...explorer, file.path]
-                });
-            else
-                Quickshell.execDetached(["xdg-open", file.path]);
+            Files.open(file.path);
             return;
         }
 
@@ -82,13 +76,7 @@ done
     function openLocation(path: string): void {
         const slash = path.lastIndexOf("/");
         const directory = slash > 0 ? path.slice(0, slash) : "/";
-        const explorer = GlobalConfig.general.apps.explorer;
-        if (explorer.length > 0)
-            Quickshell.execDetached({
-                command: [...explorer, directory]
-            });
-        else
-            Quickshell.execDetached(["xdg-open", directory]);
+        Files.open(directory);
     }
 
     function renameEntry(entry: DesktopFile, name: string): void {

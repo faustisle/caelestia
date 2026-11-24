@@ -223,6 +223,23 @@ MimeType=image/jpeg;image/png;image/webp;image/tiff;image/svg+xml;
 NoDisplay=true
 ```
 
+### Files
+
+The fork includes a native file manager. Open it from a keybind or terminal with:
+
+```sh
+caelestia shell files open <path>
+```
+
+It supports grid browsing, rubber-band selection, `Ctrl`+scroll or the toolbar
+buttons to change icon size, and opening folders from the desktop. The context
+menu covers open, open with, cut/copy/paste, rename, trash, permanent delete,
+copy location, properties, ZIP compression and archive extraction. The sidebar
+includes the standard home folders, Trash, the filesystem root and GTK
+bookmarks. Common shortcuts include `Ctrl+L` for the location bar, `Ctrl+H` for
+hidden files, `Ctrl+A`, `Ctrl+C`/`X`/`V`, `F2`, `Delete`, `Shift+Delete`,
+`Alt+Left`/`Right`/`Up`, `Ctrl+Shift+N` for a new folder and `Ctrl+W` to close.
+
 ### Icon theme
 
 The fork includes a generator for a `caelestia-material` icon theme. It recolours
