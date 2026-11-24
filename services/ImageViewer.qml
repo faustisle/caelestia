@@ -20,7 +20,7 @@ Singleton {
             return Paths.toLocalFile(resolved);
 
         if (!resolved.startsWith("/") && !resolved.startsWith("~") && !resolved.startsWith("$"))
-            resolved = `${Quickshell.env("PWD") || Paths.home}/${resolved}`;
+            resolved = `${Paths.home}/${resolved}`;
 
         return Paths.absolutePath(resolved);
     }

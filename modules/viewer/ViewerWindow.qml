@@ -110,18 +110,13 @@ FloatingWindow {
     }
 
     function openPath(path: string): void {
-        const changed = path !== root.sourcePath;
-        root.sourcePath = path;
         root.errorText = "";
         root.fitMode = true;
         root.pendingFit = true;
         root.panX = 0;
         root.panY = 0;
         root.zoom = 1;
-        if (changed) {
-            root.naturalWidth = 0;
-            root.naturalHeight = 0;
-        }
+        root.sourcePath = path;
         Qt.callLater(() => {
             root.syncImages();
             if (photo.status === Image.Ready)
@@ -167,8 +162,9 @@ FloatingWindow {
             Qt.callLater(root.fitToWindow);
     }
     Component.onCompleted: {
-        if (root.sourcePath.length > 0)
-            root.openPath(root.sourcePath);
+        root.syncImages();
+        if (photo.status === Image.Ready)
+            root.fitToWindow();
         Qt.callLater(() => contentRoot.forceActiveFocus());
     }
 
@@ -258,7 +254,7 @@ FloatingWindow {
 
             StyledText {
                 anchors.centerIn: parent
-                visible: photo.status === Image.Error
+                visible: root.errorText.length > 0
                 text: root.errorText
                 color: Colours.palette.m3onSurfaceVariant
                 font: Tokens.font.body.large
