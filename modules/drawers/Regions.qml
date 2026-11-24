@@ -32,8 +32,16 @@ Region {
         intersection: Intersection.Subtract
     }
 
-    R {
-        panel: root.win.bar
+    Region {
+        // The bar lives directly in the interaction window, unlike the panels,
+        // which are already inset by EdgeGeometry. Adding the inset here shifts
+        // the input area below the actual bar and steals clicks from window
+        // controls.
+        x: root.win.bar.x
+        y: root.win.bar.y
+        width: root.win.bar.width
+        height: root.win.bar.height
+        intersection: Intersection.Subtract
     }
 
     R {
