@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Widgets
 import Caelestia.Config
 import Caelestia.I18n
 import Caelestia.Models
@@ -327,11 +328,11 @@ FloatingWindow {
     }
 
     function zoomIn(): void {
-        root.setIconScale(root.iconScale * 1.15);
+        root.setIconScale(root.iconScale * 1.3);
     }
 
     function zoomOut(): void {
-        root.setIconScale(root.iconScale / 1.15);
+        root.setIconScale(root.iconScale / 1.3);
     }
 
     function resetZoom(): void {
@@ -969,6 +970,7 @@ FloatingWindow {
         readonly property bool selected: root.isSelected(tile.modelData.path)
         readonly property bool current: GridView.isCurrentItem
 
+
         implicitWidth: grid.cellWidth - Tokens.spacing.small
         implicitHeight: grid.cellHeight - Tokens.spacing.small
 
@@ -977,23 +979,29 @@ FloatingWindow {
         border.width: tile.current ? 1 : 0
         border.color: Colours.palette.m3primary
 
-        Visual {
+        Item {
             id: icon
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: Tokens.padding.small
 
-            implicitWidth: root.iconSide
-            implicitHeight: root.iconSide
-            fillMode: VisualSource.PreserveAspectFit
-            source: {
-                const entry = tile.modelData;
-                if (entry.isDir)
-                    return root.folderIcon(entry);
-                if (entry.isImage)
-                    return Files.fileUri(entry.path);
-                return root.fileIcon(entry);
+            width: root.iconSide
+            height: root.iconSide
+
+            Visual {
+                anchors.fill: parent
+                visible: tile.modelData.isImage
+                source: tile.modelData.isImage ? Files.fileUri(tile.modelData.path) : ""
+                fillMode: VisualSource.PreserveAspectFit
+            }
+
+            IconImage {
+                anchors.fill: parent
+                visible: !tile.modelData.isImage
+                source: tile.modelData.isImage ? "" : root.fileIcon(tile.modelData)
+                asynchronous: true
+                mipmap: true
             }
         }
 
