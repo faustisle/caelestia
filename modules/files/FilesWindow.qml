@@ -344,13 +344,30 @@ FloatingWindow {
         context.open(x, y, root.selectedEntries());
     }
 
-    function folderIcon(): string {
-        return Quickshell.iconPath("inode-directory");
+    function folderIcon(entry): string {
+        const icons = {
+            Documents: "folder-documents",
+            Downloads: "folder-download",
+            Music: "folder-music",
+            Pictures: "folder-pictures",
+            Videos: "folder-videos",
+            Public: "folder-publicshare",
+            Templates: "folder-templates"
+        };
+        return Quickshell.iconPath(entry.isDir ? (icons[entry.name] ?? "inode-directory") : "inode-directory", "inode-directory");
+    }
+
+    function folderBadge(entry): string {
+        if (!entry.isDir)
+            return "";
+        if (entry.name === "Desktop")
+            return "desktop_windows";
+        return "";
     }
 
     function fileIcon(entry): string {
         if (entry.isDir)
-            return root.folderIcon();
+            return root.folderIcon(entry);
         return Quickshell.iconPath(entry.mimeType.replace("/", "-"), "application-x-zerosize");
     }
 
@@ -1012,6 +1029,17 @@ FloatingWindow {
                 asynchronous: true
                 cache: false
                 mipmap: true
+            }
+
+            MaterialIcon {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: root.iconSide * 0.1
+
+                visible: root.folderBadge(tile.modelData) !== ""
+                text: root.folderBadge(tile.modelData)
+                color: Colours.palette.m3onPrimaryContainer
+                fontStyle: Tokens.font.icon.builders.small.scale(root.iconSide / 64).build()
             }
         }
 
