@@ -11,11 +11,25 @@ Singleton {
 
     property var currentWindow: null
 
+    function resolvePath(path: string): string {
+        let resolved = path.trim();
+        if (!resolved)
+            return "";
+
+        if (resolved.startsWith("file://"))
+            return Paths.toLocalFile(resolved);
+
+        if (!resolved.startsWith("/") && !resolved.startsWith("~") && !resolved.startsWith("$"))
+            resolved = `${Quickshell.env("PWD") || Paths.home}/${resolved}`;
+
+        return Paths.absolutePath(resolved);
+    }
+
     function open(path: string): void {
         if (!path)
             return;
 
-        const localPath = Paths.toLocalFile(path);
+        const localPath = root.resolvePath(path);
         if (!localPath)
             return;
 

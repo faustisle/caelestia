@@ -200,8 +200,9 @@ caelestia wallpaper -f <path_to_wallpaper>
 
 Images open in a floating viewer with the other images from the same directory.
 Scroll to zoom, drag to pan, use the arrow keys to move through the directory,
-`0` to fit, `1` for 100% zoom, `F11`/`F` to toggle fullscreen and `Escape` to
-close. Image files on the desktop also open in this viewer.
+`0` to fit, `1` for 100% zoom, double-click or `F11`/`F` to toggle fullscreen
+and `Escape` to close. Animated GIF and APNG files play, and image files on the
+desktop also open in this viewer.
 
 Open an image from a keybind, file manager or terminal:
 

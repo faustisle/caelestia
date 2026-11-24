@@ -21,6 +21,8 @@ FloatingWindow {
     property bool pendingFit: true
     property real panX: 0
     property real panY: 0
+    property real naturalWidth: 0
+    property real naturalHeight: 0
     property string errorText: ""
 
     readonly property string directoryPath: {
@@ -55,12 +57,12 @@ FloatingWindow {
     }
 
     function fitToWindow(): void {
-        if (photo.status !== Image.Ready || photo.implicitWidth <= 0 || viewport.width <= 0 || viewport.height <= 0) {
+        if (photo.status !== Image.Ready || root.naturalWidth <= 0 || root.naturalHeight <= 0 || viewport.width <= 0 || viewport.height <= 0) {
             root.pendingFit = true;
             return;
         }
 
-        root.zoom = Math.min(1, viewport.width / photo.implicitWidth, viewport.height / photo.implicitHeight);
+        root.zoom = Math.min(1, viewport.width / root.naturalWidth, viewport.height / root.naturalHeight);
         root.panX = 0;
         root.panY = 0;
         root.fitMode = true;
@@ -85,7 +87,30 @@ FloatingWindow {
         root.panY = Math.max(-maxY, Math.min(maxY, root.panY));
     }
 
+    function handlePhotoStatus(status: int, width: real, height: real): void {
+        if (status === Image.Ready) {
+            root.naturalWidth = width;
+            root.naturalHeight = height;
+            root.errorText = "";
+            if (root.pendingFit)
+                root.fitToWindow();
+            else
+                root.clampPan();
+        } else if (status === Image.Error) {
+            root.naturalWidth = 0;
+            root.naturalHeight = 0;
+            root.errorText = Tr.tr("Unable to open image");
+        }
+    }
+
+    function fileUrl(path: string): string {
+        if (!path)
+            return "";
+        return `file://${path.split("/").map(encodeURIComponent).join("/")}`;
+    }
+
     function openPath(path: string): void {
+        const changed = path !== root.sourcePath;
         root.sourcePath = path;
         root.errorText = "";
         root.fitMode = true;
@@ -93,6 +118,10 @@ FloatingWindow {
         root.panX = 0;
         root.panY = 0;
         root.zoom = 1;
+        if (changed) {
+            root.naturalWidth = 0;
+            root.naturalHeight = 0;
+        }
         Qt.callLater(() => {
             root.syncImages();
             if (photo.status === Image.Ready)
@@ -157,6 +186,8 @@ FloatingWindow {
     FocusScope {
         id: contentRoot
 
+        readonly property real topPadding: toolbarRect.implicitHeight + Tokens.padding.medium * 2
+
         anchors.fill: parent
         focus: true
 
@@ -200,34 +231,29 @@ FloatingWindow {
         Item {
             id: viewport
 
-            anchors.fill: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.topMargin: contentRoot.topPadding
             clip: true
 
-            Image {
+            AnimatedImage {
                 id: photo
 
-                source: root.sourcePath.length > 0 ? Qt.resolvedUrl(root.sourcePath) : ""
+                source: root.fileUrl(root.sourcePath)
                 asynchronous: true
                 cache: false
                 mipmap: true
+                playing: true
                 fillMode: Image.PreserveAspectFit
-                width: implicitWidth * root.zoom
-                height: implicitHeight * root.zoom
+                width: root.naturalWidth * root.zoom
+                height: root.naturalHeight * root.zoom
                 x: (viewport.width - width) / 2 + root.panX
                 y: (viewport.height - height) / 2 + root.panY
                 opacity: status === Image.Ready ? 1 : 0
 
-                onStatusChanged: {
-                    if (status === Image.Ready) {
-                        root.errorText = "";
-                        if (root.pendingFit)
-                            root.fitToWindow();
-                        else
-                            root.clampPan();
-                    } else if (status === Image.Error) {
-                        root.errorText = Tr.tr("Unable to open image");
-                    }
-                }
+                onStatusChanged: root.handlePhotoStatus(status, implicitWidth, implicitHeight)
             }
 
             StyledText {
@@ -269,12 +295,7 @@ FloatingWindow {
                     root.changeZoom(wheel.angleDelta.y > 0 ? 1.2 : 1 / 1.2);
                     wheel.accepted = true;
                 }
-                onDoubleClicked: {
-                    if (root.fitMode)
-                        root.setZoom(1);
-                    else
-                        root.fitToWindow();
-                }
+                onDoubleClicked: root.fullscreen = !root.fullscreen
             }
         }
 
@@ -341,6 +362,12 @@ FloatingWindow {
                     icon: "fit_screen"
                     type: IconButton.Text
                     onClicked: root.fitToWindow()
+                }
+
+                IconButton {
+                    icon: root.fullscreen ? "fullscreen_exit" : "fullscreen"
+                    type: IconButton.Text
+                    onClicked: root.fullscreen = !root.fullscreen
                 }
 
                 IconButton {
