@@ -13,13 +13,11 @@ Region {
 
     readonly property real borderThickness: win.contentItem.Config.border.thickness
     readonly property real clampedThickness: win.contentItem.Config.border.clampedThickness
-    readonly property real dragTop: root.geometry.barOnBottom ? 0 : win.dragMaskPadding
-    readonly property real dragBottom: root.geometry.barOnBottom ? win.dragMaskPadding : 0
 
     x: geometry.insetLeft(clampedThickness, true)
-    y: geometry.insetTop(clampedThickness, true) + root.dragTop
+    y: geometry.insetTop(clampedThickness, true)
     width: win.width - geometry.insetLeft(clampedThickness, true) - geometry.insetRight(clampedThickness, true)
-    height: win.height - geometry.insetTop(clampedThickness, true) - geometry.insetBottom(clampedThickness, true) - root.dragTop - root.dragBottom
+    height: win.height - geometry.insetTop(clampedThickness, true) - geometry.insetBottom(clampedThickness, true)
     intersection: Intersection.Xor
 
     // Keep a small input hotspot at the top-right corner for the quick settings

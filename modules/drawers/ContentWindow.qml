@@ -48,16 +48,6 @@ StyledWindow {
 
     property color surfaceColour: Colours.tPalette.m3surface
 
-    readonly property int dragMaskPadding: {
-        if (focusGrab.active || panels.popouts.isDetached)
-            return 0;
-
-        if (monitor?.lastIpcObject.specialWorkspace?.name || monitor?.activeWorkspace?.toplevels.values.length > 0)
-            return 0;
-
-        return contentItem.Config.launcher.enabled ? contentItem.Config.launcher.dragThreshold : 0;
-    }
-
     onHasFullscreenChanged: {
         screenState.launcher = false;
         screenState.session = false;
