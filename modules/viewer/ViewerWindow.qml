@@ -325,7 +325,7 @@ FloatingWindow {
                     Layout.leftMargin: Tokens.padding.small
                     text: root.fileName
                     color: Colours.palette.m3onSurface
-                    font: Tokens.font.body.medium
+                    font: Tokens.font.body.small
                     elide: Text.ElideMiddle
                 }
 
@@ -333,7 +333,7 @@ FloatingWindow {
                     visible: root.images.length > 0
                     text: `${root.currentIndex + 1} / ${root.images.length}`
                     color: Colours.palette.m3onSurfaceVariant
-                    font: Tokens.font.label.medium
+                    font: Tokens.font.label.small
                 }
 
                 IconButton {
