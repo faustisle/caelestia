@@ -8,7 +8,6 @@
   brightnessctl,
   networkmanager,
   lm_sensors,
-  swappy,
   wl-clipboard,
   bash,
   hyprland,
@@ -38,7 +37,6 @@
       brightnessctl
       networkmanager
       lm_sensors
-      swappy
       wl-clipboard
       bash
       hyprland

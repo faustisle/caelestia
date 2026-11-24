@@ -41,8 +41,6 @@ full set.
   opening from the panel button.
 - **Session menu** — horizontal layout, action labels, number badges, and
   keyboard shortcuts.
-- **Screenshot** — tinted selection mode and editing from the screenshot
-  notification.
 - **Sliders** — wavy fill animation and click-to-seek.
 - **Lock screen** — rearranged clock, centred layout, and taskbar shortcuts that
   open the matching settings pages.
@@ -89,7 +87,6 @@ Runtime dependencies:
 - `qt6-imageformats`
 - `qt6-multimedia`
 - [`qt6-m3shapes-git`](https://github.com/soramanew/m3shapes)
-- [`swappy`](https://github.com/jtheoof/swappy)
 - [`bash`](https://www.gnu.org/software/bash)
 - `python` (used by the CLI and the icon theme generator)
 
