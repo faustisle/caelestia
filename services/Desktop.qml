@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Caelestia.Config
 import Caelestia.Models
+import qs.services
 import qs.utils
 
 Singleton {
@@ -19,6 +20,11 @@ Singleton {
                 });
             else
                 Quickshell.execDetached(["xdg-open", file.path]);
+            return;
+        }
+
+        if (file.kind === "file" && Images.isValidImageByName(file.name)) {
+            ImageViewer.open(file.path);
             return;
         }
 

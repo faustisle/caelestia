@@ -196,6 +196,31 @@ Set a wallpaper from the launcher with `>wallpaper`, or directly:
 caelestia wallpaper -f <path_to_wallpaper>
 ```
 
+### Image viewer
+
+Images open in a floating viewer with the other images from the same directory.
+Scroll to zoom, drag to pan, use the arrow keys to move through the directory,
+`0` to fit, `1` for 100% zoom, `F11`/`F` to toggle fullscreen and `Escape` to
+close. Image files on the desktop also open in this viewer.
+
+Open an image from a keybind, file manager or terminal:
+
+```sh
+caelestia shell imageViewer open <path_to_image>
+```
+
+To make it the default handler for images, point an XDG desktop entry at that
+command:
+
+```ini
+[Desktop Entry]
+Type=Application
+Name=Caelestia Image Viewer
+Exec=caelestia shell imageViewer open %f
+MimeType=image/jpeg;image/png;image/webp;image/tiff;image/svg+xml;
+NoDisplay=true
+```
+
 ### Icon theme
 
 The fork includes a generator for a `caelestia-material` icon theme. It recolours

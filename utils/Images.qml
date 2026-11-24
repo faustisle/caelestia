@@ -7,6 +7,7 @@ Singleton {
     readonly property list<string> validImageExtensions: ["jpg", "jpeg", "png", "webp", "tif", "tiff", "svg"]
 
     function isValidImageByName(name: string): bool {
-        return validImageExtensions.some(t => name.endsWith(`.${t}`));
+        const lower = name.toLowerCase();
+        return validImageExtensions.some(t => lower.endsWith(`.${t}`));
     }
 }
