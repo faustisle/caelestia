@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Widgets
 import Caelestia.Config
 import Caelestia.I18n
 import Caelestia.Models
@@ -35,7 +34,7 @@ FloatingWindow {
     readonly property bool canGoForward: historyIndex >= 0 && historyIndex < history.length - 1
     readonly property real minIconScale: 0.8
     readonly property real maxIconScale: 2.0
-    readonly property real iconSide: 64 * root.iconScale
+    readonly property real iconSide: Math.round(64 * root.iconScale)
     readonly property real tileWidth: Math.max(96, root.iconSide + 48)
     readonly property real tileHeight: root.iconSide + 68
     readonly property string parentPath: {
@@ -839,6 +838,16 @@ FloatingWindow {
                                 wheel.accepted = true;
                             }
                         }
+
+                        WheelHandler {
+                            acceptedModifiers: Qt.NoModifier
+                            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                            onWheel: wheel => {
+                                const delta = wheel.pixelDelta.y !== 0 ? wheel.pixelDelta.y : wheel.angleDelta.y / 2;
+                                grid.contentY = Math.max(0, Math.min(grid.contentHeight - grid.height, grid.contentY - delta));
+                                wheel.accepted = true;
+                            }
+                        }
                     }
 
                     Rectangle {
@@ -996,11 +1005,15 @@ FloatingWindow {
                 fillMode: VisualSource.PreserveAspectFit
             }
 
-            IconImage {
+            Image {
                 anchors.fill: parent
                 visible: !tile.modelData.isImage
                 source: tile.modelData.isImage ? "" : root.fileIcon(tile.modelData)
+                sourceSize.width: Math.round(root.iconSide)
+                sourceSize.height: Math.round(root.iconSide)
+                fillMode: Image.PreserveAspectFit
                 asynchronous: true
+                cache: false
                 mipmap: true
             }
         }
