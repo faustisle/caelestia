@@ -9,8 +9,6 @@ import qs.modules.viewer
 Singleton {
     id: root
 
-    property var currentWindow: null
-
     function resolvePath(path: string): string {
         let resolved = path.trim();
         if (!resolved)
@@ -33,25 +31,12 @@ Singleton {
         if (!localPath)
             return;
 
-        if (root.currentWindow) {
-            root.currentWindow.openPath(localPath);
-            root.currentWindow.visible = true;
-            if (root.currentWindow.requestActivate)
-                root.currentWindow.requestActivate();
-            return;
-        }
-
         const window = windowComp.createObject(windowHolder, {
             sourcePath: localPath
         });
         if (!window)
             return;
 
-        root.currentWindow = window;
-        window.imageViewerClosed.connect(() => {
-            if (root.currentWindow === window)
-                root.currentWindow = null;
-        });
         window.visible = true;
         if (window.requestActivate)
             window.requestActivate();

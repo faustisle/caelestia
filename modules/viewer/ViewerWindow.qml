@@ -36,8 +36,6 @@ FloatingWindow {
         return slash >= 0 ? root.sourcePath.slice(slash + 1) : root.sourcePath;
     }
 
-    signal imageViewerClosed
-
     function syncImages(): void {
         const list = [];
         const entries = directory.entries;
@@ -148,10 +146,8 @@ FloatingWindow {
     title: root.fileName.length > 0 ? root.fileName : Tr.tr("Image Viewer")
 
     onVisibleChanged: {
-        if (!visible) {
-            root.imageViewerClosed();
+        if (!visible)
             destroy();
-        }
     }
     onWidthChanged: {
         if (root.fitMode)
