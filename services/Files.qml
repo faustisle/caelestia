@@ -16,9 +16,31 @@ Singleton {
             cut: false
         })
 
+    property real iconScale: 1
+
     readonly property bool hasClipboard: root.clipboard.paths.length > 0
+    readonly property real minIconScale: 0.8
+    readonly property real maxIconScale: 2.0
 
     readonly property string trashPath: `${Quickshell.env("XDG_DATA_HOME") || `${Paths.home}/.local/share`}/Trash/files`
+
+    function clampIconScale(value: real): real {
+        return Math.max(root.minIconScale, Math.min(root.maxIconScale, value));
+    }
+
+    function setIconScale(value: real): void {
+        const next = root.clampIconScale(value);
+        if (next === root.iconScale)
+            return;
+        root.iconScale = next;
+        stateSaveTimer.restart();
+    }
+
+    function saveState(): void {
+        stateFile.setText(JSON.stringify({
+            iconScale: root.iconScale
+        }));
+    }
 
     function resolvePath(path: string): string {
         let resolved = path.trim();
@@ -277,6 +299,29 @@ esac`, "sh", destination, archive, folderName]);
         }
 
         target: "files"
+    }
+
+    FileView {
+        id: stateFile
+
+        printErrors: false
+        path: `${Paths.state}/files.json`
+
+        onLoaded: {
+            try {
+                const data = JSON.parse(text());
+                if (typeof data.iconScale === "number" && !isNaN(data.iconScale))
+                    root.iconScale = root.clampIconScale(data.iconScale);
+            } catch (e) {
+            }
+        }
+    }
+
+    Timer {
+        id: stateSaveTimer
+
+        interval: 300
+        onTriggered: root.saveState()
     }
 
     QtObject {

@@ -23,7 +23,6 @@ FloatingWindow {
     property bool editingLocation: false
     property var selectedPaths: ({})
     property int anchorIndex: -1
-    property real iconScale: 1
     property string promptMode: ""
     property var promptEntries: []
     property bool deleteDialogOpen: false
@@ -32,8 +31,9 @@ FloatingWindow {
 
     readonly property bool canGoBack: historyIndex > 0
     readonly property bool canGoForward: historyIndex >= 0 && historyIndex < history.length - 1
-    readonly property real minIconScale: 0.8
-    readonly property real maxIconScale: 2.0
+    readonly property real iconScale: Files.iconScale
+    readonly property real minIconScale: Files.minIconScale
+    readonly property real maxIconScale: Files.maxIconScale
     readonly property real iconSide: Math.round(64 * root.iconScale)
     readonly property real tileWidth: Math.max(96, root.iconSide + 48)
     readonly property real tileHeight: root.iconSide + 68
@@ -323,7 +323,7 @@ FloatingWindow {
     }
 
     function setIconScale(value: real): void {
-        root.iconScale = Math.max(root.minIconScale, Math.min(root.maxIconScale, value));
+        Files.setIconScale(value);
     }
 
     function zoomIn(): void {
@@ -335,7 +335,7 @@ FloatingWindow {
     }
 
     function resetZoom(): void {
-        root.iconScale = 1;
+        root.setIconScale(1);
     }
 
     function openEntryContext(entry, index: int, x: real, y: real): void {
