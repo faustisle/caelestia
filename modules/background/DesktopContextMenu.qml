@@ -27,6 +27,10 @@ Item {
     readonly property real menuPadding: Tokens.padding.extraSmall
     readonly property real submenuWidth: 164
     readonly property var barRef: ShellState.componentsFor(root.screen)?.bar
+    readonly property int panelRadius: Theme.fluent ? Tokens.rounding.extraLarge : Tokens.rounding.large
+    readonly property int panelBorderWidth: Theme.fluent ? Theme.borderWidth : 1
+    readonly property color panelBorderColour: Theme.fluent ? Theme.borderColour : Colours.palette.m3primary
+    readonly property color panelColour: Colours.tPalette.m3surfaceContainerLow
     readonly property bool barHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
     readonly property real barThickness: root.barRef?.contentThickness ?? (root.barHorizontal ? Tokens.sizes.bar.horizontalInnerWidth + Tokens.padding.extraSmall * 2 : Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.small, Config.border.thickness) * 2)
     readonly property real marginLeft: root.baseMargin + (Config.bar.position === "left" ? root.barThickness + root.baseMargin : 0)
@@ -107,7 +111,7 @@ Item {
 
         visible: !root.confirmingDelete
         level: 2
-        radius: Tokens.rounding.large
+        radius: root.panelRadius
         width: root.menuWidth
         height: mainColumn.implicitHeight + root.menuPadding * 2
         implicitWidth: width
@@ -118,9 +122,9 @@ Item {
         StyledRect {
             anchors.fill: parent
             radius: parent.radius
-            color: Colours.palette.m3surfaceContainerLow
-            border.width: 1
-            border.color: Colours.palette.m3primary
+            color: root.panelColour
+            border.width: root.panelBorderWidth
+            border.color: root.panelBorderColour
         }
 
         ColumnLayout {
@@ -265,7 +269,7 @@ Item {
 
         visible: root.confirmingDelete
         level: 2
-        radius: Tokens.rounding.large
+        radius: root.panelRadius
         width: root.menuWidth
         height: confirmColumn.implicitHeight + root.menuPadding * 2
         implicitWidth: width
@@ -276,9 +280,9 @@ Item {
         StyledRect {
             anchors.fill: parent
             radius: parent.radius
-            color: Colours.palette.m3surfaceContainerLow
-            border.width: 1
-            border.color: Colours.palette.m3primary
+            color: root.panelColour
+            border.width: root.panelBorderWidth
+            border.color: root.panelBorderColour
         }
 
         ColumnLayout {
@@ -322,7 +326,7 @@ Item {
 
         visible: root.sortMenuVisible && !root.confirmingDelete && root.entry === null
         level: 2
-        radius: Tokens.rounding.large
+        radius: root.panelRadius
         width: root.submenuWidth
         height: sortColumn.implicitHeight + root.menuPadding * 2
         implicitWidth: width
@@ -338,9 +342,9 @@ Item {
         StyledRect {
             anchors.fill: parent
             radius: parent.radius
-            color: Colours.palette.m3surfaceContainerLow
-            border.width: 1
-            border.color: Colours.palette.m3primary
+            color: root.panelColour
+            border.width: root.panelBorderWidth
+            border.color: root.panelBorderColour
         }
 
         ColumnLayout {
