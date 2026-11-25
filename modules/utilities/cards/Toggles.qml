@@ -179,8 +179,8 @@ StyledRect {
     }
 
     component Toggle: IconButton {
-        activeColour: Theme.fluent ? Colours.palette.m3primaryContainer : Colours.palette.m3primary
-        activeOnColour: Theme.fluent ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onPrimary
+        activeColour: Colours.palette.m3primary
+        activeOnColour: Colours.palette.m3onPrimary
         inactiveColour: Colours.layer(Colours.palette.m3surfaceContainerHighest, 2)
         fillWidth: true
         isToggle: true
