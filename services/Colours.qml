@@ -76,34 +76,34 @@ Singleton {
     }
 
     function fluentRoles(light: bool, accent: color): var {
-        const tint = light ? 0.1 : 0.16;
+        const tint = light ? 0.12 : 0.18;
         const surface = value => root.mix(root.parseColour(value), accent, tint);
 
         const roles = light ? {
             m3background: surface("#f3f3f3"),
-            m3surface: surface("#ececec"),
-            m3surfaceDim: surface("#e2e2e2"),
-            m3surfaceBright: surface("#f6f6f6"),
-            m3surfaceContainerLowest: surface("#e4e4e4"),
-            m3surfaceContainerLow: surface("#eaeaea"),
-            m3surfaceContainer: surface("#efefef"),
-            m3surfaceContainerHigh: surface("#f4f4f4"),
-            m3surfaceContainerHighest: surface("#f8f8f8"),
-            m3surfaceVariant: surface("#dedede"),
+            m3surface: surface("#d8d8d8"),
+            m3surfaceDim: surface("#cecece"),
+            m3surfaceBright: surface("#e2e2e2"),
+            m3surfaceContainerLowest: surface("#d4d4d4"),
+            m3surfaceContainerLow: surface("#dadada"),
+            m3surfaceContainer: surface("#dfdfdf"),
+            m3surfaceContainerHigh: surface("#e4e4e4"),
+            m3surfaceContainerHighest: surface("#e8e8e8"),
+            m3surfaceVariant: surface("#cecece"),
             m3inverseSurface: surface("#2b2b2b"),
             m3neutral_paletteKeyColor: surface("#8a8a8a"),
             m3neutral_variant_paletteKeyColor: surface("#d6d6d6")
         } : {
             m3background: surface("#202020"),
-            m3surface: surface("#1c1c1c"),
-            m3surfaceDim: surface("#181818"),
-            m3surfaceBright: surface("#282828"),
-            m3surfaceContainerLowest: surface("#171717"),
-            m3surfaceContainerLow: surface("#1d1d1d"),
-            m3surfaceContainer: surface("#232323"),
-            m3surfaceContainerHigh: surface("#292929"),
-            m3surfaceContainerHighest: surface("#2f2f2f"),
-            m3surfaceVariant: surface("#2f2f2f"),
+            m3surface: surface("#060606"),
+            m3surfaceDim: surface("#000000"),
+            m3surfaceBright: surface("#121212"),
+            m3surfaceContainerLowest: surface("#020202"),
+            m3surfaceContainerLow: surface("#080808"),
+            m3surfaceContainer: surface("#0d0d0d"),
+            m3surfaceContainerHigh: surface("#131313"),
+            m3surfaceContainerHighest: surface("#191919"),
+            m3surfaceVariant: surface("#191919"),
             m3inverseSurface: surface("#f3f3f3"),
             m3neutral_paletteKeyColor: surface("#8a8a8a"),
             m3neutral_variant_paletteKeyColor: surface("#3d3d3d")
