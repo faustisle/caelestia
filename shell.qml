@@ -21,6 +21,7 @@ ShellRoot {
     Component.onCompleted: {
         // Force certain singletons to load on shell init instead of lazily
         ImageViewer;
+        Theme;
         Notifs;
         Brightness;
         NightLight;

@@ -7,7 +7,7 @@ QtObject {
     id: root
 
     readonly property int wallpaperAndStylePage: 0
-    readonly property int displaysPage: 6
+    readonly property int displaysPage: 7
     readonly property int wallpaperSubPage: 1
     readonly property int coloursSubPage: 3
 
@@ -17,6 +17,12 @@ QtObject {
             label: Tr.tr("Wallpaper & style"),
             icon: "palette",
             description: Tr.tr("Wallpaper, fonts, colours"),
+            category: "appearance"
+        },
+        {
+            label: Tr.tr("Theme"),
+            icon: "palette",
+            description: Tr.tr("Visual language, density, motion"),
             category: "appearance"
         },
 

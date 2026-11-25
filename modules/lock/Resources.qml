@@ -250,6 +250,7 @@ StyledRect {
                     anchors.bottom: parent.bottom
 
                     implicitHeight: shape.implicitSize * res.fillValue
+                    amplitude: Theme.active.waves ? 3 : 0
                     color: res.fillColour
                 }
             }
