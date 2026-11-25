@@ -22,6 +22,10 @@ full set.
   `bar.position`.
 - **Style** — choose Material or Fluent in Nexus → Style. Density, radii
   and motion switch live without restarting the shell.
+- **Thunar** — the shell writes `thunar.css` for GTK 3 and GTK 4 when the
+  style changes. Make sure `~/.config/gtk-3.0/gtk.css` and
+  `~/.config/gtk-4.0/gtk.css` import it with `@import "thunar.css";`.
+  Restart Thunar after switching styles to reload the stylesheet.
 - **Desktop icons** — show files and folders on the desktop, reorder them by
   dragging, drop files and folders onto the desktop, and choose single-click or
   double-click opening. Configure it under `background.desktopIcons`.

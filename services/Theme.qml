@@ -188,6 +188,7 @@ Singleton {
 
         root.applyFonts(theme, base);
         Colours.style = theme.palette;
+        Quickshell.execDetached(["python3", Quickshell.shellPath("assets/apply-thunar-theme.py"), theme.id]);
         root.saveState();
 
         if (shellRoot)
