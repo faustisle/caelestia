@@ -77,36 +77,38 @@ Singleton {
 
     function fluentRoles(light: bool, accent: color): var {
         const tint = light ? 0.12 : 0.18;
+        const panelTint = light ? 0.08 : 0.06;
         const surface = value => root.mix(root.parseColour(value), accent, tint);
+        const panel = value => root.mix(root.parseColour(value), accent, panelTint);
 
         const roles = light ? {
-            m3background: surface("#f3f3f3"),
-            m3surface: surface("#d8d8d8"),
-            m3surfaceDim: surface("#cecece"),
-            m3surfaceBright: surface("#e2e2e2"),
-            m3surfaceContainerLowest: surface("#d4d4d4"),
-            m3surfaceContainerLow: surface("#dadada"),
-            m3surfaceContainer: surface("#dfdfdf"),
-            m3surfaceContainerHigh: surface("#e4e4e4"),
-            m3surfaceContainerHighest: surface("#e8e8e8"),
-            m3surfaceVariant: surface("#cecece"),
-            m3inverseSurface: surface("#2b2b2b"),
-            m3neutral_paletteKeyColor: surface("#8a8a8a"),
-            m3neutral_variant_paletteKeyColor: surface("#d6d6d6")
+            m3background: panel("#f3f3f3"),
+            m3surface: panel("#e8e8e8"),
+            m3surfaceDim: panel("#dedede"),
+            m3surfaceBright: panel("#f0f0f0"),
+            m3surfaceContainerLowest: panel("#e4e4e4"),
+            m3surfaceContainerLow: panel("#eaeaea"),
+            m3surfaceContainer: surface("#efefef"),
+            m3surfaceContainerHigh: surface("#f4f4f4"),
+            m3surfaceContainerHighest: surface("#f8f8f8"),
+            m3surfaceVariant: surface("#e0e0e0"),
+            m3inverseSurface: panel("#2b2b2b"),
+            m3neutral_paletteKeyColor: panel("#8a8a8a"),
+            m3neutral_variant_paletteKeyColor: panel("#d6d6d6")
         } : {
-            m3background: surface("#202020"),
-            m3surface: surface("#060606"),
-            m3surfaceDim: surface("#000000"),
-            m3surfaceBright: surface("#121212"),
-            m3surfaceContainerLowest: surface("#020202"),
-            m3surfaceContainerLow: surface("#080808"),
-            m3surfaceContainer: surface("#0d0d0d"),
-            m3surfaceContainerHigh: surface("#131313"),
-            m3surfaceContainerHighest: surface("#191919"),
-            m3surfaceVariant: surface("#191919"),
-            m3inverseSurface: surface("#f3f3f3"),
-            m3neutral_paletteKeyColor: surface("#8a8a8a"),
-            m3neutral_variant_paletteKeyColor: surface("#3d3d3d")
+            m3background: panel("#080808"),
+            m3surface: panel("#080808"),
+            m3surfaceDim: panel("#020202"),
+            m3surfaceBright: panel("#121212"),
+            m3surfaceContainerLowest: panel("#040404"),
+            m3surfaceContainerLow: panel("#090909"),
+            m3surfaceContainer: surface("#111111"),
+            m3surfaceContainerHigh: surface("#1b1b1b"),
+            m3surfaceContainerHighest: surface("#252525"),
+            m3surfaceVariant: surface("#252525"),
+            m3inverseSurface: panel("#f3f3f3"),
+            m3neutral_paletteKeyColor: panel("#8a8a8a"),
+            m3neutral_variant_paletteKeyColor: panel("#3d3d3d")
         };
 
         Object.assign(roles, light ? {

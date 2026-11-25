@@ -54,12 +54,15 @@ Item {
     }
 
     function updateShape(): void {
+        if (Theme.fluent)
+            return;
+
         const shape = indicator.item as MaterialShape;
         if (!shape)
             return;
 
         if (focused)
-            shape.shape = Theme.fluent ? MaterialShape.Square : focusedShapeList[Math.floor(Math.random() * focusedShapeList.length)];
+            shape.shape = focusedShapeList[Math.floor(Math.random() * focusedShapeList.length)];
         else
             shape.shape = Qt.binding(() => isOccupied ? MaterialShape.Square : MaterialShape.Circle);
     }
@@ -108,6 +111,27 @@ Item {
     Behavior on opacity {
         Anim {
             type: Anim.DefaultEffects
+        }
+    }
+
+    Component {
+        id: flatShapeComponent
+
+        StyledRect {
+            implicitWidth: root.indicatorSize
+            implicitHeight: root.indicatorSize
+
+            radius: Tokens.rounding.small
+            color: root.fgColour
+            scale: root.focused ? 2 / 3 : root.isOccupied ? 1 / 3 : 1 / 4
+
+            Behavior on color {
+                CAnim {}
+            }
+
+            Behavior on scale {
+                Anim {}
+            }
         }
     }
 
@@ -223,7 +247,7 @@ Item {
                     return iconLoaderComponent;
                 if (root.displayType === BarWorkspaceDisplay.Text)
                     return textComponent;
-                return shapeComponent;
+                return Theme.fluent ? flatShapeComponent : shapeComponent;
             }
 
             onItemChanged: root.updateShape()

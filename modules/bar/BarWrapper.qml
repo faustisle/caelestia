@@ -89,7 +89,7 @@ Item {
     StyledRect {
         anchors.fill: parent
         visible: Theme.taskbar
-        color: Colours.tPalette.m3surfaceContainer
+        color: Colours.tPalette.m3surface
         radius: 0
 
         StyledRect {
