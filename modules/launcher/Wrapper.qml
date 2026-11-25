@@ -101,7 +101,7 @@ Item {
         y: search?.y ?? 0
         width: search?.width ?? 0
         height: search?.height ?? 0
-        radius: Tokens.rounding.full
+        radius: Theme.fluent ? Tokens.rounding.small : Tokens.rounding.full
         color: Colours.tPalette.m3surfaceContainer
     }
 

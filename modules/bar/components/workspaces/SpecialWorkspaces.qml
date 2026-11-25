@@ -112,7 +112,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: Tokens.rounding.full
+            radius: Tokens.rounding.extraLarge
 
             gradient: Gradient {
                 orientation: root.horizontal ? Gradient.Horizontal : Gradient.Vertical
@@ -142,7 +142,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: root.horizontal ? parent.bottom : undefined
 
-            radius: Tokens.rounding.full
+            radius: Tokens.rounding.extraLarge
             implicitWidth: root.horizontal ? parent.width / 2 : -1
             implicitHeight: root.horizontal ? -1 : parent.height / 2
             opacity: (root.horizontal ? view.x : view.y) < -Tokens.padding.extraSmall ? 0 : 1
@@ -160,7 +160,7 @@ Item {
             anchors.top: root.horizontal ? parent.top : undefined
             anchors.bottom: parent.bottom
 
-            radius: Tokens.rounding.full
+            radius: Tokens.rounding.extraLarge
             implicitWidth: root.horizontal ? parent.width / 2 : -1
             implicitHeight: root.horizontal ? -1 : parent.height / 2
             opacity: (root.horizontal ? view.x : view.y) > -root.maxViewOffset + Tokens.padding.extraSmall ? 0 : 1
