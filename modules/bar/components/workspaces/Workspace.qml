@@ -121,7 +121,7 @@ Item {
             implicitWidth: root.indicatorSize
             implicitHeight: root.indicatorSize
 
-            radius: Tokens.rounding.small
+            radius: Tokens.rounding.full
             color: root.fgColour
             scale: root.focused ? 2 / 3 : root.isOccupied ? 1 / 3 : 1 / 4
 
