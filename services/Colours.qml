@@ -96,16 +96,16 @@ Singleton {
             m3neutral_paletteKeyColor: panel("#8a8a8a"),
             m3neutral_variant_paletteKeyColor: panel("#d6d6d6")
         } : {
-            m3background: panel("#080808"),
-            m3surface: panel("#080808"),
-            m3surfaceDim: panel("#020202"),
-            m3surfaceBright: panel("#121212"),
-            m3surfaceContainerLowest: panel("#040404"),
-            m3surfaceContainerLow: panel("#090909"),
-            m3surfaceContainer: surface("#111111"),
-            m3surfaceContainerHigh: surface("#1b1b1b"),
-            m3surfaceContainerHighest: surface("#252525"),
-            m3surfaceVariant: surface("#252525"),
+            m3background: panel("#121212"),
+            m3surface: panel("#121212"),
+            m3surfaceDim: panel("#0a0a0a"),
+            m3surfaceBright: panel("#1c1c1c"),
+            m3surfaceContainerLowest: panel("#0e0e0e"),
+            m3surfaceContainerLow: panel("#121212"),
+            m3surfaceContainer: surface("#0a0a0a"),
+            m3surfaceContainerHigh: surface("#0e0e0e"),
+            m3surfaceContainerHighest: surface("#121212"),
+            m3surfaceVariant: surface("#121212"),
             m3inverseSurface: panel("#f3f3f3"),
             m3neutral_paletteKeyColor: panel("#8a8a8a"),
             m3neutral_variant_paletteKeyColor: panel("#3d3d3d")
@@ -131,7 +131,7 @@ Singleton {
             m3shadow: "#000000"
         });
 
-        const container = root.mix(root.parseColour(light ? "#ffffff" : "#2f2f2f"), accent, light ? 0.14 : 0.22);
+        const container = root.mix(root.parseColour(light ? "#ffffff" : "#111111"), accent, light ? 0.14 : 0.22);
 
         roles.m3primary = accent;
         roles.m3primaryContainer = container;
