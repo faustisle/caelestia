@@ -18,6 +18,16 @@ StyledRect {
     color: Colours.tPalette.m3surfaceContainer
     clip: true
 
+    StyledRect {
+        anchors.fill: parent
+        radius: parent.radius
+        color: "transparent"
+        border.width: Theme.borderWidth
+        border.color: Theme.borderColour
+        visible: Theme.borderWidth > 0
+        z: 100
+    }
+
     RowLayout {
         id: layout
 

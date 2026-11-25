@@ -41,7 +41,7 @@ StyledWindow {
     readonly property real sdfBorderOffset: 2 * fsTransitionProg // SDFs joins are not exact, so offset by 2px to ensure nothing shows
     readonly property real borderThickness: contentItem.Config.border.thickness * (1 - fsTransitionProg)
     readonly property real borderRounding: (GameMode.enabled && GlobalConfig.utilities.gameMode.options["decoration:rounding"] === 0 ? 0 : contentItem.Config.border.rounding) * (1 - fsTransitionProg)
-    readonly property real shadowOpacity: 0.7 * (1 - fsTransitionProg)
+    readonly property real shadowOpacity: Theme.shadowOpacity * (1 - fsTransitionProg)
     readonly property real borderLayoutThickness: hasFullscreen ? 0 : contentItem.Config.border.thickness
     // Shared screen dim opacity for the session menu and the launcher
     readonly property real dimOpacity: 0.5
@@ -150,7 +150,7 @@ StyledWindow {
         layer.enabled: true
         layer.effect: MultiEffect {
             shadowEnabled: true
-            blurMax: 15
+            blurMax: Theme.shadowBlur
             shadowColor: Qt.alpha(Colours.palette.m3shadow, Math.max(0, root.shadowOpacity))
         }
 
@@ -200,6 +200,7 @@ StyledWindow {
 
                 panel: panels.osdWrapper
                 deformAmount: 0.25
+                squareRight: Theme.fluent
                 x: panels.osdWrapper.x + panels.osd.x + geometry.insetLeft(root.borderThickness)
                 implicitWidth: panels.osd.width + 1
                 // Keep the OSD's blob merge with the frame for its spring, but
@@ -212,6 +213,8 @@ StyledWindow {
             id: notifsBg
 
             panel: panels.notifications
+            squareRight: Theme.fluent
+            squareTop: Theme.fluent
         }
 
         Item {
@@ -231,6 +234,8 @@ StyledWindow {
 
                 panel: panels.utilities
                 deformAmount: 0.15
+                squareRight: Theme.fluent
+                squareTop: Theme.fluent
                 // This item is offset by the clip's top edge already.
                 y: panel.y
                 implicitHeight: panel.height
@@ -253,7 +258,10 @@ StyledWindow {
 
             panel: panels.popoutsWrapper
             deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
-            mergeWithInverted: !fullyClosed || physicsActive
+            mergeWithInverted: !Theme.fluent && (!fullyClosed || physicsActive)
+            squareLeft: Theme.fluent && geometry.barOnLeft
+            squareTop: Theme.fluent && geometry.barOnTop
+            squareBottom: Theme.fluent && geometry.barOnBottom
             visible: !fullyClosed || physicsActive
             x: panels.popoutsWrapper.x + panels.popouts.x + geometry.insetLeft(root.borderThickness) - (geometry.horizontal ? 0 : panels.popouts.width * extraExtent)
             y: panels.popoutsWrapper.y + panels.popouts.y + geometry.insetTop(root.borderThickness) - (geometry.barOnTop ? panels.popouts.height * extraExtent : 0)
@@ -357,6 +365,10 @@ StyledWindow {
     component PanelBg: BlobRect {
         required property Item panel
         property real deformAmount: 0.15
+        property bool squareLeft: false
+        property bool squareRight: false
+        property bool squareTop: false
+        property bool squareBottom: false
 
         group: blobGroup
         x: panel.x + geometry.insetLeft(root.borderThickness)
@@ -364,6 +376,24 @@ StyledWindow {
         implicitWidth: panel.width
         implicitHeight: panel.height
         radius: Tokens.rounding.extraLarge
+        topLeftRadius: squareLeft || squareTop ? 0 : radius
+        topRightRadius: squareRight || squareTop ? 0 : radius
+        bottomLeftRadius: squareLeft || squareBottom ? 0 : radius
+        bottomRightRadius: squareRight || squareBottom ? 0 : radius
         deformScale: (deformAmount * Config.appearance.deformScale) / 10000
+        mergeWithInverted: !Theme.fluent
+
+        StyledRect {
+            anchors.fill: parent
+            radius: parent.radius
+            topLeftRadius: parent.topLeftRadius
+            topRightRadius: parent.topRightRadius
+            bottomLeftRadius: parent.bottomLeftRadius
+            bottomRightRadius: parent.bottomRightRadius
+            color: "transparent"
+            border.width: Theme.borderWidth
+            border.color: Theme.borderColour
+            visible: Theme.borderWidth > 0
+        }
     }
 }

@@ -40,6 +40,16 @@ StyledRect {
         }
     }
 
+    StyledRect {
+        anchors.fill: parent
+        radius: parent.radius
+        color: "transparent"
+        border.width: Theme.borderWidth
+        border.color: Theme.borderColour
+        visible: Theme.borderWidth > 0
+        z: 100
+    }
+
     MouseArea {
         property int startY
 

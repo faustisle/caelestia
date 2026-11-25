@@ -28,7 +28,7 @@ TextFieldBase {
 
         anchors.fill: parent
         color: root.backgroundless ? "transparent" : Colours.tPalette.m3surfaceContainer
-        radius: Tokens.rounding.full
+        radius: Theme.fluent ? Tokens.rounding.small : Tokens.rounding.full
 
         StateLayer {
             id: stateLayer

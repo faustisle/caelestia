@@ -37,8 +37,8 @@ Item {
         layer.enabled: true
         layer.effect: MultiEffect {
             shadowEnabled: true
-            blurMax: 15 * root.scaleFactor
-            shadowColor: Qt.alpha(Colours.palette.m3shadow, 0.7)
+            blurMax: Theme.shadowBlur * root.scaleFactor
+            shadowColor: Qt.alpha(Colours.palette.m3shadow, Theme.shadowOpacity)
         }
 
         StyledRect {

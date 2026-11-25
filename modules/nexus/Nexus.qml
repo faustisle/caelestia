@@ -110,6 +110,15 @@ Item {
         width: Math.min(Tokens.sizes.nexus.maxNavWidth, Math.round(root.width / 3))
     }
 
+    StyledRect {
+        anchors.fill: parent
+        radius: Tokens.rounding.large
+        color: "transparent"
+        border.width: Theme.borderWidth
+        border.color: Theme.borderColour
+        visible: Theme.borderWidth > 0
+    }
+
     Pages {
         anchors.left: navPane.right
         anchors.right: parent.right

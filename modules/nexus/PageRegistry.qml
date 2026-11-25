@@ -20,9 +20,9 @@ QtObject {
             category: "appearance"
         },
         {
-            label: Tr.tr("Theme"),
+            label: Tr.tr("Style"),
             icon: "palette",
-            description: Tr.tr("Visual language, density, motion"),
+            description: Tr.tr("Visual style, density, motion"),
             category: "appearance"
         },
 

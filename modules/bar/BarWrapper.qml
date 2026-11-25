@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Caelestia.Config
 import qs.components
+import qs.services
 import qs.utils
 import qs.modules.bar.popouts as BarPopouts
 
@@ -84,6 +85,23 @@ Item {
             }
         }
     ]
+
+    StyledRect {
+        anchors.fill: parent
+        visible: Theme.taskbar
+        color: Colours.tPalette.m3surfaceContainer
+        radius: 0
+
+        StyledRect {
+            anchors.top: root.horizontal ? parent.top : undefined
+            anchors.right: root.horizontal ? undefined : parent.right
+            anchors.left: root.horizontal ? parent.left : undefined
+            anchors.bottom: root.horizontal ? undefined : parent.bottom
+            implicitWidth: root.horizontal ? parent.width : 1
+            implicitHeight: root.horizontal ? 1 : parent.height
+            color: Qt.alpha(Colours.palette.m3outline, 0.18)
+        }
+    }
 
     Loader {
         id: content

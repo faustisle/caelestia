@@ -14,7 +14,16 @@ MouseArea {
     readonly property alias rect: base
 
     property bool shapeMorph
-    property real stateOpacity: containsMouse || manualHoverOverride ? 0.08 : 0
+    property bool ripple: Theme.ripple
+    property real stateOpacity: {
+        if (disabled)
+            return 0;
+        if (containsMouse || manualHoverOverride)
+            return Theme.fluent ? 0.06 : 0.08;
+        if (!root.ripple && (pressed || manualPressOverride))
+            return 0.12;
+        return 0;
+    }
 
     property real pressX: width / 2
     property real pressY: height / 2
@@ -32,7 +41,7 @@ MouseArea {
         const d2 = distSq(width, 0);
         const d3 = distSq(0, height);
         const d4 = distSq(width, height);
-        return (Math.sqrt(Math.max(d1, d2, d3, d4)) + (shapeMorph ? 24 : 0)) * 1.3;
+        return (Math.sqrt(Math.max(d1, d2, d3, d4)) + (shapeMorph && Theme.morph ? 24 : 0)) * 1.3;
     }
     property real endRadiusAtPress
 
@@ -45,6 +54,9 @@ MouseArea {
     }
 
     function press(x: real, y: real): void {
+        if (!root.ripple)
+            return;
+
         pressX = x;
         pressY = y;
         fadeAnim.complete();
@@ -116,6 +128,7 @@ MouseArea {
         id: circle
 
         anchors.fill: parent
+        visible: root.ripple
         opacity: 0
         preferredRendererType: Shape.CurveRenderer
 

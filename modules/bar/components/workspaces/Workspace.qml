@@ -59,7 +59,7 @@ Item {
             return;
 
         if (focused)
-            shape.shape = focusedShapeList[Math.floor(Math.random() * focusedShapeList.length)];
+            shape.shape = Theme.fluent ? MaterialShape.Square : focusedShapeList[Math.floor(Math.random() * focusedShapeList.length)];
         else
             shape.shape = Qt.binding(() => isOccupied ? MaterialShape.Square : MaterialShape.Circle);
     }
@@ -120,7 +120,7 @@ Item {
             color: root.fgColour
             scale: root.focused ? 2 / 3 : root.isOccupied ? 1 / 3 : 1 / 4
 
-            animationEasing: Tokens.anim.expressiveDefaultSpatial
+            animationEasing: Theme.fluent ? Tokens.anim.standard : Tokens.anim.expressiveDefaultSpatial
             animationDuration: Tokens.anim.durations.expressiveDefaultSpatial * Tokens.anim.durations.scale
 
             Behavior on color {

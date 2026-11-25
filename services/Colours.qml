@@ -15,6 +15,9 @@ Singleton {
     property bool showPreview
     property string scheme
     property string flavour
+    property string style: "material"
+    property var currentRaw: ({})
+    property var previewRaw: ({})
     readonly property bool light: showPreview ? previewLight : currentLight
     property bool currentLight
     property bool previewLight
@@ -59,6 +62,101 @@ Singleton {
         return Qt.hsla(c.hslHue, c.hslSaturation, 0.1, 1);
     }
 
+    function mix(a: color, b: color, t: real): color {
+        return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1);
+    }
+
+    function parseColour(value: var): color {
+        if (typeof value !== "string")
+            return value;
+
+        const hex = value.replace("#", "");
+        const number = parseInt(hex, 16);
+        return Qt.rgba(((number >> 16) & 255) / 255, ((number >> 8) & 255) / 255, (number & 255) / 255, 1);
+    }
+
+    function fluentRoles(light: bool, accent: color): var {
+        const tint = light ? 0.1 : 0.16;
+        const surface = value => root.mix(root.parseColour(value), accent, tint);
+
+        const roles = light ? {
+            m3background: surface("#f3f3f3"),
+            m3surface: surface("#ececec"),
+            m3surfaceDim: surface("#e2e2e2"),
+            m3surfaceBright: surface("#f6f6f6"),
+            m3surfaceContainerLowest: surface("#e4e4e4"),
+            m3surfaceContainerLow: surface("#eaeaea"),
+            m3surfaceContainer: surface("#efefef"),
+            m3surfaceContainerHigh: surface("#f4f4f4"),
+            m3surfaceContainerHighest: surface("#f8f8f8"),
+            m3surfaceVariant: surface("#dedede"),
+            m3inverseSurface: surface("#2b2b2b"),
+            m3neutral_paletteKeyColor: surface("#8a8a8a"),
+            m3neutral_variant_paletteKeyColor: surface("#d6d6d6")
+        } : {
+            m3background: surface("#202020"),
+            m3surface: surface("#1c1c1c"),
+            m3surfaceDim: surface("#181818"),
+            m3surfaceBright: surface("#282828"),
+            m3surfaceContainerLowest: surface("#171717"),
+            m3surfaceContainerLow: surface("#1d1d1d"),
+            m3surfaceContainer: surface("#232323"),
+            m3surfaceContainerHigh: surface("#292929"),
+            m3surfaceContainerHighest: surface("#2f2f2f"),
+            m3surfaceVariant: surface("#2f2f2f"),
+            m3inverseSurface: surface("#f3f3f3"),
+            m3neutral_paletteKeyColor: surface("#8a8a8a"),
+            m3neutral_variant_paletteKeyColor: surface("#3d3d3d")
+        };
+
+        Object.assign(roles, light ? {
+            m3onSurface: "#1a1a1a",
+            m3onBackground: "#1a1a1a",
+            m3onSurfaceVariant: "#5a5a5a",
+            m3inverseOnSurface: "#ffffff",
+            m3outline: "#8a8a8a",
+            m3outlineVariant: "#d6d6d6",
+            m3scrim: "#000000",
+            m3shadow: "#000000"
+        } : {
+            m3onSurface: "#f5f5f5",
+            m3onBackground: "#f5f5f5",
+            m3onSurfaceVariant: "#c7c7c7",
+            m3inverseOnSurface: "#1b1b1b",
+            m3outline: "#9a9a9a",
+            m3outlineVariant: "#464646",
+            m3scrim: "#000000",
+            m3shadow: "#000000"
+        });
+
+        const container = root.mix(root.parseColour(light ? "#ffffff" : "#2f2f2f"), accent, light ? 0.14 : 0.22);
+
+        roles.m3primary = accent;
+        roles.m3primaryContainer = container;
+        roles.m3onPrimaryContainer = root.mix(root.parseColour(light ? "#1a1a1a" : "#ffffff"), accent, light ? 0.2 : 0.12);
+        roles.m3inversePrimary = accent;
+        roles.m3secondary = accent;
+        roles.m3secondaryContainer = container;
+        roles.m3onSecondaryContainer = roles.m3onPrimaryContainer;
+        roles.m3surfaceTint = accent;
+
+        return roles;
+    }
+
+    function applyPalette(target: var, raw: var, isLight: bool): void {
+        if (!raw)
+            return;
+
+        const fluent = root.style === "fluent";
+        const roles = fluent ? root.fluentRoles(isLight, root.parseColour(raw.m3primary ?? "#60cdff")) : null;
+
+        for (const [name, value] of Object.entries(raw)) {
+            if (!target.hasOwnProperty(name))
+                continue;
+            target[name] = fluent ? (roles[name] ?? value) : value;
+        }
+    }
+
     function load(data: string, isPreview: bool): void {
         const colours = isPreview ? preview : current;
         const scheme = JSON.parse(data);
@@ -71,11 +169,19 @@ Singleton {
             previewLight = scheme.mode === "light";
         }
 
+        const raw = {};
         for (const [name, colour] of Object.entries(scheme.colours)) {
             const propName = name.startsWith("term") ? name : `m3${name}`;
             if (colours.hasOwnProperty(propName))
-                colours[propName] = `#${colour}`;
+                raw[propName] = `#${colour}`;
         }
+
+        if (isPreview)
+            root.previewRaw = raw;
+        else
+            root.currentRaw = raw;
+
+        root.applyPalette(colours, raw, isPreview ? root.previewLight : root.currentLight);
     }
 
     function setMode(mode: string): void {
@@ -101,6 +207,11 @@ Singleton {
             root.reloadHyprRules();
             cooldownTimer.restart();
         }
+    }
+
+    onStyleChanged: {
+        root.applyPalette(root.current, root.currentRaw, root.currentLight);
+        root.applyPalette(root.preview, root.previewRaw, root.previewLight);
     }
 
     Component.onCompleted: root.requestReloadHyprRules()

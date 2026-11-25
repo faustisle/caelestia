@@ -12,7 +12,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: Tr.tr("Theme")
+    title: Tr.tr("Style")
     isSubPage: false
 
     ColumnLayout {
@@ -24,7 +24,7 @@ PageBase {
         StyledText {
             Layout.fillWidth: true
             Layout.bottomMargin: Tokens.spacing.medium
-            text: Tr.tr("Choose a visual language. Changes apply immediately.")
+            text: Tr.tr("Choose a style. Changes apply immediately.")
             color: Colours.palette.m3onSurfaceVariant
             font: Tokens.font.body.small
             wrapMode: Text.WordWrap
@@ -46,6 +46,8 @@ PageBase {
 
                 radius: Tokens.rounding.large
                 color: card.selected ? Qt.alpha(Colours.palette.m3primaryContainer, 0.8) : Colours.tPalette.m3surfaceContainerHigh
+                border.width: Theme.borderWidth
+                border.color: card.selected ? Colours.palette.m3primary : Theme.borderColour
 
                 StateLayer {
                     radius: card.radius

@@ -1,5 +1,6 @@
 import QtQuick
 import Caelestia.Config
+import qs.services
 
 NumberAnimation {
     enum Type {
@@ -43,6 +44,9 @@ NumberAnimation {
         return Tokens.anim.durations[types[idx]];
     }
     easing: {
+        if (Theme.fluent)
+            return Tokens.anim.standard;
+
         if (type === Anim.FastSpatial)
             return Tokens.anim.expressiveFastSpatial;
         if (type === Anim.DefaultSpatial)

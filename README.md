@@ -20,8 +20,8 @@ full set.
   replaced by the quick-settings hover panel.
 - **Panel positioning** — the bar can sit on the top, bottom, or left edge via
   `bar.position`.
-- **Themes** — choose Material or Fluent 2 in Nexus → Theme. Density, radii,
-  transparency and motion switch live without restarting the shell.
+- **Style** — choose Material or Fluent in Nexus → Style. Density, radii
+  and motion switch live without restarting the shell.
 - **Desktop icons** — show files and folders on the desktop, reorder them by
   dragging, drop files and folders onto the desktop, and choose single-click or
   double-click opening. Configure it under `background.desktopIcons`.

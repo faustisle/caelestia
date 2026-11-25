@@ -219,8 +219,8 @@ WlSessionLockSurface {
             layer.enabled: true
             layer.effect: MultiEffect {
                 shadowEnabled: true
-                blurMax: 15
-                shadowColor: Qt.alpha(Colours.palette.m3shadow, 0.7)
+                blurMax: Theme.shadowBlur
+                shadowColor: Qt.alpha(Colours.palette.m3shadow, Theme.shadowOpacity)
             }
         }
 

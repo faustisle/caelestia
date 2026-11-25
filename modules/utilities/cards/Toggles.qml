@@ -43,6 +43,16 @@ StyledRect {
     radius: Tokens.rounding.large
     color: Colours.tPalette.m3surfaceContainer
 
+    StyledRect {
+        anchors.fill: parent
+        radius: parent.radius
+        color: "transparent"
+        border.width: Theme.borderWidth
+        border.color: Theme.borderColour
+        visible: Theme.borderWidth > 0
+        z: 100
+    }
+
     ColumnLayout {
         id: layout
 

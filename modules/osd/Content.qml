@@ -21,14 +21,16 @@ Item {
     required property bool sourceMuted
     required property real brightness
 
-    implicitWidth: layout.implicitWidth + Tokens.padding.large + layout.anchors.horizontalCenterOffset * 2
+    readonly property real borderCompensation: Config.border.thickness > 0 ? CUtils.clamp(Tokens.padding.large - Config.border.thickness, 0, Tokens.padding.large) / 2 : 0
+
+    implicitWidth: layout.implicitWidth + Tokens.padding.large + (Config.border.thickness > 0 ? borderCompensation * 2 : Tokens.padding.large)
     implicitHeight: layout.implicitHeight + Tokens.padding.large * 2
 
     ColumnLayout {
         id: layout
 
         anchors.centerIn: parent
-        anchors.horizontalCenterOffset: CUtils.clamp(Tokens.padding.large - Config.border.thickness, 0, Tokens.padding.large) / 2
+        anchors.horizontalCenterOffset: root.borderCompensation
         spacing: Tokens.spacing.medium
 
         // Speaker volume
