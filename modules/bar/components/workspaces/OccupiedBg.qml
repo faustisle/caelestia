@@ -49,8 +49,8 @@ Item {
         required property int index
         required property Workspace modelData
 
-        property real leadingRadius: ifAdjacent(0, -1, 0, root.horizontal ? height / 2 : width / 2)
-        property real trailingRadius: ifAdjacent(root.workspaces.length - 1, 1, 0, root.horizontal ? height / 2 : width / 2)
+        property real leadingRadius: ifAdjacent(0, -1, 0, Tokens.rounding.extraLarge)
+        property real trailingRadius: ifAdjacent(root.workspaces.length - 1, 1, 0, Tokens.rounding.extraLarge)
         property real leadingPadding: ifAdjacent(0, -1, root.wsSpacing, 0)
         property real trailingPadding: ifAdjacent(root.workspaces.length - 1, 1, root.wsSpacing, 0)
 

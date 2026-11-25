@@ -26,7 +26,7 @@ StyledRect {
     implicitHeight: horizontal ? Tokens.sizes.bar.horizontalInnerWidth : layout.implicitHeight + root.padding * 2
 
     color: Qt.alpha(Colours.tPalette.m3surfaceContainer, Config.bar.clock.background ? Colours.tPalette.m3surfaceContainer.a : 0)
-    radius: Tokens.rounding.full
+    radius: Tokens.rounding.extraLarge
 
     TextMetrics {
         id: hourMetrics

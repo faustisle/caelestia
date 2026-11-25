@@ -45,7 +45,7 @@ StyledRect {
     y: horizontal ? 0 : start + mask.y
     implicitWidth: horizontal ? end - start : Tokens.sizes.bar.innerWidth - Tokens.padding.small
     implicitHeight: horizontal ? Tokens.sizes.bar.horizontalInnerWidth - Tokens.padding.small : end - start
-    radius: Tokens.rounding.full
+    radius: Tokens.rounding.extraLarge
     color: Colours.palette.m3primary
 
     Anim on start {

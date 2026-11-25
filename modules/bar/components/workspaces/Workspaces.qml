@@ -75,7 +75,7 @@ ClipRect {
     implicitHeight: horizontal ? normalHeight : Math.max(normalHeight, onSpecial ? specialHeight : 0)
 
     color: Colours.tPalette.m3surfaceContainer
-    radius: Tokens.rounding.full
+    radius: Tokens.rounding.extraLarge
 
     Item {
         anchors.fill: parent
@@ -223,7 +223,7 @@ ClipRect {
 
             StyledRect {
                 anchors.fill: parent
-                radius: Tokens.rounding.full
+                radius: Tokens.rounding.extraLarge
                 color: Qt.alpha(Colours.palette.m3scrim, Colours.light ? 0 : 0.2)
             }
 

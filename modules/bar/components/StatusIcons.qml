@@ -46,7 +46,7 @@ StyledRect {
     }
 
     color: Colours.tPalette.m3surfaceContainer
-    radius: Tokens.rounding.full
+    radius: Tokens.rounding.extraLarge
 
     clip: true
     implicitWidth: horizontal ? iconColumn.implicitWidth + Tokens.padding.medium * 2 : Tokens.sizes.bar.innerWidth
