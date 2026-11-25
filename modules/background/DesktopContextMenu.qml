@@ -210,6 +210,7 @@ Item {
                 onHovered: {
                     root.openSortMenu();
                 }
+                onUnhovered: root.scheduleSortMenuClose()
             }
 
             MenuRow {
