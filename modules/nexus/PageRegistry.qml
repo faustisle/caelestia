@@ -14,7 +14,7 @@ QtObject {
     readonly property list<var> pages: [
         // Appearance
         {
-            label: Tr.tr("Wallpaper & style"),
+            label: Tr.tr("Wallpaper & theming"),
             icon: "palette",
             description: Tr.tr("Wallpaper, fonts, colours"),
             category: "appearance"

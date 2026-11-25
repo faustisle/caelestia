@@ -24,7 +24,7 @@ QtObject {
     readonly property list<Component> pageComps: [
         // Appearance
         Component {
-            // Wallpaper & style
+            // Wallpaper & theming
             StackPage {
                 Component {
                     WallpaperAndStyle {}

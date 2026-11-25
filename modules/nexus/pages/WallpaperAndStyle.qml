@@ -14,7 +14,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: Tr.tr("Wallpaper & style")
+    title: Tr.tr("Wallpaper & theming")
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
