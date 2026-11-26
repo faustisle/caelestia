@@ -32,7 +32,7 @@ Item {
 
             text: Time.format("dddd • MMMM dd").toUpperCase()
             color: Colours.palette.m3onSurface
-            font: Tokens.font.title.builders.medium.weight(Font.DemiBold).build()
+            font: Tokens.font.title.builders.medium.weight(Font.DemiBold).scale(Theme.fluent ? 0.9 : 1).build()
         }
 
         PasswordInput {

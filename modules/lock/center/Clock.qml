@@ -11,11 +11,15 @@ Item {
 
     required property real centerScale
 
+    readonly property real sizeFactor: Theme.fluent ? 0.72 : 1
+    readonly property real colonGap: Tokens.spacing.extraSmall
+    readonly property font colonFont: Tokens.font.headline.builders.large.scale(7 * root.centerScale * root.sizeFactor).weight(Font.Light).width(30).build()
+
     function calcTopOff(metrics: TextMetrics): real {
         return metrics.tightBoundingRect.y - metrics.boundingRect.y;
     }
 
-    implicitWidth: hours.implicitWidth + minutes.implicitWidth + Tokens.spacing.small
+    implicitWidth: hours.implicitWidth + colonGap + colonMetrics.tightBoundingRect.width + colonGap + minutes.implicitWidth
     implicitHeight: hourMetrics.tightBoundingRect.height
 
     StyledText {
@@ -24,13 +28,38 @@ Item {
         y: -root.calcTopOff(hourMetrics)
         text: Time.hourStr
         color: Colours.palette.m3primary
-        font: Tokens.font.headline.builders.large.scale(7 * root.centerScale).width(30).build()
+        font: Tokens.font.headline.builders.large.scale(7 * root.centerScale * root.sizeFactor).weight(Font.Light).width(30).build()
 
         TextMetrics {
             id: hourMetrics
 
             text: hours.text
             font: hours.font
+        }
+    }
+
+    StyledText {
+        id: colon
+
+        x: hours.implicitWidth + root.colonGap
+        y: (root.implicitHeight - colonMetrics.tightBoundingRect.height) / 2
+        width: colonMetrics.tightBoundingRect.width
+        height: colonMetrics.tightBoundingRect.height
+
+        text: ":"
+        color: Colours.palette.m3onSurface
+        font: root.colonFont
+
+        transform: Translate {
+            x: -colonMetrics.tightBoundingRect.x
+            y: -root.calcTopOff(colonMetrics)
+        }
+
+        TextMetrics {
+            id: colonMetrics
+
+            text: colon.text
+            font: colon.font
         }
     }
 
@@ -42,7 +71,7 @@ Item {
 
         text: Time.minuteStr
         color: Colours.palette.m3secondary
-        font: Tokens.font.headline.builders.large.scale((Units.twelveHourClock ? 3.8 : 7) * root.centerScale).width(30).build()
+        font: Tokens.font.headline.builders.large.scale((Units.twelveHourClock ? 3.8 : 7) * root.centerScale * root.sizeFactor).weight(Font.Light).width(30).build()
 
         TextMetrics {
             id: minuteMetrics
@@ -80,7 +109,7 @@ Item {
 
                 text: Time.amPmStr
                 color: Colours.palette.m3onSurface
-                font: Tokens.font.headline.builders.small.scale(2 * root.centerScale).width(30).build()
+                font: Tokens.font.headline.builders.small.scale(2 * root.centerScale * root.sizeFactor).weight(Font.Light).width(30).build()
 
                 TextMetrics {
                     id: amPmMetrics

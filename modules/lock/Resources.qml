@@ -18,6 +18,7 @@ StyledRect {
     id: root
 
     readonly property bool sessionControlsShown: GlobalConfig.lock.enableSessionControls && hover.hovered
+    readonly property real fontFactor: Theme.fluent ? 0.8 : 1
     readonly property real fontScale: {
         const diff = width / 391 - 1; // 391 is the width at 1080 height screen
         return 1 + Math.pow(Math.abs(diff), 0.8) * Math.sign(diff);
@@ -121,7 +122,7 @@ StyledRect {
 
                             text: Units.formatSensorTemp(Cpu.temperature)
                             color: Cpu.temperature > 90 ? Colours.palette.m3onErrorContainer : Colours.palette.m3secondary
-                            font: Tokens.font.title.builders.medium.scale(cpu.width / 112).width(50).build()
+                            font: Tokens.font.title.builders.medium.scale(cpu.width / 112 * root.fontFactor).width(50).build()
                         }
                     }
                 }
@@ -271,7 +272,7 @@ StyledRect {
                 Layout.alignment: Qt.AlignHCenter
                 text: res.value
                 color: res.colour
-                font: Tokens.font.headline.builders.large.scale(root.fontScale).width(50).build()
+                font: Tokens.font.headline.builders.large.scale(root.fontScale * root.fontFactor).width(50).build()
             }
         }
 
