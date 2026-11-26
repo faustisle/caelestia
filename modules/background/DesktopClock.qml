@@ -85,6 +85,7 @@ Item {
                     text: Time.hourStr
                     font: Tokens.font.clock.size(Tokens.font.headline.medium.pointSize * 3 * root.clockScale).weight(Font.Bold).build()
                     color: root.safePrimary
+                    renderType: Text.QtRendering
                 }
 
                 StyledText {
@@ -92,6 +93,7 @@ Item {
                     font: Tokens.font.clock.size(Tokens.font.headline.medium.pointSize * 3 * root.clockScale).build()
                     color: root.safeTertiary
                     opacity: 0.8
+                    renderType: Text.QtRendering
                     Layout.topMargin: -Tokens.padding.large * 1.5 * root.clockScale
                 }
 
@@ -99,6 +101,7 @@ Item {
                     text: Time.minuteStr
                     font: Tokens.font.clock.size(Tokens.font.headline.medium.pointSize * 3 * root.clockScale).weight(Font.Bold).build()
                     color: root.safeSecondary
+                    renderType: Text.QtRendering
                 }
 
                 Loader {
