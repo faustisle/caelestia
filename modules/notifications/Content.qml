@@ -18,6 +18,8 @@ Item {
     required property Item sessionPanel
     readonly property int padding: Tokens.padding.large
     readonly property int clampedPadding: CUtils.clamp(padding - Config.border.thickness, 0, padding)
+    // Extra room below the list so the last card's border is not clipped.
+    readonly property int bottomInset: Tokens.padding.small
 
     anchors.top: parent.top
     anchors.bottom: parent.bottom
@@ -45,14 +47,14 @@ Item {
                 height = h;
         }
 
-        return Math.min(((QsWindow.window as QsWindow)?.screen?.height ?? 0) + padding - clampedPadding * 2 - Config.border.thickness, height + padding + clampedPadding);
+        return Math.min(((QsWindow.window as QsWindow)?.screen?.height ?? 0) + padding - clampedPadding * 2 - Config.border.thickness, height + padding + clampedPadding + bottomInset);
     }
 
     ClippingWrapperRectangle {
         anchors.fill: parent
-        anchors.margins: root.padding
-        anchors.topMargin: root.clampedPadding
-        anchors.rightMargin: root.clampedPadding
+        anchors.margins: root.padding - Theme.borderWidth
+        anchors.topMargin: root.clampedPadding - Theme.borderWidth
+        anchors.rightMargin: root.clampedPadding - Theme.borderWidth
 
         color: "transparent"
         radius: Tokens.rounding.large
@@ -65,6 +67,8 @@ Item {
             }
 
             anchors.fill: parent
+            anchors.margins: Theme.borderWidth
+            anchors.bottomMargin: 0
 
             orientation: Qt.Vertical
             spacing: 0
@@ -188,6 +192,8 @@ Item {
         }
 
         ClipRect {
+            id: clipRect
+
             anchors.top: parent.top
             anchors.topMargin: wrapper.idx === 0 ? 0 : Tokens.spacing.medium
 

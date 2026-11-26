@@ -40,16 +40,6 @@ StyledRect {
         }
     }
 
-    StyledRect {
-        anchors.fill: parent
-        radius: parent.radius
-        color: "transparent"
-        border.width: Theme.borderWidth
-        border.color: Theme.borderColour
-        visible: Theme.borderWidth > 0
-        z: 100
-    }
-
     MouseArea {
         property int startY
 
@@ -540,5 +530,17 @@ StyledRect {
                 }
             }
         }
+    }
+
+    // Inset the border so the rounded clip mask cannot shave off the bottom edge.
+    StyledRect {
+        anchors.fill: parent
+        anchors.margins: 1
+        radius: Math.max(0, parent.radius - 1)
+        color: "transparent"
+        border.width: Theme.borderWidth
+        border.color: Theme.borderColour
+        visible: Theme.borderWidth > 0
+        z: 100
     }
 }
